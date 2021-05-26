@@ -17,10 +17,13 @@ SOURCE_FILES :=\
 	src/ingame/ingame_core.cpp\
 	src/ingame/ingame_enemy_controller.cpp\
 	src/ingame/ingame_input_handler.cpp\
+	src/ingame/ingame_inventory.cpp\
 	src/ingame/ingame_map.cpp\
 	src/ingame/ingame_pathfinder.cpp\
 	src/ingame/ingame_projectile_controller.cpp\
 	src/ingame/ingame_renderer.cpp\
+	src/interface/window.cpp\
+	src/interface/window_inventory.cpp\
 	src/interface/window_map.cpp\
 
 SOURCE_FILES_LIB := \

@@ -10,6 +10,8 @@
 
 STATUS WindowMap::render(struct _fbg *pFbg)
 {
+	fbg_rect(pFbg, x-2, y-2, width+4, height+4, 0x22, 0x26, 0x31);
+
 	return map.render(pFbg, *this);
 }
 

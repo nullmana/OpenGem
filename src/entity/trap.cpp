@@ -10,7 +10,7 @@ void Trap::tick(IngameMap &map, int frames)
 	std::vector<Targetable*> targetsInRange;
 	float rangeSq = 1.0f;
 	if (g_game.game == GC_LABYRINTH)
-		rangeSq = (33.0f/28.0f)*(33.0f/28.0f);
+		rangeSq = 1.0f;
 	else if(g_game.game == GC_CHASINGSHADOWS)
 		rangeSq = (30.0f/17.0f)*(30.0f/17.0f);
 	else

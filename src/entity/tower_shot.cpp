@@ -16,8 +16,8 @@ TowerShot::TowerShot(const Tower &tower, Targetable *pTarget_) : pTarget(pTarget
 	{
 		z = 50.0f;
 
-		velX = (50.0f/28.0f) * (rand() / float(RAND_MAX)) - (25.0f/28.0f);
-		velY = (50.0f/28.0f) * (rand() / float(RAND_MAX)) - (25.0f/28.0f);
+		velX = (50.0f/33.0f) * (rand() / float(RAND_MAX)) - (25.0f/33.0f);
+		velY = (50.0f/33.0f) * (rand() / float(RAND_MAX)) - (25.0f/33.0f);
 		velZ = 0.0f;
 	}
 	else if (g_game.game == GC_CHASINGSHADOWS)
@@ -58,7 +58,7 @@ bool TowerShot::tick(int frames)
 			y += (1.0f - z / 50.0f) * (lastTargetY - y);
 		}
 
-		if ((z < 20.0f) && (fabs(lastTargetX - x) + fabs(lastTargetY - y) < (4.0f/28.0f)))
+		if ((z < 20.0f) && (fabs(lastTargetX - x) + fabs(lastTargetY - y) < (4.0f/33.0f)))
 		{
 			if (pTarget != NULL)
 			{

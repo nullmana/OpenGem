@@ -2,21 +2,14 @@
 
 #include "interface/window.h"
 
-class IngameMap;
+class IngameInventory;
 
-class WindowMap : public Window
+class WindowInventory : public Window
 {
 private:
-	IngameMap &map;
-
-	int dragStartX;
-	int dragStartY;
+	IngameInventory &inventory;
 public:
-	WindowMap(IngameMap &map_) : map(map_)
-	{
-		dragStartX = 0;
-		dragStartY = 0;
-	}
+	WindowInventory(IngameInventory &inventory_) : inventory(inventory_) {}
 
 	virtual STATUS render(struct _fbg *pFbg);
 	virtual void handleMouseInput(GLFWwindow *pWindow, int button, int action, int mods);
