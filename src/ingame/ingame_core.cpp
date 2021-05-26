@@ -4,7 +4,7 @@
 
 STATUS IngameCore::init(struct _fbg* pFbg_)
 {
-    STATUS status                          = STATUS_OK;
+    STATUS status = STATUS_OK;
     struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)pFbg_->user_context;
 
     glfwSetWindowUserPointer(pGlfwContext->window, this);

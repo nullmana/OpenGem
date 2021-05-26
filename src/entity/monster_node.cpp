@@ -28,7 +28,7 @@ int MonsterNode::pickDirection(const PathWeight& path)
 void MonsterNode::debugDrawPathWeights(IngameCore& core)
 {
     struct _fbg* pFbg = core.fbg();
-    Window* pWindow   = core.renderer.getRootWindow();
+    Window* pWindow = core.renderer.getRootWindow();
 
     float scale = pWindow->width / float(g_game.ingameMapWidth);
 

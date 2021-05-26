@@ -9,8 +9,8 @@ TowerShot::TowerShot(const Tower& tower, Targetable* pTarget_) : pTarget(pTarget
 {
     lastTargetX = pTarget_->x;
     lastTargetY = pTarget_->y;
-    x           = tower.x;
-    y           = tower.y;
+    x = tower.x;
+    y = tower.y;
 
     if (g_game.game == GC_LABYRINTH)
     {

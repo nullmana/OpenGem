@@ -40,14 +40,14 @@ void IngameRenderer::resize(int width, int height)
     else
         throw "Game Code Unavailable!";
 
-    float aspect_w   = (float)g_game.ingameMapWidth / (float)g_game.ingameMapHeight;
+    float aspect_w = (float)g_game.ingameMapWidth / (float)g_game.ingameMapHeight;
     float realHeight = height * 0.95f - offsetY;
-    float realWidth  = fmin(realHeight * aspect_w, width * 0.75f - offsetX);
-    realHeight       = realWidth / aspect_w;
+    float realWidth = fmin(realHeight * aspect_w, width * 0.75f - offsetX);
+    realHeight = realWidth / aspect_w;
 
-    float invWidth  = width - realWidth - offsetX - 16;
+    float invWidth = width - realWidth - offsetX - 16;
     float invHeight = fmin(invWidth * 4.0f, realHeight * 2.0f / 3.0f);
-    invWidth        = invHeight * 0.25f;
+    invWidth = invHeight * 0.25f;
 
     int mapW = std::max<int>(realWidth, g_game.ingameMapWidth);
     int mapH = std::max<int>(realHeight, g_game.ingameMapHeight);
