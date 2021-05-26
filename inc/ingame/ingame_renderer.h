@@ -12,14 +12,15 @@ struct _fbg;
 class IngameRenderer
 {
 private:
-	// TODO make root window with windowMap as child
-	WindowMap windowMap;
+    // TODO make root window with windowMap as child
+    WindowMap windowMap;
+
 public:
-	IngameRenderer(IngameCore &core);
+    IngameRenderer(IngameCore& core);
 
-	STATUS init(IngameCore &core);
+    STATUS init(IngameCore& core);
 
-	STATUS render(IngameCore &core);
+    STATUS render(IngameCore& core);
 
-	Window * getRootWindow() { return &windowMap; }
+    Window* getRootWindow() { return &windowMap; }
 };

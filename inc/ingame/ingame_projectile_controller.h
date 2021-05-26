@@ -14,24 +14,25 @@ struct _fbg;
 class IngameProjectileController
 {
 private:
-	std::list<TowerShot> shots;
+    std::list<TowerShot> shots;
+
 public:
-	IngameProjectileController();
+    IngameProjectileController();
 
-	void createTowerShots(const Tower &tower, Targetable *pTarget, int num);
+    void createTowerShots(const Tower& tower, Targetable* pTarget, int num);
 
-	/*!
-	 * @brief Monsters which reach the orb are immediately hit by all shots heading towards them
-	 * @param[in] pTarget Target which reached the orb
-	 */
-	void warpShotsToTarget(Targetable *pTarget);
-	/*!
-	 * @brief Clear targets on any killed monsters
-	 * @param[in] targets Set of INVALIDATED pointers for comparison, should NOT be dereferenced
-	 */
-	void clearShotsFromTarget(const std::unordered_set<Targetable*> &invalidatedTargets);
+    /*!
+     * @brief Monsters which reach the orb are immediately hit by all shots heading towards them
+     * @param[in] pTarget Target which reached the orb
+     */
+    void warpShotsToTarget(Targetable* pTarget);
+    /*!
+     * @brief Clear targets on any killed monsters
+     * @param[in] targets Set of INVALIDATED pointers for comparison, should NOT be dereferenced
+     */
+    void clearShotsFromTarget(const std::unordered_set<Targetable*>& invalidatedTargets);
 
-	void tickProjectiles(int frames);
+    void tickProjectiles(int frames);
 
-	void render(struct _fbg *pFbg, const Window &window)const;
+    void render(struct _fbg* pFbg, const Window& window) const;
 };

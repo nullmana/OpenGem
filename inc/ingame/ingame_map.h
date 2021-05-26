@@ -23,29 +23,29 @@ struct _fbg;
 class IngameMap
 {
 private:
-	vector2d<BUILDING_TYPE> tileOccupied;
-	vector2d<Building*> tileBuilding;
+    vector2d<BUILDING_TYPE> tileOccupied;
+    vector2d<Building*> tileBuilding;
 
-	bool verifyBuilding(BUILDING_TYPE building, int x, int y);
-	STATUS placeBuilding(BUILDING_TYPE building, int x, int y);
+    bool verifyBuilding(BUILDING_TYPE building, int x, int y);
+    STATUS placeBuilding(BUILDING_TYPE building, int x, int y);
 
 public:
-	IngameMap(IngameLevelDefinition &level);
+    IngameMap(IngameLevelDefinition& level);
 
-	STATUS render(struct _fbg *pFbg, const Window &window)const;
+    STATUS render(struct _fbg* pFbg, const Window& window) const;
 
-	STATUS buildWall(int x1, int y1, int x2, int y2);
-	STATUS buildTower(int x, int y);
-	STATUS buildTrap(int x, int y);
-	STATUS destroyStructure(int x, int y);
+    STATUS buildWall(int x1, int y1, int x2, int y2);
+    STATUS buildTower(int x, int y);
+    STATUS buildTrap(int x, int y);
+    STATUS destroyStructure(int x, int y);
 
-	const vector2d<BUILDING_TYPE> & getTileOccupiedMap()const { return tileOccupied; }
+    const vector2d<BUILDING_TYPE>& getTileOccupiedMap() const { return tileOccupied; }
 
-	void monsterReachesTarget(Monster &monster);
+    void monsterReachesTarget(Monster& monster);
 
-	IngameBuildingController buildingController;
-	IngameEnemyController enemyController;
-	IngameProjectileController projectileController;
-	IngamePathfinder pathfinder;
-	Orb orb;
+    IngameBuildingController buildingController;
+    IngameEnemyController enemyController;
+    IngameProjectileController projectileController;
+    IngamePathfinder pathfinder;
+    Orb orb;
 };

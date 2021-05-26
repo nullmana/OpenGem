@@ -11,17 +11,17 @@
 class IngameCore
 {
 private:
-	struct _fbg *pFbg;
+    struct _fbg* pFbg;
 
 public:
-	IngameCore(IngameLevelDefinition &level) : renderer(*this), map(level) {}
+    IngameCore(IngameLevelDefinition& level) : renderer(*this), map(level) {}
 
-	STATUS init(struct _fbg *pFbg_);
+    STATUS init(struct _fbg* pFbg_);
 
-	struct _fbg * fbg() { return pFbg; }
-	const struct _fbg * fbg()const { return pFbg; }
+    struct _fbg* fbg() { return pFbg; }
+    const struct _fbg* fbg() const { return pFbg; }
 
-	IngameInputHandler inputHandler;
-	IngameMap map;
-	IngameRenderer renderer;
+    IngameInputHandler inputHandler;
+    IngameMap map;
+    IngameRenderer renderer;
 };
