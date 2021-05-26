@@ -2,7 +2,7 @@
 
 enum GC_GAME
 {
-    GC_LABYRINTH      = 2,
+    GC_LABYRINTH = 2,
     GC_CHASINGSHADOWS = 3,
     GC_FROSTBORNWRATH = 4,
 };

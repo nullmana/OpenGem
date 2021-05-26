@@ -135,20 +135,20 @@ void IngamePathfinder::recalculateNodePaths(IngameMap& map, MonsterNode* pNode)
     distance.clear(INT_MAX);
     calculateDistanceToNode(*pNode, map.getTileOccupiedMap(), distance);
 
-    int weight_cardinal       = 1;
-    int weight_diagonalEqual  = 0;
+    int weight_cardinal = 1;
+    int weight_diagonalEqual = 0;
     int weight_diagonalCloser = 1;
 
     if (g_game.game == GC_LABYRINTH)
     {
-        weight_cardinal       = 1;
-        weight_diagonalEqual  = 0;
+        weight_cardinal = 1;
+        weight_diagonalEqual = 0;
         weight_diagonalCloser = 1;
     }
     else if (g_game.game == GC_CHASINGSHADOWS)
     {
-        weight_cardinal       = 12;
-        weight_diagonalEqual  = 1;
+        weight_cardinal = 12;
+        weight_diagonalEqual = 1;
         weight_diagonalCloser = 4;
     }
 

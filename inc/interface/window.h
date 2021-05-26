@@ -17,9 +17,9 @@ public:
 
     virtual void resize(float x_, float y_, float w_, float h_)
     {
-        x      = x_;
-        y      = y_;
-        width  = w_;
+        x = x_;
+        y = y_;
+        width = w_;
         height = h_;
     }
 

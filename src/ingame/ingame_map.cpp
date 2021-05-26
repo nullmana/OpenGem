@@ -138,7 +138,7 @@ STATUS IngameMap::placeBuilding(BUILDING_TYPE building, int x, int y)
         for (int i = x; i < x + bw; ++i)
         {
             BUILDING_TYPE b = tileOccupied.at(j, i);
-            bool isPath     = (b == BUILDING_PATH) || (b == BUILDING_WALL_PATH);
+            bool isPath = (b == BUILDING_PATH) || (b == BUILDING_WALL_PATH);
 
             switch (building)
             {
@@ -173,7 +173,7 @@ STATUS IngameMap::placeBuilding(BUILDING_TYPE building, int x, int y)
 
 STATUS IngameMap::buildWall(int x1, int y1, int x2, int y2)
 {
-    STATUS status     = STATUS_OK;
+    STATUS status = STATUS_OK;
     bool overlapsPath = false;
 
     if ((x1 < 0) || (x1 >= g_game.ingameMapWidth) || (y1 < 0) || (y1 >= g_game.ingameMapHeight) ||
@@ -281,7 +281,7 @@ STATUS IngameMap::buildTrap(int x, int y)
 
 STATUS IngameMap::destroyStructure(int x, int y)
 {
-    STATUS status  = STATUS_OK;
+    STATUS status = STATUS_OK;
     bool addedPath = false;
 
     if (x < 0 || x >= g_game.ingameMapWidth || y < 0 || y >= g_game.ingameMapHeight)
@@ -302,7 +302,7 @@ STATUS IngameMap::destroyStructure(int x, int y)
                 }
                 else
                 {
-                    t         = BUILDING_PATH;
+                    t = BUILDING_PATH;
                     addedPath = true;
                 }
 

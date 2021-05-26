@@ -15,9 +15,9 @@ static void windowSizeCallback(GLFWwindow* pWindow, int width, int height)
 {
     IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
 
-    float aspect_w   = (float)g_game.ingameMapWidth / (float)g_game.ingameMapHeight;
+    float aspect_w = (float)g_game.ingameMapWidth / (float)g_game.ingameMapHeight;
     float realHeight = height * 0.95f - 53;
-    float realWidth  = fmin(realHeight * aspect_w, width * 0.75f - 39);
+    float realWidth = fmin(realHeight * aspect_w, width * 0.75f - 39);
 
     int mapW = std::max<int>(realWidth, g_game.ingameMapWidth);
     int mapH = std::max<int>(realHeight, g_game.ingameMapHeight);

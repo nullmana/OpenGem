@@ -7,7 +7,7 @@
 
 IngameInputHandler::IngameInputHandler()
 {
-    speedMultiplier      = 0;
+    speedMultiplier = 0;
     savedSpeedMultiplier = 1;
 }
 
@@ -27,7 +27,7 @@ static void scrollCallback(GLFWwindow* pWindow, double xoffset, double yoffset) 
 
 static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
 {
-    IngameCore* pCore                 = (IngameCore*)glfwGetWindowUserPointer(pWindow);
+    IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
     IngameInputHandler* pInputHandler = &pCore->inputHandler;
 
     switch (key)

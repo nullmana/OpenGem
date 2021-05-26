@@ -13,19 +13,19 @@ int main(int argc, char* argv[])
 {
     if ((argc >= 2) && !strcmp(argv[1], "cs"))
     {
-        g_game.game               = GC_CHASINGSHADOWS;
-        g_game.ingameMapWidth     = GCCS_INGAME_MAP_WIDTH;
-        g_game.ingameMapHeight    = GCCS_INGAME_MAP_HEIGHT;
+        g_game.game = GC_CHASINGSHADOWS;
+        g_game.ingameMapWidth = GCCS_INGAME_MAP_WIDTH;
+        g_game.ingameMapHeight = GCCS_INGAME_MAP_HEIGHT;
         g_game.ingameBuildingSize = GCCS_INGAME_BUILDING_SIZE;
-        g_game.ingameFramerate    = GCCS_INGAME_FRAMERATE;
+        g_game.ingameFramerate = GCCS_INGAME_FRAMERATE;
     }
     else
     {
-        g_game.game               = GC_LABYRINTH;
-        g_game.ingameMapWidth     = GCL_INGAME_MAP_WIDTH;
-        g_game.ingameMapHeight    = GCL_INGAME_MAP_HEIGHT;
+        g_game.game = GC_LABYRINTH;
+        g_game.ingameMapWidth = GCL_INGAME_MAP_WIDTH;
+        g_game.ingameMapHeight = GCL_INGAME_MAP_HEIGHT;
         g_game.ingameBuildingSize = GCL_INGAME_BUILDING_SIZE;
-        g_game.ingameFramerate    = GCL_INGAME_FRAMERATE;
+        g_game.ingameFramerate = GCL_INGAME_FRAMERATE;
     }
 
     switch (g_game.game)
@@ -66,23 +66,23 @@ int main(int argc, char* argv[])
 
     core.init(pFbg);
 
-    double lastFrame          = glfwGetTime();
-    double lastUpdate         = lastFrame;
+    double lastFrame = glfwGetTime();
+    double lastUpdate = lastFrame;
     int framesSinceLastUpdate = 0;
-    double lastGameFrame      = lastFrame;
+    double lastGameFrame = lastFrame;
 
     do
     {
         ++framesSinceLastUpdate;
         double curTime = glfwGetTime();
-        double dt      = curTime - lastFrame;
-        lastFrame      = curTime;
+        double dt = curTime - lastFrame;
+        lastFrame = curTime;
         if (curTime - lastUpdate > 1.0)
         {
             printf("%.04fms | %.04fFPS\n", (curTime - lastUpdate) / framesSinceLastUpdate,
                 framesSinceLastUpdate / (curTime - lastUpdate));
             framesSinceLastUpdate = 0;
-            lastUpdate            = curTime;
+            lastUpdate = curTime;
         }
 
         int gameFrames = 0;

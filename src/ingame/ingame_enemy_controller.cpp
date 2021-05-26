@@ -14,7 +14,7 @@ IngameEnemyController::IngameEnemyController()
 
 void IngameEnemyController::spawnMonsters(const IngamePathfinder& pathfinder, int num)
 {
-    static int nodeOffset                            = 0;
+    static int nodeOffset = 0;
     const std::vector<const MonsterSpawnNode*> nodes = pathfinder.getMonsterSpawnNodes();
     for (int i = 0; i < num; ++i)
     {

@@ -15,7 +15,7 @@ STATUS WindowMap::render(struct _fbg* pFbg)
 
 void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, int mods)
 {
-    IngameCore* pCore                 = (IngameCore*)glfwGetWindowUserPointer(pWindow);
+    IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
     IngameInputHandler* pInputHandler = &pCore->inputHandler;
     double xpos, ypos;
     float scale = width / g_game.ingameMapWidth;
