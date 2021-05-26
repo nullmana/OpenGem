@@ -3,6 +3,8 @@
 #include "entity/tower.h"
 #include "entity/trap.h"
 
+#include "interface/window.h"
+
 #include <list>
 
 class IngameBuildingController
@@ -16,6 +18,8 @@ private:
 
 public:
     IngameBuildingController();
+
+    void render(struct _fbg* pFbg, const Window& window) const;
 
     void tickBuildings(IngameMap& map, int frames);
 

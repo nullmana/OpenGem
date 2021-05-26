@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.1] - 2021-05-26
+
+### Added
+
+- Added gems, 6 created during initialization for testing, which can be dragged around, swapped between slots, placed into buildings, and swapped between buildings.
+- Improved interface window system to handle input and rendering recursively, with each window handling inputs within its boundary.
+
+### Fixed
+
+- Fixed crash due to incorrect window scaling in GCL mode going out-of-bounds while attempting to draw the map. All windows will now automatically scale to a sane size during initialization
+
+
 ## [0.1.0] - 2021-05-25
 
 ### Added

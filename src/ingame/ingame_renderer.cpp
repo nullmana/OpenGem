@@ -73,8 +73,5 @@ STATUS IngameRenderer::render(IngameCore& core)
 
     rootWindow.render(pFbg);
 
-    core.map.enemyController.render(pFbg, windowMap);
-    core.map.projectileController.render(pFbg, windowMap);
-
     return STATUS_OK;
 }

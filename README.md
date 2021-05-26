@@ -32,7 +32,7 @@ v0.1:
 - [x] Traps, able to strike monsters passing within range
 
 v0.2:
-- [ ] Gems, able to be created and placed into buildings
+- [x] Gems, able to be created and placed into buildings
 - [ ] Amplifiers, able to be placed on the map and affect towers, no specific math yet
 - [ ] Primitive UI elements, able to select actions with mouse and keyboard with visual response
 

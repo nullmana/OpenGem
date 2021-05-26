@@ -2,11 +2,17 @@
 
 #include "constants/building_type.h"
 
+#include <cstddef>
+
+class Gem;
+
 class Building
 {
 public:
-    Building(int ix_, int iy_) : ix(ix_), iy(iy_), x(ix_ + 1.0f), y(iy_ + 1.0f) {}
+    Building(int ix_, int iy_);
     BUILDING_TYPE type;
+
+    Gem* pGem;
 
     int ix;
     int iy;

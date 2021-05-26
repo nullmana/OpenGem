@@ -21,6 +21,17 @@ static void mouseButtonCallback(GLFWwindow* pWindow, int button, int action, int
     Window* rootWindow = pCore->renderer.getRootWindow();
     if (rootWindow->contains(xpos, ypos))
         rootWindow->handleMouseInput(pWindow, button, action, mods);
+
+    switch (pCore->inputHandler.getInputState())
+    {
+        case INPUT_DRAGGING_IDLE:
+            if ((action == GLFW_RELEASE) && (button == GLFW_MOUSE_BUTTON_LEFT))
+            {
+                pCore->inventory.clearDraggedGem();
+                pCore->inputHandler.setInputState(INPUT_IDLE);
+            }
+            break;
+    }
 }
 
 static void scrollCallback(GLFWwindow* pWindow, double xoffset, double yoffset) {}
@@ -92,6 +103,18 @@ STATUS IngameInputHandler::init(IngameCore& core)
 
 STATUS IngameInputHandler::handleMouseInput(IngameCore& core)
 {
+    struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)core.fbg()->user_context;
+    Gem* pDraggedGem                       = core.inventory.getDraggedGem();
+    double xpos, ypos;
+
+    glfwGetCursorPos(pGlfwContext->window, &xpos, &ypos);
+
+    if (pDraggedGem != NULL)
+    {
+        pDraggedGem->x = xpos;
+        pDraggedGem->y = ypos;
+    }
+
     return STATUS_OK;
 }
 

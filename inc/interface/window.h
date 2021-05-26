@@ -11,14 +11,24 @@ class Window
 {
 private:
     std::vector<Window*> children;
+    Window* pParent;
 
 public:
+    Window();
+
     float x;
     float y;
     float width;
     float height;
 
-    void addChildWindow(Window* pWindow) { children.push_back(pWindow); }
+    void addChildWindow(Window* pWindow)
+    {
+        children.push_back(pWindow);
+        pWindow->setParent(this);
+    }
+    void setParent(Window* pWindow) { pParent = pWindow; }
+    Window* getParent() const { return pParent; }
+    const Window* getRootWindow() const;
 
     virtual void resize(float x_, float y_, float w_, float h_)
     {

@@ -39,6 +39,8 @@ public:
     STATUS buildTrap(int x, int y);
     STATUS destroyStructure(int x, int y);
 
+    Building* getBuilding(int y, int x) const { return tileBuilding.at(y, x); }
+
     const vector2d<BUILDING_TYPE>& getTileOccupiedMap() const { return tileOccupied; }
 
     void monsterReachesTarget(Monster& monster);

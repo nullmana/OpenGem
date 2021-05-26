@@ -24,11 +24,8 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
 
     glfwGetCursorPos(pWindow, &xpos, &ypos);
 
-    xpos -= x;
-    ypos -= y;
-
-    int ix = std::floor(xpos / scale);
-    int iy = std::floor(ypos / scale);
+    int ix = std::floor((xpos - x) / scale);
+    int iy = std::floor((ypos - y) / scale);
 
     if ((ix < 0) || (ix >= g_game.ingameMapWidth) || (iy < 0) || (iy >= g_game.ingameMapHeight))
         return;
@@ -44,6 +41,21 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
     switch (pInputHandler->getInputState())
     {
         case INPUT_IDLE:
+            if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
+            {
+                Building* pBuilding = map.getBuilding(iy, ix);
+                if (pBuilding != NULL)
+                {
+                    Gem* pGem = pBuilding->pGem;
+                    if (pGem != NULL)
+                    {
+                        pCore->inventory.startDragGem(pGem);
+                        pGem->x = xpos;
+                        pGem->y = ypos;
+                        pInputHandler->setInputState(INPUT_DRAGGING_IDLE);
+                    }
+                }
+            }
             break;
         case INPUT_BUILD_WALL:
             if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
@@ -77,6 +89,22 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                 map.buildTrap(ix, iy);
                 if (!(mods & GLFW_MOD_SHIFT))
                     pInputHandler->setInputState(INPUT_IDLE);
+            }
+            break;
+        case INPUT_DRAGGING_IDLE:
+            if ((action == GLFW_RELEASE) && (button == GLFW_MOUSE_BUTTON_LEFT))
+            {
+                Building* pBuilding = map.getBuilding(iy, ix);
+                Gem* pDraggedGem    = pCore->inventory.getDraggedGem();
+                if (pDraggedGem != NULL)
+                {
+                    if (pBuilding != NULL)
+                    {
+                        pCore->inventory.placeGemIntoBuilding(pDraggedGem, pBuilding, false);
+                    }
+                    pCore->inventory.clearDraggedGem();
+                    pInputHandler->setInputState(INPUT_IDLE);
+                }
             }
             break;
     }

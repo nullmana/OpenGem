@@ -27,5 +27,5 @@ public:
 
     void resize(int width, int height);
 
-    Window* getRootWindow() { return &windowMap; }
+    Window* getRootWindow() { return &rootWindow; }
 };

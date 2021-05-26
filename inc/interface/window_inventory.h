@@ -9,6 +9,8 @@ class WindowInventory : public Window
 private:
     IngameInventory& inventory;
 
+    int getInventorySlot(float xpos, float ypos) const;
+
 public:
     WindowInventory(IngameInventory& inventory_) : inventory(inventory_) {}
 

@@ -50,6 +50,10 @@ STATUS IngameMap::render(struct _fbg* pFbg, const Window& window) const
         }
     }
 
+    buildingController.render(pFbg, window);
+    enemyController.render(pFbg, window);
+    projectileController.render(pFbg, window);
+
     return STATUS_OK;
 }
 

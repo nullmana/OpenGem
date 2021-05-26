@@ -1,8 +1,40 @@
 #include "ingame/ingame_building_controller.h"
 
+#include "constants/game_header.h"
+
+#include "entity/gem.h"
+
+#include "wrapfbg.h"
+
 #include <cstdlib>
 
 IngameBuildingController::IngameBuildingController() {}
+
+void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) const
+{
+    float scale    = window.width / float(g_game.ingameMapWidth);
+    float gemScale = 0.85f * scale;
+
+    for (const Tower& t : towers)
+    {
+        if ((t.pGem != NULL) && !t.pGem->isDragged)
+        {
+            fbg_rect(pFbg, t.x * scale + window.x - 0.5f * gemScale,
+                t.y * scale + window.y - 0.5f * gemScale, gemScale, gemScale,
+                (t.pGem->color >> 4) & 0xFF, (t.pGem->color >> 2) & 0xFF, t.pGem->color & 0xFF);
+        }
+    }
+
+    for (const Trap& t : traps)
+    {
+        if ((t.pGem != NULL) && !t.pGem->isDragged)
+        {
+            fbg_rect(pFbg, t.x * scale + window.x - 0.5f * gemScale,
+                t.y * scale + window.y - 0.5f * gemScale, gemScale, gemScale,
+                (t.pGem->color >> 4) & 0xFF, (t.pGem->color >> 2) & 0xFF, t.pGem->color & 0xFF);
+        }
+    }
+}
 
 void IngameBuildingController::tickBuildings(IngameMap& map, int frames)
 {

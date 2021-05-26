@@ -1,6 +1,7 @@
 #include "entity/orb.h"
 
-Orb::Orb(int ix, int iy) : MonsterNode(ix + 1.0f, iy + 1.0f)
+Orb::Orb(int ix, int iy)
+    : MonsterNode(ix + 0.5f * g_game.ingameBuildingSize, iy + 0.5f * g_game.ingameBuildingSize)
 {
     type = BUILDING_ORB;
 }
