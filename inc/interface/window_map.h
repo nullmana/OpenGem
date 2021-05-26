@@ -7,17 +7,18 @@ class IngameMap;
 class WindowMap : public Window
 {
 private:
-	IngameMap &map;
+    IngameMap& map;
 
-	int dragStartX;
-	int dragStartY;
+    int dragStartX;
+    int dragStartY;
+
 public:
-	WindowMap(IngameMap &map_) : map(map_)
-	{
-		dragStartX = 0;
-		dragStartY = 0;
-	}
+    WindowMap(IngameMap& map_) : map(map_)
+    {
+        dragStartX = 0;
+        dragStartY = 0;
+    }
 
-	virtual STATUS render(struct _fbg *pFbg);
-	virtual void handleMouseInput(GLFWwindow *pWindow, int button, int action, int mods);
+    virtual STATUS render(struct _fbg* pFbg);
+    virtual void handleMouseInput(GLFWwindow* pWindow, int button, int action, int mods);
 };

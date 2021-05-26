@@ -5,5 +5,5 @@
 class Orb : public MonsterNode
 {
 public:
-	Orb(int ix, int iy);
+    Orb(int ix, int iy);
 };

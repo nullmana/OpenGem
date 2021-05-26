@@ -8,18 +8,19 @@
 class IngameBuildingController
 {
 private:
-	std::list<Tower> towers;
-	std::list<Trap> traps;
+    std::list<Tower> towers;
+    std::list<Trap> traps;
 
-	void destroyTower(Tower *pTower);
-	void destroyTrap(Trap *pTrap);
+    void destroyTower(Tower* pTower);
+    void destroyTrap(Trap* pTrap);
+
 public:
-	IngameBuildingController();
+    IngameBuildingController();
 
-	void tickBuildings(IngameMap &map, int frames);
+    void tickBuildings(IngameMap& map, int frames);
 
-	Tower & addTower(int x, int y);
-	Trap & addTrap(int x, int y);
+    Tower& addTower(int x, int y);
+    Trap& addTrap(int x, int y);
 
-	void destroyBuilding(Building *pBuilding);
+    void destroyBuilding(Building* pBuilding);
 };

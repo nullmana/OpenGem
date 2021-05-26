@@ -7,16 +7,24 @@ class TowerShot;
 class Targetable
 {
 public:
-	Targetable() : x(0.0f), y(0.0f), distanceToOrb(INT_MAX), incomingShots(0), isKillingShotOnTheWay(false), isKilled(false) {}
+    Targetable()
+        : x(0.0f),
+          y(0.0f),
+          distanceToOrb(INT_MAX),
+          incomingShots(0),
+          isKillingShotOnTheWay(false),
+          isKilled(false)
+    {
+    }
 
-	virtual void receiveShotDamage()=0;
+    virtual void receiveShotDamage() = 0;
 
-	float x;
-	float y;
+    float x;
+    float y;
 
-	int distanceToOrb;
+    int distanceToOrb;
 
-	int incomingShots;
-	bool isKillingShotOnTheWay;
-	bool isKilled;
+    int incomingShots;
+    bool isKillingShotOnTheWay;
+    bool isKilled;
 };

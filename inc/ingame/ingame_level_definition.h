@@ -7,8 +7,8 @@
 
 struct IngameLevelDefinition
 {
-	IngameLevelDefinition() : buildings(g_game.ingameMapHeight, g_game.ingameMapWidth) {}
+    IngameLevelDefinition() : buildings(g_game.ingameMapHeight, g_game.ingameMapWidth) {}
 
-	vector2d<BUILDING_TYPE> buildings;
-	int orbX, orbY;
+    vector2d<BUILDING_TYPE> buildings;
+    int orbX, orbY;
 };

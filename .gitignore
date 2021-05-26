@@ -1,2 +1,7 @@
-*.o
+build/
+build_release/
+out/
+out_release/
+.vscode/
 opengem
+opengem.exe

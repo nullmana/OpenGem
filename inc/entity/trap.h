@@ -7,7 +7,7 @@ class IngameMap;
 class Trap : public Building
 {
 public:
-	Trap(int ix_, int iy_) : Building(ix_, iy_) { type = BUILDING_TRAP; }
+    Trap(int ix_, int iy_) : Building(ix_, iy_) { type = BUILDING_TRAP; }
 
-	void tick(IngameMap &map, int frames);
+    void tick(IngameMap& map, int frames);
 };

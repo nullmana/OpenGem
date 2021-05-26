@@ -9,11 +9,12 @@
 class IngameInventory
 {
 private:
-	std::vector<bool> occupied;
-	std::vector<Gem> inventory;
-	Gem *pDraggedGem;
-public:
-	IngameInventory (int slots);
+    std::vector<bool> occupied;
+    std::vector<Gem> inventory;
+    Gem* pDraggedGem;
 
-	STATUS render(struct _fbg *pFbg, const Window &window)const;
+public:
+    IngameInventory(int slots);
+
+    STATUS render(struct _fbg* pFbg, const Window& window) const;
 };

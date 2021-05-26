@@ -5,8 +5,8 @@
 #include "ingame/ingame_input_handler.h"
 
 #include "interface/window.h"
-#include "interface/window_map.h"
 #include "interface/window_inventory.h"
+#include "interface/window_map.h"
 
 class IngameCore;
 struct _fbg;
@@ -14,17 +14,18 @@ struct _fbg;
 class IngameRenderer
 {
 private:
-	Window rootWindow;
-	WindowMap windowMap;
-	WindowInventory windowInventory;
+    Window rootWindow;
+    WindowMap windowMap;
+    WindowInventory windowInventory;
+
 public:
-	IngameRenderer(IngameCore &core);
+    IngameRenderer(IngameCore& core);
 
-	STATUS init(IngameCore &core);
+    STATUS init(IngameCore& core);
 
-	STATUS render(IngameCore &core);
+    STATUS render(IngameCore& core);
 
-	void resize(int width, int height);
+    void resize(int width, int height);
 
-	Window * getRootWindow() { return &windowMap; }
+    Window* getRootWindow() { return &windowMap; }
 };
