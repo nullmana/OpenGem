@@ -1,0 +1,9 @@
+#pragma once
+
+enum STATUS
+{
+	STATUS_OK = 0x00,
+
+	STATUS_INVALID_ARGUMENT = 0x01,
+	STATUS_INVALID_OPERATION = 0x02,
+};

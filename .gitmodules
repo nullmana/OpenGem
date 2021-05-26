@@ -1,0 +1,3 @@
+[submodule "lib/fbg"]
+	path = lib/fbg
+	url = https://github.com/grz0zrg/fbg
