@@ -5,8 +5,6 @@
 #include "constants/building_type.h"
 #include "constants/status.h"
 
-#include "entity/orb.h"
-
 #include "ingame/ingame_building_controller.h"
 #include "ingame/ingame_enemy_controller.h"
 #include "ingame/ingame_input_handler.h"
@@ -37,6 +35,7 @@ public:
     STATUS buildWall(int x1, int y1, int x2, int y2);
     STATUS buildTower(int x, int y);
     STATUS buildTrap(int x, int y);
+    STATUS buildAmplifier(int x, int y);
     STATUS destroyStructure(int x, int y);
 
     Building* getBuilding(int y, int x) const { return tileBuilding.at(y, x); }
@@ -49,5 +48,4 @@ public:
     IngameEnemyController enemyController;
     IngameProjectileController projectileController;
     IngamePathfinder pathfinder;
-    Orb orb;
 };

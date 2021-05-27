@@ -16,6 +16,8 @@ private:
     std::list<Gem> gems;
     Gem* pDraggedGem;
 
+    void checkAdjacentAmplifiers(Gem* pGem);
+
 public:
     IngameInventory(int slots_);
 

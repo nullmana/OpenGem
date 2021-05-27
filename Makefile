@@ -16,7 +16,7 @@ EXEC_NAME := opengem
 # CC := gcc
 # CXX := g++
 
-DEBUG_FLAGS := -g -Og
+DEBUG_FLAGS := -g -Og -DDEBUG
 RELEASE_FLAGS := -O3 -flto
 
 SOURCES := src

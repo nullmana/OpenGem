@@ -86,8 +86,8 @@ void IngameEnemyController::render(struct _fbg* pFbg, const Window& window) cons
         if ((m.x > 0.0f) && (m.x < g_game.ingameMapWidth) && (m.y > 0.0f) &&
             (m.y < g_game.ingameMapHeight))
         {
-            fbg_pixel(pFbg, scale * m.x + window.x, scale * m.y + window.y, (m.color >> 4) & 0xFF,
-                (m.color >> 2) & 0xFF, m.color & 0xFF);
+            fbg_pixel(pFbg, scale * m.x + window.x, scale * m.y + window.y, (m.color >> 16) & 0xFF,
+                (m.color >> 8) & 0xFF, m.color & 0xFF);
         }
     }
 }

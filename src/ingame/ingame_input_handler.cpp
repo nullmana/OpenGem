@@ -73,6 +73,12 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
                 pInputHandler->toggleInputState(INPUT_BUILD_TOWER);
             }
             break;
+        case GLFW_KEY_A:
+            if (action == GLFW_PRESS)
+            {
+                pInputHandler->toggleInputState(INPUT_BUILD_AMPLIFIER);
+            }
+            break;
         case GLFW_KEY_LEFT_SHIFT:
         case GLFW_KEY_RIGHT_SHIFT:
             if (action == GLFW_RELEASE)
@@ -104,7 +110,7 @@ STATUS IngameInputHandler::init(IngameCore& core)
 STATUS IngameInputHandler::handleMouseInput(IngameCore& core)
 {
     struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)core.fbg()->user_context;
-    Gem* pDraggedGem                       = core.inventory.getDraggedGem();
+    Gem* pDraggedGem = core.inventory.getDraggedGem();
     double xpos, ypos;
 
     glfwGetCursorPos(pGlfwContext->window, &xpos, &ypos);

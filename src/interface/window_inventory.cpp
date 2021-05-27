@@ -22,7 +22,7 @@ int WindowInventory::getInventorySlot(float xpos, float ypos) const
 
 void WindowInventory::handleMouseInput(GLFWwindow* pWindow, int button, int action, int mods)
 {
-    IngameCore* pCore                 = (IngameCore*)glfwGetWindowUserPointer(pWindow);
+    IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
     IngameInputHandler* pInputHandler = &pCore->inputHandler;
     double xpos, ypos;
     float scale = width / 3.0f;

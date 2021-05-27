@@ -27,7 +27,7 @@ STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
         if ((inventory[i] != NULL) && !inventory[i]->isDragged)
         {
             fbg_rect(pFbg, (i % 3) * scale + window.x, (i / 3) * scale + window.y, scale, scale,
-                (inventory[i]->color >> 4) & 0xFF, (inventory[i]->color >> 2) & 0xFF,
+                (inventory[i]->color >> 16) & 0xFF, (inventory[i]->color >> 8) & 0xFF,
                 inventory[i]->color & 0xFF);
         }
     }
@@ -35,10 +35,10 @@ STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
     if (pDraggedGem != NULL)
     {
         const Window* pRootWindow = window.getRootWindow();
-        int ix                    = pDraggedGem->x - scale;
-        int iy                    = pDraggedGem->y - scale;
-        int iw                    = 2 * scale;
-        int ih                    = 2 * scale;
+        int ix = pDraggedGem->x - scale;
+        int iy = pDraggedGem->y - scale;
+        int iw = 2 * scale;
+        int ih = 2 * scale;
 
         if (ix < 0)
             ix = 0;
@@ -51,8 +51,8 @@ STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
 
         if ((iw > 0) && (ih > 0))
         {
-            fbg_rect(pFbg, ix, iy, 2 * scale, 2 * scale, (pDraggedGem->color >> 4) & 0xFF,
-                (pDraggedGem->color >> 2) & 0xFF, pDraggedGem->color & 0xFF);
+            fbg_rect(pFbg, ix, iy, 2 * scale, 2 * scale, (pDraggedGem->color >> 16) & 0xFF,
+                (pDraggedGem->color >> 8) & 0xFF, pDraggedGem->color & 0xFF);
         }
     }
 
@@ -87,14 +87,14 @@ void IngameInventory::placeGemIntoInventory(Gem* pGem, int slot, bool forceRepla
         if (pGem->isDragged)
         {
             pGem->isDragged = false;
-            pDraggedGem     = NULL;
+            pDraggedGem = NULL;
         }
     }
 }
 
 Gem* IngameInventory::removeGemFromBuilding(Building* pBuilding)
 {
-    Gem* pGem       = pBuilding->pGem;
+    Gem* pGem = pBuilding->pGem;
     pBuilding->pGem = NULL;
     pGem->pBuilding = NULL;
     return pGem;
@@ -123,7 +123,7 @@ void IngameInventory::placeGemIntoBuilding(Gem* pGem, Building* pBuilding, bool 
         if (pGem->isDragged)
         {
             pGem->isDragged = false;
-            pDraggedGem     = NULL;
+            pDraggedGem = NULL;
         }
     }
 }
@@ -135,8 +135,8 @@ void IngameInventory::swapGems(Gem* pGem1, Gem* pGem2)
 
     std::vector<Gem*>::iterator it1 = std::find(inventory.begin(), inventory.end(), pGem1);
     std::vector<Gem*>::iterator it2 = std::find(inventory.begin(), inventory.end(), pGem2);
-    int slot1                       = (it1 == inventory.end()) ? -1 : (it1 - inventory.begin());
-    int slot2                       = (it2 == inventory.end()) ? -1 : (it2 - inventory.begin());
+    int slot1 = (it1 == inventory.end()) ? -1 : (it1 - inventory.begin());
+    int slot2 = (it2 == inventory.end()) ? -1 : (it2 - inventory.begin());
 
     if (pBuilding1 != NULL)
     {
@@ -171,7 +171,7 @@ void IngameInventory::startDragGem(Gem* pGem)
     if (pDraggedGem != NULL)
         pDraggedGem->isDragged = false;
 
-    pDraggedGem     = pGem;
+    pDraggedGem = pGem;
     pGem->isDragged = true;
 }
 
@@ -180,6 +180,6 @@ void IngameInventory::clearDraggedGem()
     if (pDraggedGem != NULL)
     {
         pDraggedGem->isDragged = false;
-        pDraggedGem            = NULL;
+        pDraggedGem = NULL;
     }
 }

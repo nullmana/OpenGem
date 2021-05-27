@@ -9,7 +9,7 @@
 IngameMap::IngameMap(IngameLevelDefinition& level)
     : tileOccupied(g_game.ingameMapHeight, g_game.ingameMapWidth),
       tileBuilding(g_game.ingameMapHeight, g_game.ingameMapWidth),
-      orb(level.orbX, level.orbY),
+      buildingController(level),
       pathfinder(*this, level)
 {
     tileOccupied = level.buildings;
@@ -45,7 +45,7 @@ STATUS IngameMap::render(struct _fbg* pFbg, const Window& window) const
         {
             BUILDING_TYPE type = tileOccupied.at(j, i);
             fbg_rect(pFbg, window.x + i * scale, window.y + j * scale, scale, scale,
-                (TILE_COLOR[type] >> 4) & 0xFF, (TILE_COLOR[type] >> 2) & 0xFF,
+                (TILE_COLOR[type] >> 16) & 0xFF, (TILE_COLOR[type] >> 8) & 0xFF,
                 (TILE_COLOR[type]) & 0xFF);
         }
     }
@@ -66,6 +66,7 @@ bool IngameMap::verifyBuilding(BUILDING_TYPE building, int x, int y)
     {
         case BUILDING_TOWER:
         case BUILDING_TRAP:
+        case BUILDING_AMPLIFIER:
             bw = bh = g_game.ingameBuildingSize;
             break;
         default:
@@ -116,6 +117,7 @@ STATUS IngameMap::placeBuilding(BUILDING_TYPE building, int x, int y)
     {
         case BUILDING_TOWER:
         case BUILDING_TRAP:
+        case BUILDING_AMPLIFIER:
         case BUILDING_ORB:
             bw = bh = g_game.ingameBuildingSize;
             break;
@@ -135,6 +137,9 @@ STATUS IngameMap::placeBuilding(BUILDING_TYPE building, int x, int y)
         case BUILDING_TRAP:
             pBuilt = &buildingController.addTrap(x, y);
             break;
+        case BUILDING_AMPLIFIER:
+            pBuilt = &buildingController.addAmplifier(x, y);
+            break;
     }
 
     for (int j = y; j < y + bh; ++j)
@@ -149,6 +154,10 @@ STATUS IngameMap::placeBuilding(BUILDING_TYPE building, int x, int y)
                 case BUILDING_TOWER:
                     overlapsPath |= (b == BUILDING_PATH);
                     tileOccupied.at(j, i) = isPath ? BUILDING_TOWER_PATH : BUILDING_TOWER;
+                    break;
+                case BUILDING_AMPLIFIER:
+                    overlapsPath |= (b == BUILDING_PATH);
+                    tileOccupied.at(j, i) = isPath ? BUILDING_AMPLIFIER_PATH : BUILDING_AMPLIFIER;
                     break;
                 case BUILDING_TRAP:
                     tileOccupied.at(j, i) = BUILDING_TRAP;
@@ -283,6 +292,26 @@ STATUS IngameMap::buildTrap(int x, int y)
     return status;
 }
 
+STATUS IngameMap::buildAmplifier(int x, int y)
+{
+    STATUS status = STATUS_OK;
+
+    if (x < 0 || x >= g_game.ingameMapWidth || y < 0 || y >= g_game.ingameMapHeight)
+        return STATUS_INVALID_ARGUMENT;
+
+    if (!verifyBuilding(BUILDING_AMPLIFIER, x, y))
+        return STATUS_INVALID_OPERATION;
+
+    status = placeBuilding(BUILDING_AMPLIFIER, x, y);
+
+#ifdef DEBUG
+    if (status == STATUS_OK)
+        printf("Build Amplifier: %i %i\n", x, y);
+#endif
+
+    return status;
+}
+
 STATUS IngameMap::destroyStructure(int x, int y)
 {
     STATUS status = STATUS_OK;
@@ -295,12 +324,15 @@ STATUS IngameMap::destroyStructure(int x, int y)
 
     if (pBuilt != NULL)
     {
+        if (pBuilt->pGem != NULL)
+            return STATUS_INVALID_OPERATION;
+
         for (int iy = pBuilt->iy; iy < pBuilt->iy + g_game.ingameBuildingSize; ++iy)
         {
             for (int ix = pBuilt->ix; ix < pBuilt->ix + g_game.ingameBuildingSize; ++ix)
             {
                 BUILDING_TYPE& t = tileOccupied.at(iy, ix);
-                if (t == BUILDING_TOWER)
+                if ((t == BUILDING_TOWER) || (t == BUILDING_AMPLIFIER))
                 {
                     t = BUILDING_NONE;
                 }
@@ -350,7 +382,7 @@ STATUS IngameMap::destroyStructure(int x, int y)
 
 void IngameMap::monsterReachesTarget(Monster& monster)
 {
-    if (monster.pTargetNode == &orb)
+    if (monster.pTargetNode == &buildingController.getOrb())
     {
         if (monster.incomingShots > 0)
             projectileController.warpShotsToTarget(&monster);

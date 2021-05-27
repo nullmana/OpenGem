@@ -49,7 +49,7 @@ void MonsterNode::debugDrawPathWeights(IngameCore& core)
                         w *= 8;
                     if (w > 0)
                         fbg_line(pFbg, x1, y1, PathWeight::dx[i] * w + x1,
-                            PathWeight::dy[i] * w + y1, 0, 0, 0xFF);
+                            PathWeight::dy[i] * w + y1, 0x00, 0x00, 0xFF);
                 }
             }
         }

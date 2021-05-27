@@ -91,11 +91,19 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                     pInputHandler->setInputState(INPUT_IDLE);
             }
             break;
+        case INPUT_BUILD_AMPLIFIER:
+            if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
+            {
+                map.buildAmplifier(ix, iy);
+                if (!(mods & GLFW_MOD_SHIFT))
+                    pInputHandler->setInputState(INPUT_IDLE);
+            }
+            break;
         case INPUT_DRAGGING_IDLE:
             if ((action == GLFW_RELEASE) && (button == GLFW_MOUSE_BUTTON_LEFT))
             {
                 Building* pBuilding = map.getBuilding(iy, ix);
-                Gem* pDraggedGem    = pCore->inventory.getDraggedGem();
+                Gem* pDraggedGem = pCore->inventory.getDraggedGem();
                 if (pDraggedGem != NULL)
                 {
                     if (pBuilding != NULL)

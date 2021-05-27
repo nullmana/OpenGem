@@ -5,10 +5,10 @@
 Window::Window()
 {
     pParent = NULL;
-    x       = 0.0f;
-    y       = 0.0f;
-    width   = 0.0f;
-    height  = 0.0f;
+    x = 0.0f;
+    y = 0.0f;
+    width = 0.0f;
+    height = 0.0f;
 }
 
 STATUS Window::render(struct _fbg* pFbg)
@@ -42,12 +42,12 @@ void Window::handleMouseInput(GLFWwindow* pWindow, int button, int action, int m
 
 const Window* Window::getRootWindow() const
 {
-    const Window* pRoot       = this;
+    const Window* pRoot = this;
     const Window* pRootParent = pParent;
 
     while (pRootParent != NULL)
     {
-        pRoot       = pRootParent;
+        pRoot = pRootParent;
         pRootParent = pRoot->getParent();
     }
 

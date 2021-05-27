@@ -21,7 +21,7 @@ class IngamePathfinder
 {
 private:
     std::vector<PathEdgeNode> pathEdges;
-    Orb& orb;
+    Orb& orbNode;
 
     static void calculateDistanceToNode(
         const MonsterNode& node, const vector2d<BUILDING_TYPE>& map, vector2d<int>& distance);
@@ -36,7 +36,7 @@ public:
     bool checkBlocking(const IngameMap& map, int x, int y, int w, int h);
 
     std::vector<const MonsterSpawnNode*> getMonsterSpawnNodes() const;
-    const Orb* getOrbNode() const { return &orb; }
+    const Orb* getOrbNode() const { return &orbNode; }
 
 #ifdef DEBUG
     void debugDrawPathWeights(IngameCore& core, int node);

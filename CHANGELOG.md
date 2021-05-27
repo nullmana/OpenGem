@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.2] - 2021-05-27
+
+### Added
+
+- Added Amplifiers, with calculations to determine how many amplifiers a gem is affected by, displayed while amplifier build is selected in debug mode
+
+### Fixed
+
+- Fixed tiles, gems, and monsters using incorrect offsets for translating uint32 colors to RGB
+- Made buildings not destroyable if they have a gem socketed
+
+### Changed
+
+- Added DEBUG define to debugflags in Makefile
+- Changed building colors to be more distinct
+- Moved orb from IngameMap into IngameBuildingController
+
 ## [0.1.1] - 2021-05-26
 
 ### Added

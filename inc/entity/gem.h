@@ -11,8 +11,8 @@ public:
     Gem(uint32_t color_ = 0xAABBCC)
     {
         pBuilding = NULL;
-        x         = 0.0f;
-        y         = 0.0f;
+        x = 0.0f;
+        y = 0.0f;
         isDragged = false;
 
         color = color_;

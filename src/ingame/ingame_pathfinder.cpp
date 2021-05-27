@@ -6,7 +6,8 @@
 #include <queue>
 #include <tuple>
 
-IngamePathfinder::IngamePathfinder(IngameMap& map, IngameLevelDefinition& level) : orb(map.orb)
+IngamePathfinder::IngamePathfinder(IngameMap& map, IngameLevelDefinition& level)
+    : orbNode(map.buildingController.getOrb())
 {
     for (int x = 0; x < g_game.ingameMapWidth; ++x)
     {
@@ -104,7 +105,7 @@ bool IngamePathfinder::checkBlocking(const IngameMap& map, int x, int y, int w, 
         }
     }
 
-    calculateDistanceToNode(orb, mapInstance, distance);
+    calculateDistanceToNode(orbNode, mapInstance, distance);
 
     // Check whether any nodes are unreachable - if so, blocking
     for (PathEdgeNode& node : pathEdges)
@@ -253,7 +254,7 @@ void IngamePathfinder::recalculateNodePaths(IngameMap& map, MonsterNode* pNode)
 
 void IngamePathfinder::recalculatePaths(IngameMap& map)
 {
-    recalculateNodePaths(map, &orb);
+    recalculateNodePaths(map, &map.buildingController.getOrb());
     for (PathEdgeNode& node : pathEdges)
         recalculateNodePaths(map, &node);
 }
@@ -281,7 +282,7 @@ void IngamePathfinder::debugDrawPathWeights(IngameCore& core, int node)
     }
 
     if (node == -1)
-        orb.debugDrawPathWeights(core);
+        core.map.buildingController.getOrb().debugDrawPathWeights(core);
     else if (node >= 0 && node < pathEdges.size())
         pathEdges[node].debugDrawPathWeights(core);
 }
