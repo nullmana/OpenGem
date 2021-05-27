@@ -33,7 +33,7 @@ private:
 public:
     IngameBuildingController(const IngameLevelDefinition& level);
 
-    void render(struct _fbg* pFbg, const Window& window) const;
+    void render(struct GraphicsContext* pContext, const Window& window) const;
 
     void tickBuildings(IngameMap& map, int frames);
 

@@ -22,12 +22,12 @@ int MonsterNode::pickDirection(const PathWeight& path)
 }
 
 #ifdef DEBUG
+#include "graphics.h"
 #include "ingame/ingame_core.h"
-#include "wrapfbg.h"
 
 void MonsterNode::debugDrawPathWeights(IngameCore& core)
 {
-    struct _fbg* pFbg = core.fbg();
+    struct NVGcontext* context = core.context()->ctx;
     Window* pWindow = core.renderer.getRootWindow();
 
     float scale = pWindow->width / float(g_game.ingameMapWidth);
@@ -48,8 +48,13 @@ void MonsterNode::debugDrawPathWeights(IngameCore& core)
                     if (g_game.game == GC_LABYRINTH)
                         w *= 8;
                     if (w > 0)
-                        fbg_line(pFbg, x1, y1, PathWeight::dx[i] * w + x1,
-                            PathWeight::dy[i] * w + y1, 0x00, 0x00, 0xFF);
+                    {
+                        nvgBeginPath(context);
+                        nvgMoveTo(context, x1, y1);
+                        nvgLineTo(context, PathWeight::dx[i] * w + x1, PathWeight::dy[i] * w + y1);
+                        nvgStrokeColor(context, nvgRGB(0x00, 0x00, 0xFF));
+                        nvgStroke(context);
+                    }
                 }
             }
         }

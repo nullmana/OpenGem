@@ -1,7 +1,7 @@
 #include "ingame/ingame_input_handler.h"
 #include "ingame/ingame_core.h"
 
-#include "wrapfbg.h"
+#include "graphics.h"
 
 #include <cstdio>
 
@@ -20,7 +20,7 @@ static void mouseButtonCallback(GLFWwindow* pWindow, int button, int action, int
 
     Window* rootWindow = pCore->renderer.getRootWindow();
     if (rootWindow->contains(xpos, ypos))
-        rootWindow->handleMouseInput(pWindow, button, action, mods);
+        rootWindow->handleMouseInput(pCore->context(), button, action, mods);
 
     switch (pCore->inputHandler.getInputState())
     {
@@ -93,14 +93,14 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
 
 STATUS IngameInputHandler::init(IngameCore& core)
 {
-    struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)core.fbg()->user_context;
+    GLFWwindow* pWindow = core.context()->win;
 
-    glfwSetMouseButtonCallback(pGlfwContext->window, mouseButtonCallback);
-    glfwSetScrollCallback(pGlfwContext->window, scrollCallback);
-    glfwSetKeyCallback(pGlfwContext->window, keyCallback);
+    glfwSetMouseButtonCallback(pWindow, mouseButtonCallback);
+    glfwSetScrollCallback(pWindow, scrollCallback);
+    glfwSetKeyCallback(pWindow, keyCallback);
 
-    glfwSetInputMode(pGlfwContext->window, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
-    glfwSetInputMode(pGlfwContext->window, GLFW_STICKY_KEYS, GLFW_TRUE);
+    glfwSetInputMode(pWindow, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
+    glfwSetInputMode(pWindow, GLFW_STICKY_KEYS, GLFW_TRUE);
 
     inputState = INPUT_IDLE;
 
@@ -109,11 +109,11 @@ STATUS IngameInputHandler::init(IngameCore& core)
 
 STATUS IngameInputHandler::handleMouseInput(IngameCore& core)
 {
-    struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)core.fbg()->user_context;
+    GLFWwindow* pWindow = core.context()->win;
     Gem* pDraggedGem = core.inventory.getDraggedGem();
     double xpos, ypos;
 
-    glfwGetCursorPos(pGlfwContext->window, &xpos, &ypos);
+    glfwGetCursorPos(pWindow, &xpos, &ypos);
 
     if (pDraggedGem != NULL)
     {
@@ -131,23 +131,23 @@ STATUS IngameInputHandler::handleMouseInput(IngameCore& core)
 STATUS IngameInputHandler::handleKeyboardInput(IngameCore& core)
 {
 #ifdef DEBUG
-    struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)core.fbg()->user_context;
+    GLFWwindow* pWindow = core.context()->win;
 
-    if (glfwGetKey(pGlfwContext->window, GLFW_KEY_O) == GLFW_PRESS)
+    if (glfwGetKey(pWindow, GLFW_KEY_O) == GLFW_PRESS)
     {
         core.map.pathfinder.debugDrawPathWeights(core, -1);
     }
     for (int key = 0; key <= 9; ++key)
     {
-        if (glfwGetKey(pGlfwContext->window, GLFW_KEY_0 + key) == GLFW_PRESS)
+        if (glfwGetKey(pWindow, GLFW_KEY_0 + key) == GLFW_PRESS)
         {
             core.map.pathfinder.debugDrawPathWeights(core, key);
             break;
         }
     }
-    if (glfwGetKey(pGlfwContext->window, GLFW_KEY_M) == GLFW_PRESS)
+    if (glfwGetKey(pWindow, GLFW_KEY_M) == GLFW_PRESS)
     {
-        if (glfwGetKey(pGlfwContext->window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        if (glfwGetKey(pWindow, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         {
             if (core.map.enemyController.getMonsters().size() < BENCHMARK_MONSTERS)
                 core.map.enemyController.spawnMonsters(core.map.pathfinder,

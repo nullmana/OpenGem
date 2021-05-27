@@ -1,7 +1,7 @@
 #include "ingame/ingame_map.h"
 #include "ingame/ingame_core.h"
 
-#include "wrapfbg.h"
+#include "graphics.h"
 
 #include <algorithm>
 #include <cstdio>
@@ -35,7 +35,7 @@ IngameMap::IngameMap(IngameLevelDefinition& level)
     pathfinder.recalculatePaths(*this);
 }
 
-STATUS IngameMap::render(struct _fbg* pFbg, const Window& window) const
+STATUS IngameMap::render(GraphicsContext* pContext, const Window& window) const
 {
     float scale = window.width / float(g_game.ingameMapWidth);
 
@@ -44,15 +44,18 @@ STATUS IngameMap::render(struct _fbg* pFbg, const Window& window) const
         for (int i = 0; i < g_game.ingameMapWidth; ++i)
         {
             BUILDING_TYPE type = tileOccupied.at(j, i);
-            fbg_rect(pFbg, window.x + i * scale, window.y + j * scale, scale, scale,
-                (TILE_COLOR[type] >> 16) & 0xFF, (TILE_COLOR[type] >> 8) & 0xFF,
-                (TILE_COLOR[type]) & 0xFF);
+            nvgBeginPath(pContext->ctx);
+            nvgRect(pContext->ctx, window.x + i * scale, window.y + j * scale, scale, scale);
+            nvgFillColor(
+                pContext->ctx, nvgRGB((TILE_COLOR[type] >> 16) & 0xFF,
+                                   (TILE_COLOR[type] >> 8) & 0xFF, (TILE_COLOR[type]) & 0xFF));
+            nvgFill(pContext->ctx);
         }
     }
 
-    buildingController.render(pFbg, window);
-    enemyController.render(pFbg, window);
-    projectileController.render(pFbg, window);
+    buildingController.render(pContext, window);
+    enemyController.render(pContext, window);
+    projectileController.render(pContext, window);
 
     return STATUS_OK;
 }

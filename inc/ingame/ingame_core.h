@@ -12,15 +12,15 @@
 class IngameCore
 {
 private:
-    struct _fbg* pFbg;
+    struct GraphicsContext* pContext;
 
 public:
     IngameCore(IngameLevelDefinition& level) : renderer(*this), map(level), inventory(36) {}
 
-    STATUS init(struct _fbg* pFbg_);
+    STATUS init(struct GraphicsContext* context);
 
-    struct _fbg* fbg() { return pFbg; }
-    const struct _fbg* fbg() const { return pFbg; }
+    struct GraphicsContext* context() { return pContext; }
+    const struct GraphicsContext* context() const { return pContext; }
 
     IngameInputHandler inputHandler;
     IngameInventory inventory;

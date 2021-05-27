@@ -19,6 +19,6 @@ public:
         dragStartY = 0;
     }
 
-    virtual STATUS render(struct _fbg* pFbg);
-    virtual void handleMouseInput(GLFWwindow* pWindow, int button, int action, int mods);
+    virtual STATUS render(GraphicsContext* pContext);
+    virtual void handleMouseInput(GraphicsContext* pContext, int button, int action, int mods);
 };

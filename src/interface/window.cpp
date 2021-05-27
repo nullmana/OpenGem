@@ -1,6 +1,6 @@
 #include "interface/window.h"
 
-#include "glfw/fbg_glfw.h"
+#include "graphics.h"
 
 Window::Window()
 {
@@ -11,12 +11,12 @@ Window::Window()
     height = 0.0f;
 }
 
-STATUS Window::render(struct _fbg* pFbg)
+STATUS Window::render(GraphicsContext* pContext)
 {
     STATUS status = STATUS_OK;
     for (Window* w : children)
     {
-        status = w->render(pFbg);
+        status = w->render(pContext);
         if (status != STATUS_OK)
             return status;
     }
@@ -24,17 +24,17 @@ STATUS Window::render(struct _fbg* pFbg)
     return status;
 }
 
-void Window::handleMouseInput(GLFWwindow* pWindow, int button, int action, int mods)
+void Window::handleMouseInput(GraphicsContext* pContext, int button, int action, int mods)
 {
     double xpos, ypos;
 
-    glfwGetCursorPos(pWindow, &xpos, &ypos);
+    glfwGetCursorPos(pContext->win, &xpos, &ypos);
 
     for (Window* w : children)
     {
         if (w->contains(xpos, ypos))
         {
-            w->handleMouseInput(pWindow, button, action, mods);
+            w->handleMouseInput(pContext, button, action, mods);
             break;
         }
     }

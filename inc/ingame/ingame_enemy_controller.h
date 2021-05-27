@@ -11,7 +11,7 @@
 
 class IngameMap;
 class IngamePathfinder;
-struct _fbg;
+struct GraphicsContext;
 
 class IngameEnemyController
 {
@@ -28,7 +28,7 @@ public:
     // Force monsters currently pathing towards a tile which was replaced to repath
     void forceRepath(int x, int y, int w, int h);
 
-    void render(struct _fbg* pFbg, const Window& window) const;
+    void render(struct GraphicsContext* pContext, const Window& window) const;
 
     const std::vector<Monster*>& getMonstersOnTile(int y, int x) const
     {

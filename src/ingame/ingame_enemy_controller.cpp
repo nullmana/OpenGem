@@ -2,7 +2,7 @@
 #include "ingame/ingame_map.h"
 #include "ingame/ingame_pathfinder.h"
 
-#include "wrapfbg.h"
+#include "graphics.h"
 
 #include <cstdio>
 #include <unordered_set>
@@ -77,7 +77,7 @@ void IngameEnemyController::forceRepath(int x, int y, int w, int h)
     }
 }
 
-void IngameEnemyController::render(struct _fbg* pFbg, const Window& window) const
+void IngameEnemyController::render(struct GraphicsContext* pContext, const Window& window) const
 {
     float scale = window.width / float(g_game.ingameMapWidth);
 
@@ -86,8 +86,11 @@ void IngameEnemyController::render(struct _fbg* pFbg, const Window& window) cons
         if ((m.x > 0.0f) && (m.x < g_game.ingameMapWidth) && (m.y > 0.0f) &&
             (m.y < g_game.ingameMapHeight))
         {
-            fbg_pixel(pFbg, scale * m.x + window.x, scale * m.y + window.y, (m.color >> 16) & 0xFF,
-                (m.color >> 8) & 0xFF, m.color & 0xFF);
+            nvgBeginPath(pContext->ctx);
+            nvgRect(pContext->ctx, scale * m.x + window.x, scale * m.y + window.y, 1, 1);
+            nvgFillColor(pContext->ctx,
+                nvgRGB((m.color >> 16) & 0xFF, (m.color >> 8) & 0xFF, m.color & 0xFF));
+            nvgFill(pContext->ctx);
         }
     }
 }

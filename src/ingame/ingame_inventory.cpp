@@ -2,7 +2,7 @@
 
 #include "entity/building.h"
 
-#include "wrapfbg.h"
+#include "graphics.h"
 
 #include <algorithm>
 
@@ -18,7 +18,7 @@ IngameInventory::IngameInventory(int slots_) : inventory(slots_)
     }
 }
 
-STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
+STATUS IngameInventory::render(struct GraphicsContext* pContext, const Window& window) const
 {
     float scale = window.width / 3.0f;
 
@@ -26,9 +26,13 @@ STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
     {
         if ((inventory[i] != NULL) && !inventory[i]->isDragged)
         {
-            fbg_rect(pFbg, (i % 3) * scale + window.x, (i / 3) * scale + window.y, scale, scale,
-                (inventory[i]->color >> 16) & 0xFF, (inventory[i]->color >> 8) & 0xFF,
-                inventory[i]->color & 0xFF);
+            nvgBeginPath(pContext->ctx);
+            nvgRect(pContext->ctx, (i % 3) * scale + window.x, (i / 3) * scale + window.y, scale,
+                scale);
+            nvgFillColor(
+                pContext->ctx, nvgRGB((inventory[i]->color >> 16) & 0xFF,
+                                   (inventory[i]->color >> 8) & 0xFF, inventory[i]->color & 0xFF));
+            nvgFill(pContext->ctx);
         }
     }
 
@@ -51,8 +55,12 @@ STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
 
         if ((iw > 0) && (ih > 0))
         {
-            fbg_rect(pFbg, ix, iy, 2 * scale, 2 * scale, (pDraggedGem->color >> 16) & 0xFF,
-                (pDraggedGem->color >> 8) & 0xFF, pDraggedGem->color & 0xFF);
+            nvgBeginPath(pContext->ctx);
+            nvgRect(pContext->ctx, ix, iy, 2 * scale, 2 * scale);
+            nvgFillColor(
+                pContext->ctx, nvgRGB((pDraggedGem->color >> 16) & 0xFF,
+                                   (pDraggedGem->color >> 8) & 0xFF, pDraggedGem->color & 0xFF));
+            nvgFill(pContext->ctx);
         }
     }
 

@@ -4,8 +4,7 @@
 
 #include <vector>
 
-struct _fbg;
-struct GLFWwindow;
+struct GraphicsContext;
 
 class Window
 {
@@ -43,7 +42,8 @@ public:
         return (xpos > x) && (xpos < x + width) && (ypos > y) && (ypos < y + height);
     }
 
-    virtual STATUS render(struct _fbg* pFbg);
+    virtual STATUS render(struct GraphicsContext* pFbg);
 
-    virtual void handleMouseInput(GLFWwindow* pWindow, int button, int action, int mods);
+    virtual void handleMouseInput(
+        struct GraphicsContext* pWindow, int button, int action, int mods);
 };

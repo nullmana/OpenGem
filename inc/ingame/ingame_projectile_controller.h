@@ -9,7 +9,7 @@
 #include <unordered_set>
 
 class Tower;
-struct _fbg;
+struct GraphicsContext;
 
 class IngameProjectileController
 {
@@ -34,5 +34,5 @@ public:
 
     void tickProjectiles(int frames);
 
-    void render(struct _fbg* pFbg, const Window& window) const;
+    void render(struct GraphicsContext* pContext, const Window& window) const;
 };

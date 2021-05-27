@@ -1,15 +1,14 @@
 #include "ingame/ingame_core.h"
 
-#include "wrapfbg.h"
+#include "graphics.h"
 
-STATUS IngameCore::init(struct _fbg* pFbg_)
+STATUS IngameCore::init(GraphicsContext* context)
 {
     STATUS status = STATUS_OK;
-    struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)pFbg_->user_context;
 
-    glfwSetWindowUserPointer(pGlfwContext->window, this);
+    glfwSetWindowUserPointer(context->win, this);
 
-    pFbg = pFbg_;
+    pContext = context;
 
     status = inputHandler.init(*this);
     if (status != STATUS_OK)

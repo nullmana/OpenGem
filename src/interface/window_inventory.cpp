@@ -3,13 +3,16 @@
 #include "ingame/ingame_core.h"
 #include "ingame/ingame_inventory.h"
 
-#include "wrapfbg.h"
+#include "graphics.h"
 
-STATUS WindowInventory::render(struct _fbg* pFbg)
+STATUS WindowInventory::render(GraphicsContext* context)
 {
-    fbg_rect(pFbg, x - 2, y - 2, width + 4, height + 4, 0x1D, 0x22, 0x2E);
+    nvgBeginPath(context->ctx);
+    nvgRect(context->ctx, x - 2, y - 2, width + 4, height + 4);
+    nvgFillColor(context->ctx, nvgRGB(0x1D, 0x22, 0x2E));
+    nvgFill(context->ctx);
 
-    return inventory.render(pFbg, *this);
+    return inventory.render(context, *this);
 }
 
 int WindowInventory::getInventorySlot(float xpos, float ypos) const

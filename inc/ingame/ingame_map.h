@@ -16,7 +16,7 @@
 
 class IngameCore;
 class Building;
-struct _fbg;
+struct GraphicsContext;
 
 class IngameMap
 {
@@ -30,7 +30,7 @@ private:
 public:
     IngameMap(IngameLevelDefinition& level);
 
-    STATUS render(struct _fbg* pFbg, const Window& window) const;
+    STATUS render(struct GraphicsContext* pContext, const Window& window) const;
 
     STATUS buildWall(int x1, int y1, int x2, int y2);
     STATUS buildTower(int x, int y);

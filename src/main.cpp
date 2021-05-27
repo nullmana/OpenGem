@@ -3,7 +3,8 @@
 #include <cstdio>
 #include <cstring>
 
-#include "wrapfbg.h"
+#define NANOVG_GL3_IMPLEMENTATION
+#include "graphics.h"
 
 bool bKeepRunning = true;
 
@@ -41,9 +42,35 @@ int main(int argc, char* argv[])
             return -1;
     }
 
-    struct _fbg* pFbg = fbg_glfwSetup(1280, 720, 4, "opengem", 0, 0);
-    if (pFbg == NULL)
+    if (!glfwInit())
+    {
+        printf("GLFW failed to initialize");
         return -1;
+    }
+
+    GraphicsContext context;
+
+    context.win = glfwCreateWindow(1280, 720, "opengem", NULL, NULL);
+    if (context.win == nullptr)
+    {
+        printf("Could not create GLFW window");
+        return -1;
+    }
+
+    glfwMakeContextCurrent(context.win);
+
+    if (glewInit() != GLEW_OK)
+    {
+        printf("GLEW failed to initialize");
+        return -1;
+    }
+
+    context.ctx = nvgCreateGL3(0);
+    if (context.ctx == nullptr)
+    {
+        printf("nanoVG failed to initialize");
+        return -1;
+    }
 
     // Initialize level
     IngameLevelDefinition level;
@@ -64,7 +91,9 @@ int main(int argc, char* argv[])
 
     IngameCore core(level);
 
-    core.init(pFbg);
+    core.init(&context);
+
+    glfwSwapInterval(0);
 
     double lastFrame = glfwGetTime();
     double lastUpdate = lastFrame;
@@ -103,9 +132,18 @@ int main(int argc, char* argv[])
         core.map.projectileController.tickProjectiles(gameFrames);
         core.map.enemyController.tickMonsters(core.map, gameFrames);
 
-        fbg_glfwClear();
+        int winWidth, winHeight;
+        glfwGetWindowSize(context.win, &winWidth, &winHeight);
+        int fbWidth, fbHeight;
+        glfwGetFramebufferSize(context.win, &fbWidth, &fbHeight);
+        // Calculate pixel ration for hi-dpi devices.
+        float pxRatio = (float)fbWidth / (float)winWidth;
 
-        fbg_clear(pFbg, 0);
+        glViewport(0, 0, fbWidth, fbHeight);
+        glClearColor(0, 0, 0, 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+        nvgBeginFrame(context.ctx, winWidth, winHeight, pxRatio);
 
         // Begin render frame
         core.renderer.render(core);
@@ -114,12 +152,15 @@ int main(int argc, char* argv[])
         core.inputHandler.handleKeyboardInput(core);
 
         // Finish render frame
-        fbg_draw(pFbg);
-        fbg_flip(pFbg);
+        nvgEndFrame(context.ctx);
 
-    } while (bKeepRunning && !fbg_glfwShouldClose(pFbg));
+        glfwSwapBuffers(context.win);
+        glfwPollEvents();
 
-    fbg_close(pFbg);
+    } while (bKeepRunning && !glfwWindowShouldClose(context.win));
+
+    nvgDeleteGL3(context.ctx);
+    glfwDestroyWindow(context.win);
 
     return 0;
 }

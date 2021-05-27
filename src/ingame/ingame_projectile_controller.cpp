@@ -1,7 +1,7 @@
 #include "ingame/ingame_projectile_controller.h"
 #include "ingame/ingame_level_definition.h"
 
-#include "wrapfbg.h"
+#include "graphics.h"
 
 #include <cstdio>
 
@@ -59,7 +59,8 @@ void IngameProjectileController::tickProjectiles(int frames)
     }
 }
 
-void IngameProjectileController::render(struct _fbg* pFbg, const Window& window) const
+void IngameProjectileController::render(
+    struct GraphicsContext* pContext, const Window& window) const
 {
     float scale = window.width / float(g_game.ingameMapWidth);
 
@@ -68,7 +69,10 @@ void IngameProjectileController::render(struct _fbg* pFbg, const Window& window)
         if ((s.x > 0.0f) && (s.x < g_game.ingameMapWidth) && (s.y > 0.0f) &&
             (s.y < g_game.ingameMapHeight))
         {
-            fbg_pixel(pFbg, scale * s.x + window.x, scale * s.y + window.y, 0xDD, 0xDD, 0xEE);
+            nvgBeginPath(pContext->ctx);
+            nvgRect(pContext->ctx, scale * s.x + window.x, scale * s.y + window.y, 1, 1);
+            nvgFillColor(pContext->ctx, nvgRGB(0xDD, 0xDD, 0xEE));
+            nvgFill(pContext->ctx);
         }
     }
 }

@@ -19,6 +19,8 @@ EXEC_NAME := opengem
 DEBUG_FLAGS := -g -Og -DDEBUG
 RELEASE_FLAGS := -O3 -flto
 
+LIBRARIES := freetype2 glfw3 glew
+
 SOURCES := src
 # For loose files not in the folders listed above
 EXTRA_SOURCE_FILES :=
@@ -26,9 +28,9 @@ EXTRA_SOURCE_FILES :=
 INCLUDES := inc
 
 # Equivalent to the above, but files found through here will not be formatted
-NOFORMAT_SOURCES := lib/fbg/src
-NOFORMAT_EXTRA_SOURCE_FILES := lib/fbg/custom_backend/glfw/fbg_glfw.c lib/fbg/custom_backend/glfw/glew/glew.c
-NOFORMAT_INCLUDES := lib/fbg/custom_backend lib/fbg/src
+NOFORMAT_SOURCES := lib/nanovg/src
+NOFORMAT_EXTRA_SOURCE_FILES :=
+NOFORMAT_INCLUDES := lib/nanovg/src
 
 BUILD_RELEASE := build_release
 BUILD_DEBUG := build
@@ -42,12 +44,13 @@ SOURCES_RECURSIVE := 1
 SOURCES_BLACKLIST :=
 SOURCES_FILE_BLACKLIST :=
 
-CFLAGS := $(CFLAGS) -DGLEW_STATIC
-CXXFLAGS := $(CXXFLAGS) -DGLEW_STATIC -std=c++17
+CFLAGS := $(CFLAGS) `pkg-config --cflags $(LIBRARIES)` -DFONS_USE_FREETYPE -DNANOVG_GLEW
+CXXFLAGS := $(CXXFLAGS) `pkg-config --cflags $(LIBRARIES)` -DFONS_USE_FREETYPE -DNANOVG_GLEW -std=c++17
 ifeq ($(OS),Windows_NT)
-LDFLAGS := $(LDFLAGS) -lglfw3 -lgdi32 -lopengl32 -Lm -Lc -static
+# No idea why opengl needs to be explicitly linked here but whatever
+LDFLAGS := $(LDFLAGS) `pkg-config --libs $(LIBRARIES)` -lopengl32
 else
-LDFLAGS := $(LDFLAGS) -lGL -lglfw -Lm -Lc
+LDFLAGS := $(LDFLAGS) `pkg-config --libs $(LIBRARIES)`
 endif
 
 # Past here there shouldn't be much that needs editing unless extra file types are necessary

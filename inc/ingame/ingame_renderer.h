@@ -9,7 +9,7 @@
 #include "interface/window_map.h"
 
 class IngameCore;
-struct _fbg;
+struct GraphicsContext;
 
 class IngameRenderer
 {

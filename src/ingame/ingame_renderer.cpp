@@ -1,9 +1,10 @@
 #include "ingame/ingame_renderer.h"
 #include "ingame/ingame_core.h"
 
-#include "wrapfbg.h"
+#include "graphics.h"
 
 #include <algorithm>
+#include <cmath>
 
 IngameRenderer::IngameRenderer(IngameCore& core)
     : windowMap(core.map), windowInventory(core.inventory)
@@ -60,18 +61,18 @@ void IngameRenderer::resize(int width, int height)
 
 STATUS IngameRenderer::init(IngameCore& core)
 {
-    struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)core.fbg()->user_context;
+    GLFWwindow* pWindow = core.context()->win;
 
-    glfwSetWindowSizeCallback(pGlfwContext->window, windowSizeCallback);
+    glfwSetWindowSizeCallback(pWindow, windowSizeCallback);
 
     return STATUS_OK;
 }
 
 STATUS IngameRenderer::render(IngameCore& core)
 {
-    struct _fbg* pFbg = core.fbg();
+    struct GraphicsContext* pContext = core.context();
 
-    rootWindow.render(pFbg);
+    rootWindow.render(pContext);
 
     return STATUS_OK;
 }

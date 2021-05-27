@@ -5,7 +5,7 @@
 
 #include "entity/gem.h"
 
-#include "wrapfbg.h"
+#include "graphics.h"
 
 #include <algorithm>
 #include <cstdlib>
@@ -20,10 +20,9 @@ IngameBuildingController::IngameBuildingController(const IngameLevelDefinition& 
 #include "ingame/ingame_core.h"
 
 static void debugDrawAmplifierDirections(
-    struct _fbg* pFbg, const Window& window, const Building* pBuilding)
+    struct GraphicsContext* context, const Window& window, const Building* pBuilding)
 {
-    struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)pFbg->user_context;
-    IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pGlfwContext->window);
+    IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(context->win);
     IngameInputHandler* pInputHandler = &pCore->inputHandler;
 
     float scale = window.width / float(g_game.ingameMapWidth);
@@ -35,15 +34,19 @@ static void debugDrawAmplifierDirections(
 
         for (const Amplifiable* a : pBuilding->amplifying)
         {
-            fbg_line(pFbg, x1, y1, (a->ix + 0.5f) * scale + window.x,
-                (a->iy + 0.5f) * scale + window.y, 0x00, 0xFF,
-                (pBuilding->type == BUILDING_AMPLIFIER) ? 0xFF : 0x00);
+            nvgBeginPath(context->ctx);
+            nvgMoveTo(context->ctx, x1, y1);
+            nvgLineTo(
+                context->ctx, (a->ix + 0.5f) * scale + window.x, (a->iy + 0.5f) * scale + window.y);
+            nvgStrokeColor(context->ctx,
+                nvgRGB(0x00, 0xFF, (pBuilding->type == BUILDING_AMPLIFIER) ? 0xFF : 0x00));
+            nvgStroke(context->ctx);
         }
     }
 }
 #endif
 
-void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) const
+void IngameBuildingController::render(struct GraphicsContext* pContext, const Window& window) const
 {
     float scale = window.width / float(g_game.ingameMapWidth);
     float gemScale = 0.85f * scale;
@@ -52,12 +55,15 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
     {
         if ((t.pGem != NULL) && !t.pGem->isDragged)
         {
-            fbg_rect(pFbg, t.x * scale + window.x - 0.5f * gemScale,
-                t.y * scale + window.y - 0.5f * gemScale, gemScale, gemScale,
-                (t.pGem->color >> 16) & 0xFF, (t.pGem->color >> 8) & 0xFF, t.pGem->color & 0xFF);
+            nvgBeginPath(pContext->ctx);
+            nvgRect(pContext->ctx, t.x * scale + window.x - 0.5f * gemScale,
+                t.y * scale + window.y - 0.5f * gemScale, gemScale, gemScale);
+            nvgFillColor(pContext->ctx, nvgRGB((t.pGem->color >> 16) & 0xFF,
+                                            (t.pGem->color >> 8) & 0xFF, t.pGem->color & 0xFF));
+            nvgFill(pContext->ctx);
         }
 #ifdef DEBUG
-        debugDrawAmplifierDirections(pFbg, window, &t);
+        debugDrawAmplifierDirections(pContext, window, &t);
 #endif
     }
 
@@ -65,12 +71,15 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
     {
         if ((t.pGem != NULL) && !t.pGem->isDragged)
         {
-            fbg_rect(pFbg, t.x * scale + window.x - 0.5f * gemScale,
-                t.y * scale + window.y - 0.5f * gemScale, gemScale, gemScale,
-                (t.pGem->color >> 16) & 0xFF, (t.pGem->color >> 8) & 0xFF, t.pGem->color & 0xFF);
+            nvgBeginPath(pContext->ctx);
+            nvgRect(pContext->ctx, t.x * scale + window.x - 0.5f * gemScale,
+                t.y * scale + window.y - 0.5f * gemScale, gemScale, gemScale);
+            nvgFillColor(pContext->ctx, nvgRGB((t.pGem->color >> 16) & 0xFF,
+                                            (t.pGem->color >> 8) & 0xFF, t.pGem->color & 0xFF));
+            nvgFill(pContext->ctx);
         }
 #ifdef DEBUG
-        debugDrawAmplifierDirections(pFbg, window, &t);
+        debugDrawAmplifierDirections(pContext, window, &t);
 #endif
     }
 
@@ -78,12 +87,15 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
     {
         if ((t.pGem != NULL) && !t.pGem->isDragged)
         {
-            fbg_rect(pFbg, t.x * scale + window.x - 0.5f * gemScale,
-                t.y * scale + window.y - 0.5f * gemScale, gemScale, gemScale,
-                (t.pGem->color >> 16) & 0xFF, (t.pGem->color >> 8) & 0xFF, t.pGem->color & 0xFF);
+            nvgBeginPath(pContext->ctx);
+            nvgRect(pContext->ctx, t.x * scale + window.x - 0.5f * gemScale,
+                t.y * scale + window.y - 0.5f * gemScale, gemScale, gemScale);
+            nvgFillColor(pContext->ctx, nvgRGB((t.pGem->color >> 16) & 0xFF,
+                                            (t.pGem->color >> 8) & 0xFF, t.pGem->color & 0xFF));
+            nvgFill(pContext->ctx);
         }
 #ifdef DEBUG
-        debugDrawAmplifierDirections(pFbg, window, &t);
+        debugDrawAmplifierDirections(pContext, window, &t);
 #endif
     }
 }

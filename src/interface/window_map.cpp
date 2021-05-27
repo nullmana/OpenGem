@@ -3,26 +3,29 @@
 #include "ingame/ingame_core.h"
 #include "ingame/ingame_map.h"
 
-#include "wrapfbg.h"
+#include "graphics.h"
 
 #include <cmath>
 #include <cstdlib>
 
-STATUS WindowMap::render(struct _fbg* pFbg)
+STATUS WindowMap::render(GraphicsContext* pContext)
 {
-    fbg_rect(pFbg, x - 2, y - 2, width + 4, height + 4, 0x22, 0x26, 0x31);
+    nvgBeginPath(pContext->ctx);
+    nvgRect(pContext->ctx, x - 2, y - 2, width + 4, height + 4);
+    nvgFillColor(pContext->ctx, nvgRGB(0x22, 0x26, 0x31));
+    nvgFill(pContext->ctx);
 
-    return map.render(pFbg, *this);
+    return map.render(pContext, *this);
 }
 
-void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, int mods)
+void WindowMap::handleMouseInput(GraphicsContext* pContext, int button, int action, int mods)
 {
-    IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
+    IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pContext->win);
     IngameInputHandler* pInputHandler = &pCore->inputHandler;
     double xpos, ypos;
     float scale = width / g_game.ingameMapWidth;
 
-    glfwGetCursorPos(pWindow, &xpos, &ypos);
+    glfwGetCursorPos(pContext->win, &xpos, &ypos);
 
     int ix = std::floor((xpos - x) / scale);
     int iy = std::floor((ypos - y) / scale);

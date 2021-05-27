@@ -21,7 +21,7 @@ private:
 public:
     IngameInventory(int slots_);
 
-    STATUS render(struct _fbg* pFbg, const Window& window) const;
+    STATUS render(struct GraphicsContext* pContext, const Window& window) const;
 
     void removeGemFromInventory(Gem* pGem);
     void placeGemIntoInventory(Gem* pGem, int slot, bool forceReplace);
