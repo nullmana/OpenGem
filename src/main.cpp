@@ -110,8 +110,8 @@ int main(int argc, char* argv[])
         // Begin render frame
         core.renderer.render(core);
 
-        core.inputHandler.handleMouseInput(core);
-        core.inputHandler.handleKeyboardInput(core);
+        core.inputHandler.handleMouseInput();
+        core.inputHandler.handleKeyboardInput();
 
         // Finish render frame
         fbg_draw(pFbg);

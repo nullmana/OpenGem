@@ -18,6 +18,8 @@ private:
 
     void checkAdjacentAmplifiers(Gem* pGem);
 
+    Gem* createGem(int gemType, int grade);
+
 public:
     IngameInventory(int slots_);
 
@@ -35,4 +37,7 @@ public:
     void startDragGem(Gem* pGem);
     void clearDraggedGem();
     Gem* getDraggedGem() const { return pDraggedGem; }
+
+    bool createGemInSlot(int gemType, int slot);
+    bool createAllGemsInSlot(int gemType, int slot);
 };

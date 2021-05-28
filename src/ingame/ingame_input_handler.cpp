@@ -5,10 +5,11 @@
 
 #include <cstdio>
 
-IngameInputHandler::IngameInputHandler()
+IngameInputHandler::IngameInputHandler(IngameCore& core_) : core(core_)
 {
     speedMultiplier = 0;
     savedSpeedMultiplier = 1;
+    creatingGemType = -1;
 }
 
 static void mouseButtonCallback(GLFWwindow* pWindow, int button, int action, int mods)
@@ -45,39 +46,66 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
     {
         case GLFW_KEY_W:
             if (action == GLFW_PRESS)
-            {
                 pInputHandler->toggleInputState(INPUT_BUILD_WALL);
-            }
             break;
         case GLFW_KEY_SPACE:
             if (action == GLFW_PRESS)
-            {
                 pInputHandler->togglePause();
-            }
             break;
         case GLFW_KEY_Q:
             if (action == GLFW_PRESS)
-            {
                 pInputHandler->cycleSpeedMultiplier();
-            }
             break;
         case GLFW_KEY_R:
             if (action == GLFW_PRESS)
-            {
                 pInputHandler->toggleInputState(INPUT_BUILD_TRAP);
-            }
             break;
         case GLFW_KEY_T:
             if (action == GLFW_PRESS)
-            {
                 pInputHandler->toggleInputState(INPUT_BUILD_TOWER);
-            }
             break;
         case GLFW_KEY_A:
             if (action == GLFW_PRESS)
-            {
                 pInputHandler->toggleInputState(INPUT_BUILD_AMPLIFIER);
+            break;
+        case GLFW_KEY_KP_1:
+            if (action == GLFW_PRESS)
+                pInputHandler->startCreateGem(6);
+            break;
+        case GLFW_KEY_KP_2:
+            if (action == GLFW_PRESS)
+                pInputHandler->startCreateGem(7);
+            break;
+        case GLFW_KEY_KP_3:
+            if (action == GLFW_PRESS)
+                pInputHandler->startCreateGem(8);
+            break;
+        case GLFW_KEY_KP_4:
+            if (action == GLFW_PRESS)
+                pInputHandler->startCreateGem(3);
+            break;
+        case GLFW_KEY_KP_5:
+            if (g_game.game != GC_LABYRINTH)
+            {
+                if (action == GLFW_PRESS)
+                    pInputHandler->startCreateGem(4);
             }
+            break;
+        case GLFW_KEY_KP_6:
+            if (action == GLFW_PRESS)
+                pInputHandler->startCreateGem(5);
+            break;
+        case GLFW_KEY_KP_7:
+            if (action == GLFW_PRESS)
+                pInputHandler->startCreateGem(0);
+            break;
+        case GLFW_KEY_KP_8:
+            if (action == GLFW_PRESS)
+                pInputHandler->startCreateGem(1);
+            break;
+        case GLFW_KEY_KP_9:
+            if (action == GLFW_PRESS)
+                pInputHandler->startCreateGem(2);
             break;
         case GLFW_KEY_LEFT_SHIFT:
         case GLFW_KEY_RIGHT_SHIFT:
@@ -91,7 +119,7 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
     }
 }
 
-STATUS IngameInputHandler::init(IngameCore& core)
+STATUS IngameInputHandler::init()
 {
     struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)core.fbg()->user_context;
 
@@ -107,7 +135,7 @@ STATUS IngameInputHandler::init(IngameCore& core)
     return STATUS_OK;
 }
 
-STATUS IngameInputHandler::handleMouseInput(IngameCore& core)
+STATUS IngameInputHandler::handleMouseInput()
 {
     struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)core.fbg()->user_context;
     Gem* pDraggedGem = core.inventory.getDraggedGem();
@@ -121,6 +149,9 @@ STATUS IngameInputHandler::handleMouseInput(IngameCore& core)
         pDraggedGem->y = ypos;
     }
 
+    Window* rootWindow = core.renderer.getRootWindow();
+    rootWindow->handleMouseHover(pGlfwContext->window, xpos, ypos);
+
     return STATUS_OK;
 }
 
@@ -128,7 +159,7 @@ STATUS IngameInputHandler::handleMouseInput(IngameCore& core)
 #define BENCHMARK_MONSTERS 100E3
 #endif
 
-STATUS IngameInputHandler::handleKeyboardInput(IngameCore& core)
+STATUS IngameInputHandler::handleKeyboardInput()
 {
 #ifdef DEBUG
     struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)core.fbg()->user_context;
@@ -165,22 +196,75 @@ STATUS IngameInputHandler::handleKeyboardInput(IngameCore& core)
 void IngameInputHandler::toggleInputState(INGAME_INPUT_STATE state)
 {
     if (state == inputState)
-        inputState = INPUT_IDLE;
+        setInputState(INPUT_IDLE);
     else
-        inputState = state;
+        setInputState(state);
+}
+
+void IngameInputHandler::setInputState(INGAME_INPUT_STATE state)
+{
+    switch (inputState)
+    {
+        case INPUT_BUILD_WALL:
+            core.renderer.setBuildButtonActive(0, false);
+            break;
+        case INPUT_BUILD_TOWER:
+            core.renderer.setBuildButtonActive(1, false);
+            break;
+        case INPUT_BUILD_AMPLIFIER:
+            core.renderer.setBuildButtonActive(2, false);
+            break;
+        case INPUT_BUILD_TRAP:
+            core.renderer.setBuildButtonActive(4, false);
+            break;
+        case INPUT_CREATE_GEM:
+            if (creatingGemType != -1)
+            {
+                core.renderer.setGemButtonActive(creatingGemType, false);
+                creatingGemType = -1;
+            }
+            break;
+        case INPUT_DRAGGING_IDLE:
+            core.inventory.clearDraggedGem();
+            break;
+    }
+
+    inputState = state;
+
+    switch (state)
+    {
+        case INPUT_BUILD_WALL:
+            core.renderer.setBuildButtonActive(0, true);
+            break;
+        case INPUT_BUILD_TOWER:
+            core.renderer.setBuildButtonActive(1, true);
+            break;
+        case INPUT_BUILD_AMPLIFIER:
+            core.renderer.setBuildButtonActive(2, true);
+            break;
+        case INPUT_BUILD_TRAP:
+            core.renderer.setBuildButtonActive(4, true);
+            break;
+    }
 
 #ifdef DEBUG
     printf("Input state = %s\n", INPUT_STATE_NAME[inputState]);
 #endif
 }
 
-void IngameInputHandler::setInputState(INGAME_INPUT_STATE state)
+void IngameInputHandler::startCreateGem(int gemType)
 {
-    inputState = state;
-
-#ifdef DEBUG
-    printf("Input state = %s\n", INPUT_STATE_NAME[inputState]);
-#endif
+    if (gemType == creatingGemType)
+    {
+        setInputState(INPUT_IDLE);
+        creatingGemType = -1;
+    }
+    else
+    {
+        setInputState(INPUT_CREATE_GEM);
+        creatingGemType = gemType;
+        core.renderer.setGemButtonActive(gemType, true);
+    }
 }
 
 void IngameInputHandler::togglePause()

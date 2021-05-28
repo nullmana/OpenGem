@@ -45,5 +45,9 @@ public:
 
     virtual STATUS render(struct _fbg* pFbg);
 
+    // Window mouse input is sent only to child window containing the action
     virtual void handleMouseInput(GLFWwindow* pWindow, int button, int action, int mods);
+
+    // Window mouse hover is sent to ALL child windows
+    virtual void handleMouseHover(GLFWwindow* pWindow, double xpos, double ypos);
 };

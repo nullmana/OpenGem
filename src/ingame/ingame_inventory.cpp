@@ -11,11 +11,6 @@
 IngameInventory::IngameInventory(int slots_) : inventory(slots_)
 {
     pDraggedGem = NULL;
-    for (int i = 0; i < slots_ / 6; ++i)
-    {
-        gems.emplace_back(0x446688 * (1 + i));
-        placeGemIntoInventory(&gems.back(), i, true);
-    }
 }
 
 STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
@@ -182,4 +177,61 @@ void IngameInventory::clearDraggedGem()
         pDraggedGem->isDragged = false;
         pDraggedGem = NULL;
     }
+}
+
+Gem* IngameInventory::createGem(int gemType, int grade)
+{
+    gems.emplace_back(
+        grade, (0x11 * gemType) | (0x1100 * (15 - gemType)) | (0x110000 * std::min(grade, 15)));
+    return &gems.back();
+}
+
+bool IngameInventory::createGemInSlot(int gemType, int slot)
+{
+    int foundSlot = -1;
+    int grade = (inventory.size() / 3) - (slot / 3);
+
+    for (int s = slot; s < inventory.size(); ++s)
+    {
+        if (inventory[s] == NULL)
+        {
+            foundSlot = s;
+            break;
+        }
+    }
+
+    if (foundSlot == -1)
+    {
+        for (int s = slot; s >= 0; --s)
+        {
+            if (inventory[s] == NULL)
+            {
+                foundSlot = s;
+                break;
+            }
+        }
+    }
+
+    if (foundSlot != -1)
+    {
+        inventory[foundSlot] = createGem(gemType, grade);
+        placeGemIntoInventory(&gems.back(), foundSlot, true);
+        return true;
+    }
+    return false;
+}
+
+bool IngameInventory::createAllGemsInSlot(int gemType, int slot)
+{
+    bool createdGems = false;
+    bool status = true;
+
+    while (status)
+    {
+        status = createGemInSlot(gemType, slot);
+        if (!createdGems && status)
+            createdGems = true;
+    }
+
+    return createdGems;
 }

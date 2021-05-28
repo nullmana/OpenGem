@@ -8,20 +8,25 @@ class IngameCore;
 class IngameInputHandler
 {
 private:
+    IngameCore& core; // InputHandler needs to break encapsulation, try to limit use
     INGAME_INPUT_STATE inputState;
     int speedMultiplier;
     int savedSpeedMultiplier;
 
-public:
-    IngameInputHandler();
-    STATUS init(IngameCore& core);
+    int creatingGemType;
 
-    STATUS handleMouseInput(IngameCore& core);
-    STATUS handleKeyboardInput(IngameCore& core);
+public:
+    IngameInputHandler(IngameCore& core_);
+    STATUS init();
+
+    STATUS handleMouseInput();
+    STATUS handleKeyboardInput();
 
     void toggleInputState(INGAME_INPUT_STATE state);
     void setInputState(INGAME_INPUT_STATE state);
     INGAME_INPUT_STATE getInputState() { return inputState; }
+    void startCreateGem(int gemType);
+    int getCreatingGemType() { return creatingGemType; }
 
     void togglePause();
     void cycleSpeedMultiplier();

@@ -46,7 +46,7 @@ static void debugDrawAmplifierDirections(
 void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) const
 {
     float scale = window.width / float(g_game.ingameMapWidth);
-    float gemScale = 0.85f * scale;
+    float gemScale = 0.85f * scale * g_game.ingameBuildingSize;
 
     for (const Tower& t : towers)
     {

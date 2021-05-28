@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0] - 2021-05-28
+
+### Added
+
+- Added spell button panel for selecting build options, reflecting hotkey selections
+- Added gem creation button for making gems, with standard hotkeys
+
+### Fixed
+
+- Fixed gems in buildings displaying at half size in GCCS mode
+- Fixed debug path weight draw using root window instead of map window
+- Fixed dragged gem getting stuck when changing input state with a hotkey
+
+
 ## [0.1.2] - 2021-05-27
 
 ### Added
@@ -16,6 +30,7 @@
 - Added DEBUG define to debugflags in Makefile
 - Changed building colors to be more distinct
 - Moved orb from IngameMap into IngameBuildingController
+
 
 ## [0.1.1] - 2021-05-26
 

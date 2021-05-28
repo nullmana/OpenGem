@@ -25,7 +25,6 @@ void WindowInventory::handleMouseInput(GLFWwindow* pWindow, int button, int acti
     IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
     IngameInputHandler* pInputHandler = &pCore->inputHandler;
     double xpos, ypos;
-    float scale = width / 3.0f;
 
     glfwGetCursorPos(pWindow, &xpos, &ypos);
 
@@ -48,6 +47,21 @@ void WindowInventory::handleMouseInput(GLFWwindow* pWindow, int button, int acti
                     pGem->y = ypos;
                 }
                 pInputHandler->setInputState(INPUT_DRAGGING_IDLE);
+                break;
+            }
+            case INPUT_CREATE_GEM:
+            {
+                int gemType = pInputHandler->getCreatingGemType();
+                if (gemType != -1)
+                {
+                    if ((mods & GLFW_MOD_CONTROL))
+                        inventory.createAllGemsInSlot(gemType, slot);
+                    else
+                        inventory.createGemInSlot(gemType, slot);
+                }
+                if (!(mods & GLFW_MOD_SHIFT))
+                    pInputHandler->setInputState(INPUT_IDLE);
+                break;
             }
         }
     }

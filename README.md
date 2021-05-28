@@ -34,7 +34,7 @@ v0.1:
 v0.2:
 - [x] Gems, able to be created and placed into buildings
 - [x] Amplifiers, able to be placed on the map and affect towers and traps, no specific math yet
-- [ ] Primitive UI elements, able to select actions with mouse and keyboard with visual response
+- [x] Primitive UI elements, able to select actions with mouse and keyboard with visual response
 
 v0.3:
 - [ ] Mana pool displayed and used for gem creation, combining, banishment, etc.

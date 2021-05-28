@@ -40,6 +40,14 @@ void Window::handleMouseInput(GLFWwindow* pWindow, int button, int action, int m
     }
 }
 
+void Window::handleMouseHover(GLFWwindow* pWindow, double xpos, double ypos)
+{
+    for (Window* w : children)
+    {
+        w->handleMouseHover(pWindow, xpos, ypos);
+    }
+}
+
 const Window* Window::getRootWindow() const
 {
     const Window* pRoot = this;

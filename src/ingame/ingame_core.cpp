@@ -11,7 +11,7 @@ STATUS IngameCore::init(struct _fbg* pFbg_)
 
     pFbg = pFbg_;
 
-    status = inputHandler.init(*this);
+    status = inputHandler.init();
     if (status != STATUS_OK)
         return status;
 

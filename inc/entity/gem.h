@@ -8,7 +8,7 @@ class Building;
 class Gem
 {
 public:
-    Gem(uint32_t color_ = 0xAABBCC)
+    Gem(int grade_, uint32_t color_ = 0xAABBCC)
     {
         pBuilding = NULL;
         x = 0.0f;
@@ -17,7 +17,7 @@ public:
 
         color = color_;
 
-        grade = 0;
+        grade = grade_;
     }
 
     Building* pBuilding;

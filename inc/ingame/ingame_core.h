@@ -15,7 +15,10 @@ private:
     struct _fbg* pFbg;
 
 public:
-    IngameCore(IngameLevelDefinition& level) : renderer(*this), map(level), inventory(36) {}
+    IngameCore(IngameLevelDefinition& level)
+        : inputHandler(*this), renderer(*this), map(level), inventory(36)
+    {
+    }
 
     STATUS init(struct _fbg* pFbg_);
 
