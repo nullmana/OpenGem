@@ -39,6 +39,8 @@ v0.2:
 v0.3:
 - [x] Mana pool displayed and used for gem creation, combining, banishment, etc.
 - [ ] Gems have stats and can be combined to create higher-grade gems
+- [ ] GCL Gem Anvil, gem duplicate, salvage
+- [ ] Buildings use socketed gems for stats
 - [ ] Amplifiers affect gems in adjacent tiles
 - [ ] Shrines can be placed and used, no visual effects required
 - [ ] Structures, monster nests and beacons which can be placed on the map and targeted by gems
@@ -47,27 +49,38 @@ v0.3:
 - [ ] Waves and Monster Types, spawn when called
 
 v0.4:
+- [ ] Status effects
+- [ ] Chain Hit
+- [ ] Monster stats
+- [ ] Tower targeting options
+- [ ] QoL backport: Click buildings to place gems
+- [ ] QoL backport: Tab to drop gems to inventory
+- [ ] QoL backport: Template bombing
+
+v0.5:
 - [ ] Import graphics from SWF container. As of this version, a swf will be required to launch the game
 - [ ] Tower, Trap, Amplifier, Gem, Structure rendering with real sprites
 - [ ] UI rendering with real sprites
+- [ ] Monsters and projectiles rendered through direct indexed draw calls
 - [ ] Monster health bars, visual status effects
 - [ ] Ingame Options menu
 
-v0.5:
+v0.6:
 - [ ] Import levels from SWF container. Can be individually selected, no map screen required yet.
+- [ ] Level victory and defeat
 - [ ] Apparitions
 - [ ] Shadows
-- [ ] Pylons
+- [ ] Crafting Pylons
 - [ ] Wave Formations
 
-v0.6:
+v0.7:
 - [ ] Overworld map screen
 - [ ] Skills
 - [ ] Badges
 - [ ] Stats
 - [ ] Level Settings
 
-v0.7:
+v0.8:
 - [ ] Tutorial
 - [ ] Story
 - [ ] Forgotten
