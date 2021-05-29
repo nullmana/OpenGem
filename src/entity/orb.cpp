@@ -5,4 +5,5 @@ Orb::Orb(int ix, int iy)
       Amplifiable(ix, iy)
 {
     type = BUILDING_ORB;
+    broken = false;
 }

@@ -37,7 +37,7 @@ v0.2:
 - [x] Primitive UI elements, able to select actions with mouse and keyboard with visual response
 
 v0.3:
-- [ ] Mana pool displayed and used for gem creation, combining, banishment, etc.
+- [x] Mana pool displayed and used for gem creation, combining, banishment, etc.
 - [ ] Gems have stats and can be combined to create higher-grade gems
 - [ ] Amplifiers affect gems in adjacent tiles
 - [ ] Shrines can be placed and used, no visual effects required

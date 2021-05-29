@@ -44,4 +44,6 @@ public:
     const MonsterNode* pTargetNode;
 
     uint32_t color;
+
+    int banishmentCost;
 };

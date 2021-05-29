@@ -23,6 +23,26 @@ DEFFN_BUTTON_BUILD_INPUT(buttonBuildTrap_handleMouseInput, INPUT_BUILD_TRAP);
 // Mana Pool (M)
 #undef DEFFN_BUTTON_BUILD_INPUT
 
+static void buttonBuildMana_handleMouseInput(
+    Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)
+{
+    if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
+    {
+        IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
+        if (mods & GLFW_MOD_SHIFT)
+        {
+            if (pCore->manaPool.toggleAutopool())
+                thisb.state |= BUTTON_ACTIVE;
+            else
+                thisb.state &= ~BUTTON_ACTIVE;
+        }
+        else
+        {
+            pCore->manaPool.castExpandManaPool();
+        }
+    }
+}
+
 #define DEFFN_BUTTON_BUILD_HOVER(fnname)                                                           \
     static void fnname(Button& thisb, GLFWwindow* pWindow, double xpos, double ypos)               \
     {                                                                                              \

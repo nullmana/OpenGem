@@ -18,7 +18,7 @@ static const std::vector<ButtonDefinition> buildButtonDefs_GCL = {
     {NULL, button_handleMouseHover}, // Lightning Shrine (L)
     {NULL, button_handleMouseHover}, // Gem Bomb (B)
     {NULL, button_handleMouseHover}, // Combine Gems (G)
-    {NULL, button_handleMouseHover}, // Mana Pool (M)
+    {buttonBuildMana_handleMouseInput, button_handleMouseHover},
 };
 
 static const std::vector<ButtonDefinition> buildButtonDefs_GCCS = {
@@ -56,6 +56,7 @@ static const std::vector<ButtonDefinition> gemButtonDefs_GCCS = {
 
 IngameRenderer::IngameRenderer(IngameCore& core)
     : windowMap(core.map),
+      windowMana(core.manaPool),
       windowInventory(core.inventory),
       windowBuildSpells(
           g_game.game == GC_LABYRINTH ? buildButtonDefs_GCL : buildButtonDefs_GCCS, 3),
@@ -64,6 +65,7 @@ IngameRenderer::IngameRenderer(IngameCore& core)
     int width = 1280, height = 720;
 
     rootWindow.addChildWindow(&windowMap);
+    rootWindow.addChildWindow(&windowMana);
     rootWindow.addChildWindow(&windowInventory);
     rootWindow.addChildWindow(&windowBuildSpells);
     rootWindow.addChildWindow(&windowCreateGems);
@@ -114,6 +116,14 @@ void IngameRenderer::resize(int width, int height)
 
     rootWindow.resize(0, 0, width, height);
     windowMap.resize(offsetX, offsetY, realWidth, realHeight);
+
+    if (g_game.game == GC_LABYRINTH)
+        windowMana.resize(0.635f * realWidth + offsetX, 4, 0.365f * realWidth, 20);
+    else if (g_game.game == GC_CHASINGSHADOWS)
+        windowMana.resize(0.4f * realWidth + offsetX, 5, 0.2f * realWidth, 40);
+    else
+        throw "Game Code Unavailable!";
+
     windowInventory.resize(
         offsetX + realWidth + 8, offsetY + (realHeight - invHeight) * 0.5f, invWidth, invHeight);
     windowBuildSpells.resize(offsetX + realWidth + 4, offsetY + 4, buildWidth, buildHeight);

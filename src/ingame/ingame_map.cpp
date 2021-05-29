@@ -6,9 +6,10 @@
 #include <algorithm>
 #include <cstdio>
 
-IngameMap::IngameMap(IngameLevelDefinition& level)
+IngameMap::IngameMap(IngameCore& core, IngameLevelDefinition& level)
     : tileOccupied(g_game.ingameMapHeight, g_game.ingameMapWidth),
       tileBuilding(g_game.ingameMapHeight, g_game.ingameMapWidth),
+      manaPool(core.manaPool),
       buildingController(level),
       pathfinder(*this, level)
 {
@@ -384,11 +385,36 @@ void IngameMap::monsterReachesTarget(Monster& monster)
 {
     if (monster.pTargetNode == &buildingController.getOrb())
     {
+        if (buildingController.getOrb().isBroken())
+        {
+            monster.pickNextTarget();
+            return;
+        }
+
         if (monster.incomingShots > 0)
-            projectileController.warpShotsToTarget(&monster);
+        {
+            if (g_game.game == GC_LABYRINTH)
+            {
+                std::unordered_set<Targetable*> monsterSet;
+                monsterSet.insert(&monster);
+                projectileController.clearShotsFromTarget(monsterSet);
+            }
+            else
+            {
+                projectileController.warpShotsToTarget(&monster);
+            }
+        }
         if (!monster.isKilled)
         {
-            monster.spawn();
+            manaPool.addMana(-monster.banishmentCost, false);
+            if (manaPool.getMana() < 0)
+            {
+                buildingController.getOrb().breakOrb();
+            }
+            else
+            {
+                monster.spawn();
+            }
         }
     }
 }

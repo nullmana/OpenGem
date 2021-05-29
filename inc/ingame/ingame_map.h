@@ -14,13 +14,14 @@
 
 #include "interface/window.h"
 
-class IngameCore;
+class IngameManaPool;
 class Building;
 struct _fbg;
 
 class IngameMap
 {
 private:
+    IngameManaPool& manaPool;
     vector2d<BUILDING_TYPE> tileOccupied;
     vector2d<Building*> tileBuilding;
 
@@ -28,7 +29,7 @@ private:
     STATUS placeBuilding(BUILDING_TYPE building, int x, int y);
 
 public:
-    IngameMap(IngameLevelDefinition& level);
+    IngameMap(IngameCore& core, IngameLevelDefinition& level);
 
     STATUS render(struct _fbg* pFbg, const Window& window) const;
 

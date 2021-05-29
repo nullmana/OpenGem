@@ -101,6 +101,7 @@ int main(int argc, char* argv[])
 
         core.map.buildingController.tickBuildings(core.map, gameFrames);
         core.map.projectileController.tickProjectiles(gameFrames);
+        core.manaPool.checkMaximumMana();
         core.map.enemyController.tickMonsters(core.map, gameFrames);
 
         fbg_glfwClear();

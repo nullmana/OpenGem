@@ -68,6 +68,13 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
             if (action == GLFW_PRESS)
                 pInputHandler->toggleInputState(INPUT_BUILD_AMPLIFIER);
             break;
+        case GLFW_KEY_M:
+            if (g_game.game == GC_LABYRINTH)
+            {
+                if (action == GLFW_PRESS)
+                    pCore->manaPool.castExpandManaPool();
+            }
+            break;
         case GLFW_KEY_KP_1:
             if (action == GLFW_PRESS)
                 pInputHandler->startCreateGem(6);
@@ -176,7 +183,7 @@ STATUS IngameInputHandler::handleKeyboardInput()
             break;
         }
     }
-    if (glfwGetKey(pGlfwContext->window, GLFW_KEY_M) == GLFW_PRESS)
+    if (glfwGetKey(pGlfwContext->window, GLFW_KEY_N) == GLFW_PRESS)
     {
         if (glfwGetKey(pGlfwContext->window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         {
@@ -187,6 +194,13 @@ STATUS IngameInputHandler::handleKeyboardInput()
         else
         {
             core.map.enemyController.spawnMonsters(core.map.pathfinder, 100);
+        }
+    }
+    if (glfwGetKey(pGlfwContext->window, GLFW_KEY_M) == GLFW_PRESS)
+    {
+        if (glfwGetKey(pGlfwContext->window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        {
+            core.manaPool.addMana(100, true);
         }
     }
 #endif

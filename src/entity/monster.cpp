@@ -16,6 +16,8 @@ Monster::Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget)
     color = 0xFFFFFF * (rand() / float(RAND_MAX));
     speed = 0.4f + (rand() / float(RAND_MAX));
 
+    banishmentCost = 1;
+
     spawn();
 }
 
@@ -67,8 +69,8 @@ void Monster::pickNextTarget()
     int nextDirection = MonsterNode::pickDirection(pTargetNode->tileDirection.at(iy, ix));
     if (nextDirection != -1)
     {
-        ix += +PathWeight::dx[nextDirection];
-        iy += +PathWeight::dy[nextDirection];
+        ix += PathWeight::dx[nextDirection];
+        iy += PathWeight::dy[nextDirection];
     }
     setNextTarget(ix, iy);
 }

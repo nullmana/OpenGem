@@ -86,6 +86,13 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
         debugDrawAmplifierDirections(pFbg, window, &t);
 #endif
     }
+
+    if (orb.isBroken())
+    {
+        fbg_rect(pFbg, (orb.x - 0.5f * g_game.ingameBuildingSize) * scale + window.x,
+            (orb.y - 0.5f * g_game.ingameBuildingSize) * scale + window.y,
+            scale * g_game.ingameBuildingSize, scale * g_game.ingameBuildingSize, 0x08, 0x08, 0x20);
+    }
 }
 
 void IngameBuildingController::tickBuildings(IngameMap& map, int frames)

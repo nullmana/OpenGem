@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.1] - 2021-05-29
+
+### Added
+
+- Added mana pool
+- Mana pool button in GCL now used to control autopool or expand mana pool, GCCS mana pool automatically expands and increases level
+- Monster banishment now costs 1 mana, orb can be broken, does not end game
+- Gems and buildings do not currently consume mana
+- Debug key Ctrl+M to add mana
+
+### Fixed
+
+- Fixed dragged gem getting stuck when changing input state with a hotkey
+
+### Changed
+
+- Debug key M to spawn monsters moved to N
+
+
 ## [0.2.0] - 2021-05-28
 
 ### Added

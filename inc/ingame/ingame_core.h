@@ -6,6 +6,7 @@
 #include "ingame/ingame_input_handler.h"
 #include "ingame/ingame_inventory.h"
 #include "ingame/ingame_level_definition.h"
+#include "ingame/ingame_mana_pool.h"
 #include "ingame/ingame_map.h"
 #include "ingame/ingame_renderer.h"
 
@@ -16,7 +17,7 @@ private:
 
 public:
     IngameCore(IngameLevelDefinition& level)
-        : inputHandler(*this), renderer(*this), map(level), inventory(36)
+        : inputHandler(*this), renderer(*this), map(*this, level), inventory(36)
     {
     }
 
@@ -27,6 +28,7 @@ public:
 
     IngameInputHandler inputHandler;
     IngameInventory inventory;
+    IngameManaPool manaPool;
     IngameMap map;
     IngameRenderer renderer;
 };

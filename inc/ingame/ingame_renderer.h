@@ -7,6 +7,7 @@
 #include "interface/window.h"
 #include "interface/window_button.h"
 #include "interface/window_inventory.h"
+#include "interface/window_mana.h"
 #include "interface/window_map.h"
 
 class IngameCore;
@@ -17,6 +18,7 @@ class IngameRenderer
 private:
     Window rootWindow;
     WindowMap windowMap;
+    WindowMana windowMana;
     WindowInventory windowInventory;
     WindowButton windowBuildSpells;
     WindowButton windowCreateGems;
