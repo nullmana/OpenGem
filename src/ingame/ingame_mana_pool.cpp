@@ -26,7 +26,7 @@ IngameManaPool::IngameManaPool()
 
 STATUS IngameManaPool::render(struct _fbg* pFbg, const Window& window) const
 {
-    double fill = mana / manaPoolCap;
+    double fill = std::max(0.0, mana / manaPoolCap);
     bool isFull = mana == manaPoolCap;
 
     if (isFull)
@@ -90,8 +90,8 @@ void IngameManaPool::checkMaximumMana()
 {
     if (autopool)
     {
-        bool expanded = mana >= manaPoolCap;
-        while (mana >= manaPoolCap)
+        bool expanded = mana > manaPoolCap;
+        while (mana > manaPoolCap)
         {
             expandManaPool();
         }
