@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.3] - 2021-05-30
+
+### Added
+
+- Added hotkeys for gem upgrade, duplicate, and salvage
+- Added GCL gem anvil for duplicating gems, no bombing for salvage yet
+- Added GCCS salvage by dropping gems onto mana bar, backporting as QoL
+
+### Fixed
+
+- Fixed dragged gem going behind button windows since they were later in the root window's child order than the inventory window
+- Fixed dragged gem wrapping or getting stuck in the corner of the screen when pointer goes offscreen
+
+
 ## [0.2.2] - 2021-05-30
 
 ### Added

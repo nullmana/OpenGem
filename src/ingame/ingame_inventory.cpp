@@ -38,17 +38,27 @@ STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
         int ih = 2 * scale;
 
         if (ix < 0)
+        {
+            iw += ix;
             ix = 0;
+        }
         else if (ix + iw >= pRootWindow->width)
+        {
             iw = pRootWindow->width - ix;
+        }
         if (iy < 0)
+        {
+            ih += iy;
             iy = 0;
+        }
         else if (iy + ih >= pRootWindow->height)
+        {
             ih = pRootWindow->height - iy;
+        }
 
         if ((iw > 0) && (ih > 0))
         {
-            fbg_rect(pFbg, ix, iy, 2 * scale, 2 * scale, (pDraggedGem->color >> 16) & 0xFF,
+            fbg_rect(pFbg, ix, iy, iw, ih, (pDraggedGem->color >> 16) & 0xFF,
                 (pDraggedGem->color >> 8) & 0xFF, pDraggedGem->color & 0xFF);
         }
     }
@@ -165,7 +175,8 @@ Gem* IngameInventory::combineGems(Gem* pGem1, Gem* pGem2)
     pGem1->color = (pGem1->color + pGem2->color) / 2;
     pGem1->manaCost += pGem2->manaCost + Gem::gemCombineCostCurrent;
 
-    deleteGem(pGem2);
+    if (pGem1 != pGem2)
+        deleteGem(pGem2);
 
     return pGem1;
 }
@@ -184,7 +195,9 @@ Gem* IngameInventory::duplicateGemIntoSlot(Gem* pGem, int slot)
         }
     }
     else if (inventory[slot] != NULL)
+    {
         return NULL;
+    }
 
     if (slot == -1)
         return NULL;
@@ -194,6 +207,13 @@ Gem* IngameInventory::duplicateGemIntoSlot(Gem* pGem, int slot)
     placeGemIntoInventory(&gems.back(), slot, true);
 
     return &gems.back();
+}
+
+void IngameInventory::salvageGem(Gem* pGem)
+{
+    manaPool.addMana(floor(0.7 * pGem->manaCost), false);
+
+    deleteGem(pGem);
 }
 
 Gem* IngameInventory::getGemInSlot(int slot) const

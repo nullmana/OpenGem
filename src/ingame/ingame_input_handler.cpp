@@ -43,6 +43,13 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
     IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
     IngameInputHandler* pInputHandler = &pCore->inputHandler;
 
+    double xpos, ypos;
+    glfwGetCursorPos(pWindow, &xpos, &ypos);
+
+    Window* rootWindow = pCore->renderer.getRootWindow();
+    if (rootWindow->contains(xpos, ypos))
+        rootWindow->handleKeyInput(pWindow, key, scancode, action, mods);
+
     switch (key)
     {
         case GLFW_KEY_W:

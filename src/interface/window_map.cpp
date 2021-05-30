@@ -154,3 +154,49 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
             break;
     }
 }
+
+void WindowMap::handleKeyInput(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
+{
+    IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
+    double xpos, ypos;
+    float scale = width / g_game.ingameMapWidth;
+
+    glfwGetCursorPos(pWindow, &xpos, &ypos);
+
+    int ix = std::floor((xpos - x) / scale);
+    int iy = std::floor((ypos - y) / scale);
+
+    if ((ix < 0) || (ix >= g_game.ingameMapWidth) || (iy < 0) || (iy >= g_game.ingameMapHeight))
+        return;
+
+    Building* pBuilding = map.getBuilding(iy, ix);
+    if ((pBuilding == NULL) || (pBuilding->pGem == NULL) ||
+        (pCore->inventory.getDraggedGem() != NULL))
+        return;
+
+    Gem* pGem = pBuilding->pGem;
+
+    if (action == GLFW_PRESS)
+    {
+        switch (key)
+        {
+            case GLFW_KEY_D:
+                if (pCore->manaPool.getMana() >= pGem->manaCost)
+                {
+                    if (NULL != pCore->inventory.duplicateGemIntoSlot(pGem, -1))
+                        pCore->manaPool.addMana(-pGem->manaCost, false);
+                }
+                break;
+            case GLFW_KEY_U:
+                if (pCore->manaPool.getMana() >= (pGem->manaCost + Gem::gemCombineCostCurrent))
+                {
+                    pCore->inventory.combineGems(pGem, pGem);
+                    pCore->manaPool.addMana(-(pGem->manaCost + Gem::gemCombineCostCurrent), false);
+                }
+                break;
+            case GLFW_KEY_X:
+                pCore->inventory.salvageGem(pGem);
+                break;
+        }
+    }
+}

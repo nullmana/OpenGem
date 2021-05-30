@@ -40,7 +40,7 @@ v0.3:
 - [x] Mana pool displayed and used for gem creation, combining, banishment, etc.
 - [x] Gem Combining
 - [ ] Gems have stats and can be combined to create higher-grade gems
-- [ ] GCL Gem Anvil, hotkey gem duplicate, upgrade, and salvage
+- [x] GCL Gem Anvil, hotkey gem duplicate, upgrade, and salvage
 - [ ] Buildings use socketed gems for stats
 - [ ] Amplifiers affect gems in adjacent tiles
 - [ ] Shrines can be placed and used, no visual effects required

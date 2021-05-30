@@ -40,6 +40,22 @@ void Window::handleMouseInput(GLFWwindow* pWindow, int button, int action, int m
     }
 }
 
+void Window::handleKeyInput(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
+{
+    double xpos, ypos;
+
+    glfwGetCursorPos(pWindow, &xpos, &ypos);
+
+    for (Window* w : children)
+    {
+        if (w->contains(xpos, ypos))
+        {
+            w->handleKeyInput(pWindow, key, scancode, action, mods);
+            break;
+        }
+    }
+}
+
 void Window::handleMouseHover(GLFWwindow* pWindow, double xpos, double ypos)
 {
     for (Window* w : children)

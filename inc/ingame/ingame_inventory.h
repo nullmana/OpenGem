@@ -51,6 +51,8 @@ public:
      */
     Gem* duplicateGemIntoSlot(Gem* pGem, int slot);
 
+    void salvageGem(Gem* pGem);
+
     Gem* getGemInSlot(int slot) const;
 
     void startDragGem(Gem* pGem);

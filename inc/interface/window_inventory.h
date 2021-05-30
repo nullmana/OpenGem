@@ -15,5 +15,7 @@ public:
     WindowInventory(IngameInventory& inventory_) : inventory(inventory_) {}
 
     virtual STATUS render(struct _fbg* pFbg);
+
     virtual void handleMouseInput(GLFWwindow* pWindow, int button, int action, int mods);
+    virtual void handleKeyInput(GLFWwindow* pWindow, int key, int scancode, int action, int mods);
 };

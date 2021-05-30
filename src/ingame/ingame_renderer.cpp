@@ -35,7 +35,7 @@ static const std::vector<ButtonDefinition> gemButtonDefs_GCL = {
     {buttonGem1_handleMouseInput, button_handleMouseHover},
     {buttonGem2_handleMouseInput, button_handleMouseHover},
     {buttonGem3_handleMouseInput, button_handleMouseHover},
-    {NULL, button_handleMouseHover},
+    {buttonGemAnvil_handleMouseInput, NULL},
     {buttonGem5_handleMouseInput, button_handleMouseHover},
     {buttonGem6_handleMouseInput, button_handleMouseHover},
     {buttonGem7_handleMouseInput, button_handleMouseHover},
@@ -66,9 +66,9 @@ IngameRenderer::IngameRenderer(IngameCore& core)
 
     rootWindow.addChildWindow(&windowMap);
     rootWindow.addChildWindow(&windowMana);
-    rootWindow.addChildWindow(&windowInventory);
     rootWindow.addChildWindow(&windowBuildSpells);
     rootWindow.addChildWindow(&windowCreateGems);
+    rootWindow.addChildWindow(&windowInventory);
 
     resize(width, height);
 }

@@ -121,3 +121,42 @@ void WindowInventory::handleMouseInput(GLFWwindow* pWindow, int button, int acti
         }
     }
 }
+
+void WindowInventory::handleKeyInput(
+    GLFWwindow* pWindow, int key, int scancode, int action, int mods)
+{
+    IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
+    double xpos, ypos;
+
+    glfwGetCursorPos(pWindow, &xpos, &ypos);
+
+    int slot = getInventorySlot(xpos, ypos);
+    Gem* pGem = inventory.getGemInSlot(slot);
+
+    if ((pGem == NULL) || (inventory.getDraggedGem() != NULL))
+        return;
+
+    if (action == GLFW_PRESS)
+    {
+        switch (key)
+        {
+            case GLFW_KEY_D:
+                if (pCore->manaPool.getMana() >= pGem->manaCost)
+                {
+                    if (NULL != inventory.duplicateGemIntoSlot(pGem, -1))
+                        pCore->manaPool.addMana(-pGem->manaCost, false);
+                }
+                break;
+            case GLFW_KEY_U:
+                if (pCore->manaPool.getMana() >= (pGem->manaCost + Gem::gemCombineCostCurrent))
+                {
+                    inventory.combineGems(pGem, pGem);
+                    pCore->manaPool.addMana(-(pGem->manaCost + Gem::gemCombineCostCurrent), false);
+                }
+                break;
+            case GLFW_KEY_X:
+                inventory.salvageGem(pGem);
+                break;
+        }
+    }
+}

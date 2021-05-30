@@ -76,3 +76,22 @@ DEFFN_BUTTON_GEM_INPUT(buttonGem6_handleMouseInput, 6);
 DEFFN_BUTTON_GEM_INPUT(buttonGem7_handleMouseInput, 7);
 DEFFN_BUTTON_GEM_INPUT(buttonGem8_handleMouseInput, 8);
 #undef DEFFN_BUTTON_GEM_INPUT
+
+static void buttonGemAnvil_handleMouseInput(
+    Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)
+{
+    if ((action == GLFW_RELEASE) && (button == GLFW_MOUSE_BUTTON_LEFT))
+    {
+        IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
+        Gem* pDraggedGem = pCore->inventory.getDraggedGem();
+        if (pDraggedGem != NULL)
+        {
+            pCore->inputHandler.setInputState(INPUT_IDLE);
+            if (pCore->manaPool.getMana() >= pDraggedGem->manaCost)
+            {
+                if (NULL != pCore->inventory.duplicateGemIntoSlot(pDraggedGem, -1))
+                    pCore->manaPool.addMana(-pDraggedGem->manaCost, false);
+            }
+        }
+    }
+}
