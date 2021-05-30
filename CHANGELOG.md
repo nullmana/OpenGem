@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.2] - 2021-05-30
+
+### Added
+
+- Added gem combining with either hotkey or button, can be activated during dragging
+- Added gem duplication by combining into empty slot as in GCCS, backporting as QoL
+- Added mana cost to creating gems
+
+
 ## [0.2.1] - 2021-05-29
 
 ### Added

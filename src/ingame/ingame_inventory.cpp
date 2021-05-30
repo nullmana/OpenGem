@@ -1,4 +1,5 @@
 #include "ingame/ingame_inventory.h"
+#include "ingame/ingame_mana_pool.h"
 
 #include "entity/building.h"
 
@@ -8,7 +9,8 @@
 
 #include <cstddef>
 
-IngameInventory::IngameInventory(int slots_) : inventory(slots_)
+IngameInventory::IngameInventory(IngameManaPool& manaPool_, int slots_)
+    : manaPool(manaPool_), inventory(slots_)
 {
     pDraggedGem = NULL;
 }
@@ -153,6 +155,47 @@ void IngameInventory::swapGems(Gem* pGem1, Gem* pGem2)
     }
 }
 
+Gem* IngameInventory::combineGems(Gem* pGem1, Gem* pGem2)
+{
+    if (pGem1->grade == pGem2->grade)
+        ++pGem1->grade;
+    else
+        pGem1->grade = std::max<int>(pGem1->grade, pGem2->grade);
+
+    pGem1->color = (pGem1->color + pGem2->color) / 2;
+    pGem1->manaCost += pGem2->manaCost + Gem::gemCombineCostCurrent;
+
+    deleteGem(pGem2);
+
+    return pGem1;
+}
+
+Gem* IngameInventory::duplicateGemIntoSlot(Gem* pGem, int slot)
+{
+    if (slot == -1)
+    {
+        for (int s = inventory.size() - 1; s >= 0; --s)
+        {
+            if (inventory[s] == NULL)
+            {
+                slot = s;
+                break;
+            }
+        }
+    }
+    else if (inventory[slot] != NULL)
+        return NULL;
+
+    if (slot == -1)
+        return NULL;
+
+    gems.emplace_back(pGem);
+
+    placeGemIntoInventory(&gems.back(), slot, true);
+
+    return &gems.back();
+}
+
 Gem* IngameInventory::getGemInSlot(int slot) const
 {
     if ((slot < 0) || (slot >= inventory.size()))
@@ -186,10 +229,33 @@ Gem* IngameInventory::createGem(int gemType, int grade)
     return &gems.back();
 }
 
+void IngameInventory::deleteGem(Gem* pGem)
+{
+    if (pGem->pBuilding != NULL)
+        removeGemFromBuilding(pGem->pBuilding);
+    else
+        removeGemFromInventory(pGem);
+
+    if (pGem == pDraggedGem)
+        pDraggedGem = NULL;
+
+    for (std::list<Gem>::iterator it = gems.begin(); it != gems.end(); ++it)
+    {
+        if (&(*it) == pGem)
+        {
+            gems.erase(it);
+            break;
+        }
+    }
+}
+
 bool IngameInventory::createGemInSlot(int gemType, int slot)
 {
     int foundSlot = -1;
     int grade = (inventory.size() / 3) - (slot / 3);
+
+    if (manaPool.getMana() < Gem::gemCreateCost(grade))
+        return false;
 
     for (int s = slot; s < inventory.size(); ++s)
     {
@@ -216,6 +282,7 @@ bool IngameInventory::createGemInSlot(int gemType, int slot)
     {
         inventory[foundSlot] = createGem(gemType, grade);
         placeGemIntoInventory(&gems.back(), foundSlot, true);
+        manaPool.addMana(-gems.back().manaCost, false);
         return true;
     }
     return false;

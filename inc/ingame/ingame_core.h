@@ -17,7 +17,7 @@ private:
 
 public:
     IngameCore(IngameLevelDefinition& level)
-        : inputHandler(*this), renderer(*this), map(*this, level), inventory(36)
+        : inputHandler(*this), renderer(*this), map(*this, level), inventory(manaPool, 36)
     {
     }
 

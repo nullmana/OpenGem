@@ -11,8 +11,10 @@ enum INGAME_INPUT_STATE
     INPUT_BUILD_AMPLIFIER,
 
     INPUT_CREATE_GEM,
+    INPUT_COMBINE_GEM,
 
     INPUT_DRAGGING_IDLE,
+    INPUT_DRAGGING_COMBINE,
 
     INGAME_INPUT_STATE_COUNT
 };
@@ -28,7 +30,9 @@ static const char* INPUT_STATE_NAME[INGAME_INPUT_STATE_COUNT] = {
     "BuildAmplifier",
 
     "CreateGem",
+    "CombineGem",
 
     "DraggingIdle",
+    "DraggingCombine",
 };
 #endif

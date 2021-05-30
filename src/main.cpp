@@ -64,6 +64,21 @@ int main(int argc, char* argv[])
 
     IngameCore core(level);
 
+    switch (g_game.game)
+    {
+        case GC_LABYRINTH:
+            Gem::gemCreateCostCurrent = 77.0;
+            Gem::gemCombineCostCurrent = 77.0;
+            break;
+        case GC_CHASINGSHADOWS:
+            Gem::gemCreateCostCurrent = 60.0;
+            Gem::gemCombineCostCurrent = 120.0;
+            break;
+        default:
+            throw "Game Code Unavailable!";
+            break;
+    }
+
     core.init(pFbg);
 
     double lastFrame = glfwGetTime();

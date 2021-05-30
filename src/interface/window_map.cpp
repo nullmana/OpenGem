@@ -57,6 +57,23 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                 }
             }
             break;
+        case INPUT_COMBINE_GEM:
+            if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
+            {
+                Building* pBuilding = map.getBuilding(iy, ix);
+                if (pBuilding != NULL)
+                {
+                    Gem* pGem = pBuilding->pGem;
+                    if (pGem != NULL)
+                    {
+                        pCore->inventory.startDragGem(pGem);
+                        pGem->x = xpos;
+                        pGem->y = ypos;
+                        pInputHandler->setInputState(INPUT_DRAGGING_COMBINE);
+                    }
+                }
+            }
+            break;
         case INPUT_BUILD_WALL:
             if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
             {
@@ -109,6 +126,26 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                     if (pBuilding != NULL)
                     {
                         pCore->inventory.placeGemIntoBuilding(pDraggedGem, pBuilding, false);
+                    }
+                    pCore->inventory.clearDraggedGem();
+                    pInputHandler->setInputState(INPUT_IDLE);
+                }
+            }
+            break;
+        case INPUT_DRAGGING_COMBINE:
+            if ((action == GLFW_RELEASE) && (button == GLFW_MOUSE_BUTTON_LEFT))
+            {
+                Building* pBuilding = map.getBuilding(iy, ix);
+                Gem* pDraggedGem = pCore->inventory.getDraggedGem();
+                if (pDraggedGem != NULL)
+                {
+                    if ((pBuilding != NULL) && (pBuilding->pGem != NULL))
+                    {
+                        if (pCore->manaPool.getMana() >= Gem::gemCombineCostCurrent)
+                        {
+                            pCore->inventory.combineGems(pBuilding->pGem, pDraggedGem);
+                            pCore->manaPool.addMana(-Gem::gemCombineCostCurrent, false);
+                        }
                     }
                     pCore->inventory.clearDraggedGem();
                     pInputHandler->setInputState(INPUT_IDLE);

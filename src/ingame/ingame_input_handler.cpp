@@ -26,6 +26,7 @@ static void mouseButtonCallback(GLFWwindow* pWindow, int button, int action, int
     switch (pCore->inputHandler.getInputState())
     {
         case INPUT_DRAGGING_IDLE:
+        case INPUT_DRAGGING_COMBINE:
             if ((action == GLFW_RELEASE) && (button == GLFW_MOUSE_BUTTON_LEFT))
             {
                 pCore->inventory.clearDraggedGem();
@@ -67,6 +68,10 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
         case GLFW_KEY_A:
             if (action == GLFW_PRESS)
                 pInputHandler->toggleInputState(INPUT_BUILD_AMPLIFIER);
+            break;
+        case GLFW_KEY_G:
+            if (action == GLFW_PRESS)
+                pInputHandler->toggleInputState(INPUT_COMBINE_GEM);
             break;
         case GLFW_KEY_M:
             if (g_game.game == GC_LABYRINTH)
@@ -210,9 +215,26 @@ STATUS IngameInputHandler::handleKeyboardInput()
 void IngameInputHandler::toggleInputState(INGAME_INPUT_STATE state)
 {
     if (state == inputState)
+    {
         setInputState(INPUT_IDLE);
+    }
     else
-        setInputState(state);
+    {
+        switch (state)
+        {
+            case INPUT_COMBINE_GEM:
+                if (inputState == INPUT_DRAGGING_COMBINE)
+                    setInputState(INPUT_DRAGGING_IDLE);
+                else if (inputState == INPUT_DRAGGING_IDLE)
+                    setInputState(INPUT_DRAGGING_COMBINE);
+                else
+                    setInputState(INPUT_COMBINE_GEM);
+                break;
+            default:
+                setInputState(state);
+                break;
+        }
+    }
 }
 
 void IngameInputHandler::setInputState(INGAME_INPUT_STATE state)
@@ -238,8 +260,19 @@ void IngameInputHandler::setInputState(INGAME_INPUT_STATE state)
                 creatingGemType = -1;
             }
             break;
+        case INPUT_DRAGGING_COMBINE:
+            if (state != INPUT_DRAGGING_IDLE)
+                core.inventory.clearDraggedGem();
+            // Intentionally no break
+        case INPUT_COMBINE_GEM:
+        {
+            int button = g_game.game == GC_LABYRINTH ? 7 : 5;
+            core.renderer.setBuildButtonActive(button, false);
+            break;
+        }
         case INPUT_DRAGGING_IDLE:
-            core.inventory.clearDraggedGem();
+            if (state != INPUT_DRAGGING_COMBINE)
+                core.inventory.clearDraggedGem();
             break;
     }
 
@@ -259,6 +292,12 @@ void IngameInputHandler::setInputState(INGAME_INPUT_STATE state)
         case INPUT_BUILD_TRAP:
             core.renderer.setBuildButtonActive(4, true);
             break;
+        case INPUT_COMBINE_GEM:
+        case INPUT_DRAGGING_COMBINE:
+        {
+            int button = g_game.game == GC_LABYRINTH ? 7 : 5;
+            core.renderer.setBuildButtonActive(button, true);
+        }
     }
 
 #ifdef DEBUG

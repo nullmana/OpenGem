@@ -19,8 +19,7 @@ DEFFN_BUTTON_BUILD_INPUT(buttonBuildAmplifier_handleMouseInput, INPUT_BUILD_AMPL
 DEFFN_BUTTON_BUILD_INPUT(buttonBuildTrap_handleMouseInput, INPUT_BUILD_TRAP);
 // Lightning Shrine (L)
 // Gem Bomb (B)
-// Combine Gems (G)
-// Mana Pool (M)
+DEFFN_BUTTON_BUILD_INPUT(buttonBuildCombine_handleMouseInput, INPUT_COMBINE_GEM);
 #undef DEFFN_BUTTON_BUILD_INPUT
 
 static void buttonBuildMana_handleMouseInput(
