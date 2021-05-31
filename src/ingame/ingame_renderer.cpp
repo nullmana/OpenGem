@@ -54,13 +54,21 @@ static const std::vector<ButtonDefinition> gemButtonDefs_GCCS = {
     {buttonGem8_handleMouseInput, button_handleMouseHover},
 };
 
+static const std::vector<ButtonDefinition> speedButtonDefs = {
+    {buttonSpeed0_handleMouseInput, button_handleMouseHover},
+    {buttonSpeed1_handleMouseInput, button_handleMouseHover},
+    {buttonSpeed3_handleMouseInput, button_handleMouseHover},
+    {buttonSpeed9_handleMouseInput, button_handleMouseHover},
+};
+
 IngameRenderer::IngameRenderer(IngameCore& core)
     : windowMap(core.map),
       windowMana(core.manaPool),
       windowInventory(core.inventory),
       windowBuildSpells(
           g_game.game == GC_LABYRINTH ? buildButtonDefs_GCL : buildButtonDefs_GCCS, 3),
-      windowCreateGems(g_game.game == GC_LABYRINTH ? gemButtonDefs_GCL : gemButtonDefs_GCCS, 3)
+      windowCreateGems(g_game.game == GC_LABYRINTH ? gemButtonDefs_GCL : gemButtonDefs_GCCS, 3),
+      windowSpeed(speedButtonDefs, 4)
 {
     int width = 1280, height = 720;
 
@@ -68,6 +76,7 @@ IngameRenderer::IngameRenderer(IngameCore& core)
     rootWindow.addChildWindow(&windowMana);
     rootWindow.addChildWindow(&windowBuildSpells);
     rootWindow.addChildWindow(&windowCreateGems);
+    rootWindow.addChildWindow(&windowSpeed);
     rootWindow.addChildWindow(&windowInventory);
 
     resize(width, height);
@@ -129,6 +138,7 @@ void IngameRenderer::resize(int width, int height)
     windowBuildSpells.resize(offsetX + realWidth + 4, offsetY + 4, buildWidth, buildHeight);
     windowCreateGems.resize(
         offsetX + realWidth + 4, offsetY + realHeight - buildWidth, buildWidth, buildWidth);
+    windowSpeed.resize((offsetX - 18) / 2, (offsetY - 18) / 2, 72, 18);
 }
 
 STATUS IngameRenderer::init(IngameCore& core)

@@ -9,6 +9,7 @@ IngameInputHandler::IngameInputHandler(IngameCore& core_) : core(core_)
 {
     speedMultiplier = 0;
     savedSpeedMultiplier = 1;
+    pendingFrameAdvance = false;
     creatingGemType = -1;
 }
 
@@ -150,6 +151,8 @@ STATUS IngameInputHandler::init()
     glfwSetInputMode(pGlfwContext->window, GLFW_STICKY_KEYS, GLFW_TRUE);
 
     inputState = INPUT_IDLE;
+
+    setSpeedMultiplier(0);
 
     return STATUS_OK;
 }
@@ -350,9 +353,20 @@ void IngameInputHandler::cycleSpeedMultiplier()
         setSpeedMultiplier(speedMultiplier * 3);
 }
 
+static int getSpeedButton(int speed)
+{
+    if (speed == 3)
+        return 2;
+    else if (speed == 9)
+        return 3;
+    else
+        return speed;
+}
 void IngameInputHandler::setSpeedMultiplier(int speed)
 {
+    core.renderer.setSpeedButtonActive(getSpeedButton(speedMultiplier), false);
     speedMultiplier = speed;
+    core.renderer.setSpeedButtonActive(getSpeedButton(speed), true);
 #ifdef DEBUG
     printf("Speed = %d\n", speedMultiplier);
 #endif

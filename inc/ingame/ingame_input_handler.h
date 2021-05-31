@@ -15,6 +15,8 @@ private:
 
     int creatingGemType;
 
+    bool pendingFrameAdvance;
+
 public:
     IngameInputHandler(IngameCore& core_);
     STATUS init();
@@ -32,4 +34,12 @@ public:
     void cycleSpeedMultiplier();
     void setSpeedMultiplier(int speed);
     int getSpeedMultiplier() { return speedMultiplier; }
+
+    void setShouldFrameAdvance() { pendingFrameAdvance = true; }
+    bool getShouldFrameAdvance()
+    {
+        bool ret = pendingFrameAdvance;
+        pendingFrameAdvance = false;
+        return ret;
+    }
 };

@@ -105,6 +105,9 @@ int main(int argc, char* argv[])
         {
             // Don't keep counting frames if game is paused
             lastGameFrame = curTime;
+
+            if (core.inputHandler.getShouldFrameAdvance())
+                gameFrames = 1;
         }
         else
         {

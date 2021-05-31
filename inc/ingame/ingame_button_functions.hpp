@@ -95,3 +95,33 @@ static void buttonGemAnvil_handleMouseInput(
         }
     }
 }
+
+#define DEFFN_BUTTON_SPEED_INPUT(fnname, targetSpeed, elseSpeed)                                   \
+    static void fnname(Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)       \
+    {                                                                                              \
+        if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))                          \
+        {                                                                                          \
+            IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);                    \
+            if (pCore->inputHandler.getSpeedMultiplier() != targetSpeed)                           \
+                pCore->inputHandler.setSpeedMultiplier(targetSpeed);                               \
+            else                                                                                   \
+                pCore->inputHandler.setSpeedMultiplier(elseSpeed);                                 \
+        }                                                                                          \
+    }
+
+DEFFN_BUTTON_SPEED_INPUT(buttonSpeed1_handleMouseInput, 1, 3);
+DEFFN_BUTTON_SPEED_INPUT(buttonSpeed3_handleMouseInput, 3, 1);
+DEFFN_BUTTON_SPEED_INPUT(buttonSpeed9_handleMouseInput, 9, 3);
+static void buttonSpeed0_handleMouseInput(
+    Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)
+{
+    if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
+    {
+        IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
+        if (pCore->inputHandler.getSpeedMultiplier() == 0)
+            pCore->inputHandler.setShouldFrameAdvance();
+        else
+            pCore->inputHandler.setSpeedMultiplier(0);
+    }
+}
+#undef DEFFN_BUTTON_SPEED_INPUT

@@ -41,7 +41,7 @@ v0.3:
 - [x] Gem Combining
 - [ ] Gems have stats and can be combined to create higher-grade gems
 - [x] GCL Gem Anvil, hotkey gem duplicate, upgrade, and salvage
-- [ ] Speed control buttons, frame advance
+- [x] Speed control buttons, frame advance
 - [ ] Buildings use socketed gems for stats
 - [ ] Amplifiers affect gems in adjacent tiles
 - [ ] Shrines can be placed and used, no visual effects required

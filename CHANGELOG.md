@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4] - 2021-05-31
+
+### Added
+
+- Added buttons for speed control, frame advance backported as QoL
+
+
 ## [0.2.3] - 2021-05-30
 
 ### Added

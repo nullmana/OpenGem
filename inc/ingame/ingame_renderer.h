@@ -22,6 +22,7 @@ private:
     WindowInventory windowInventory;
     WindowButton windowBuildSpells;
     WindowButton windowCreateGems;
+    WindowButton windowSpeed;
 
 public:
     IngameRenderer(IngameCore& core);
@@ -41,6 +42,10 @@ public:
     void setGemButtonActive(int button, bool active)
     {
         windowCreateGems.setButtonActive(button, active);
+    }
+    void setSpeedButtonActive(int button, bool active)
+    {
+        windowSpeed.setButtonActive(button, active);
     }
 
 #ifdef DEBUG
