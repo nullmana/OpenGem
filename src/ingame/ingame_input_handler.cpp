@@ -309,7 +309,7 @@ void IngameInputHandler::setInputState(INGAME_INPUT_STATE state)
             }
             break;
         case INPUT_DRAGGING_COMBINE:
-            if (state != INPUT_DRAGGING_IDLE)
+            if ((state != INPUT_DRAGGING_IDLE) && (state != INPUT_DRAGGING_BOMB))
                 core.inventory.clearDraggedGem();
             // Intentionally no break
         case INPUT_COMBINE_GEM:
@@ -319,7 +319,7 @@ void IngameInputHandler::setInputState(INGAME_INPUT_STATE state)
             break;
         }
         case INPUT_DRAGGING_BOMB:
-            if (state != INPUT_DRAGGING_IDLE)
+            if ((state != INPUT_DRAGGING_IDLE) && (state != INPUT_DRAGGING_COMBINE))
                 core.inventory.clearDraggedGem();
             // Intentionally no break
         case INPUT_BOMB_MULTIPLE:
