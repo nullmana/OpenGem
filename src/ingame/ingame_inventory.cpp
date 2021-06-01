@@ -224,6 +224,17 @@ Gem* IngameInventory::getGemInSlot(int slot) const
     return inventory[slot];
 }
 
+Gem* IngameInventory::getFirstGem() const
+{
+    for (int s = 0; s < inventory.size(); ++s)
+    {
+        if (inventory[s] != NULL)
+            return inventory[s];
+    }
+
+    return NULL;
+}
+
 void IngameInventory::startDragGem(Gem* pGem)
 {
     if (pDraggedGem != NULL)

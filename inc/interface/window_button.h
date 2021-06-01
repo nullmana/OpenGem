@@ -22,4 +22,5 @@ public:
     virtual void handleMouseHover(GLFWwindow* pWindow, double xpos, double ypos);
 
     void setButtonActive(int index, bool active);
+    void setButtonForceColor(int index, int color) { buttons[index].forceColor = color; }
 };

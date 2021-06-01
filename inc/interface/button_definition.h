@@ -27,12 +27,14 @@ struct ButtonDefinition
         colors[3] = 0x222222;
         colors[4] = 0xAAAAAA;
         colors[5] = 0xAAAAAA;
-        colors[6] = 0xAAAAAA;
-        colors[7] = 0xAAAAAA;
+        colors[6] = 0x888888;
+        colors[7] = 0x888888;
+        colors[8] = 0xCCCC20;
+        colors[9] = 0xFF8820;
     }
 
     buttonHandleMouseInput handleMouseInput;
     buttonHandleMouseHover handleMouseHover;
 
-    uint32_t colors[8];
+    uint32_t colors[10];
 };

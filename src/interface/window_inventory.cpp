@@ -61,6 +61,18 @@ void WindowInventory::handleMouseInput(GLFWwindow* pWindow, int button, int acti
                 }
                 break;
             }
+            case INPUT_BOMB_GEM:
+            {
+                Gem* pGem = inventory.getGemInSlot(slot);
+                if (pGem != NULL)
+                {
+                    inventory.startDragGem(pGem);
+                    pGem->x = xpos;
+                    pGem->y = ypos;
+                    pInputHandler->setInputState(INPUT_DRAGGING_BOMB);
+                }
+                break;
+            }
             case INPUT_CREATE_GEM:
             {
                 int gemType = pInputHandler->getCreatingGemType();
@@ -157,6 +169,12 @@ void WindowInventory::handleKeyInput(
             case GLFW_KEY_X:
                 inventory.salvageGem(pGem);
                 break;
+        }
+
+        if ((pCore->inputHandler.getInputState() == INPUT_BOMB_MULTIPLE) ||
+            (pCore->inputHandler.getInputState() == INPUT_BOMB_TEMPLATE))
+        {
+            pCore->inputHandler.setInputState(INPUT_IDLE);
         }
     }
 }

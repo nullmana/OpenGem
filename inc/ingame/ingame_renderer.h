@@ -39,6 +39,10 @@ public:
     {
         windowBuildSpells.setButtonActive(button, active);
     }
+    void setBuildButtonForceColor(int button, int color)
+    {
+        windowBuildSpells.setButtonForceColor(button, color);
+    }
     void setGemButtonActive(int button, bool active)
     {
         windowCreateGems.setButtonActive(button, active);

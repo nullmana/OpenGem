@@ -47,7 +47,7 @@ v0.3:
 - [ ] Shrines can be placed and used, no visual effects required
 - [ ] Structures, monster nests and beacons which can be placed on the map and targeted by gems
 - [ ] Mana Shards
-- [ ] Gem bombing
+- [x] Gem bombing
 - [ ] Waves and Monster Types, spawn when called
 
 v0.4:
@@ -58,7 +58,7 @@ v0.4:
 - [ ] Kill chain counter
 - [ ] QoL backport: Click buildings to place gems
 - [ ] QoL backport: Tab to drop gems to inventory
-- [ ] QoL backport: Template bombing
+- [x] QoL backport: Template bombing
 
 v0.5:
 - [ ] Import graphics from SWF container. As of this version, a swf will be required to launch the game

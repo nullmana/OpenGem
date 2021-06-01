@@ -27,6 +27,7 @@ private:
 
     bool verifyBuilding(BUILDING_TYPE building, int x, int y);
     STATUS placeBuilding(BUILDING_TYPE building, int x, int y);
+    STATUS destroyBuilding(int x, int y);
 
 public:
     IngameMap(IngameCore& core, IngameLevelDefinition& level);
@@ -37,7 +38,9 @@ public:
     STATUS buildTower(int x, int y);
     STATUS buildTrap(int x, int y);
     STATUS buildAmplifier(int x, int y);
-    STATUS destroyStructure(int x, int y);
+    STATUS demolishBuilding(int x, int y);
+
+    void dropGemBomb(Gem* pGem, float x, float y);
 
     Building* getBuilding(int y, int x) const { return tileBuilding.at(y, x); }
 

@@ -30,14 +30,6 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
     if ((ix < 0) || (ix >= g_game.ingameMapWidth) || (iy < 0) || (iy >= g_game.ingameMapHeight))
         return;
 
-    if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_RIGHT)
-    {
-        map.destroyStructure(ix, iy);
-        if (!(mods & GLFW_MOD_SHIFT))
-            pInputHandler->setInputState(INPUT_IDLE);
-        return;
-    }
-
     switch (pInputHandler->getInputState())
     {
         case INPUT_IDLE:
@@ -70,6 +62,23 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                         pGem->x = xpos;
                         pGem->y = ypos;
                         pInputHandler->setInputState(INPUT_DRAGGING_COMBINE);
+                    }
+                }
+            }
+            break;
+        case INPUT_BOMB_GEM:
+            if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
+            {
+                Building* pBuilding = map.getBuilding(iy, ix);
+                if (pBuilding != NULL)
+                {
+                    Gem* pGem = pBuilding->pGem;
+                    if (pGem != NULL)
+                    {
+                        pCore->inventory.startDragGem(pGem);
+                        pGem->x = xpos;
+                        pGem->y = ypos;
+                        pInputHandler->setInputState(INPUT_DRAGGING_BOMB);
                     }
                 }
             }
@@ -128,8 +137,8 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                         pCore->inventory.placeGemIntoBuilding(pDraggedGem, pBuilding, false);
                     }
                     pCore->inventory.clearDraggedGem();
-                    pInputHandler->setInputState(INPUT_IDLE);
                 }
+                pInputHandler->setInputState(INPUT_IDLE);
             }
             break;
         case INPUT_DRAGGING_COMBINE:
@@ -148,8 +157,61 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                         }
                     }
                     pCore->inventory.clearDraggedGem();
-                    pInputHandler->setInputState(INPUT_IDLE);
                 }
+                pInputHandler->setInputState(INPUT_IDLE);
+            }
+            break;
+        case INPUT_DRAGGING_BOMB:
+            if ((action == GLFW_RELEASE) && (button == GLFW_MOUSE_BUTTON_LEFT))
+            {
+                Gem* pDraggedGem = pCore->inventory.getDraggedGem();
+                if (pDraggedGem != NULL)
+                {
+                    Building* pBuilding = map.getBuilding(iy, ix);
+                    if ((pBuilding != NULL) && (pBuilding->pGem == NULL))
+                        map.demolishBuilding(ix, iy);
+
+                    map.dropGemBomb(pDraggedGem, xpos - x, ypos - y);
+
+                    pCore->inventory.deleteGem(pDraggedGem);
+                }
+                pInputHandler->setInputState(INPUT_IDLE);
+            }
+            break;
+        case INPUT_BOMB_MULTIPLE:
+        case INPUT_BOMB_TEMPLATE:
+            if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
+            {
+                INGAME_INPUT_STATE state = pInputHandler->getInputState();
+                Gem* pBombGem = pCore->inventory.getFirstGem();
+                bool bClearState = true;
+                if (pBombGem != NULL)
+                {
+                    if ((state == INPUT_BOMB_MULTIPLE) ||
+                        (pCore->manaPool.getMana() >= pBombGem->manaCost))
+                    {
+                        Building* pBuilding = map.getBuilding(iy, ix);
+                        if ((pBuilding != NULL) && (pBuilding->pGem == NULL))
+                            map.demolishBuilding(ix, iy);
+
+                        map.dropGemBomb(pBombGem, xpos - x, ypos - y);
+
+                        if (state == INPUT_BOMB_TEMPLATE)
+                        {
+                            pCore->manaPool.addMana(-pBombGem->manaCost, false);
+                            if (pCore->manaPool.getMana() >= pBombGem->manaCost)
+                                bClearState = false;
+                        }
+                        else
+                        {
+                            pCore->inventory.deleteGem(pBombGem);
+                            if (pCore->inventory.getFirstGem() != NULL)
+                                bClearState = false;
+                        }
+                    }
+                }
+                if (bClearState)
+                    pInputHandler->setInputState(INPUT_IDLE);
             }
             break;
     }

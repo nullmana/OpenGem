@@ -28,6 +28,7 @@ static void mouseButtonCallback(GLFWwindow* pWindow, int button, int action, int
     {
         case INPUT_DRAGGING_IDLE:
         case INPUT_DRAGGING_COMBINE:
+        case INPUT_DRAGGING_BOMB:
             if ((action == GLFW_RELEASE) && (button == GLFW_MOUSE_BUTTON_LEFT))
             {
                 pCore->inventory.clearDraggedGem();
@@ -81,6 +82,16 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
             if (action == GLFW_PRESS)
                 pInputHandler->toggleInputState(INPUT_COMBINE_GEM);
             break;
+        case GLFW_KEY_B:
+            if (action == GLFW_PRESS)
+            {
+                Gem* pFirstGem = pCore->inventory.getFirstGem();
+                if ((mods & GLFW_MOD_SHIFT) && (pFirstGem != NULL))
+                    pInputHandler->toggleInputState(INPUT_BOMB_MULTIPLE);
+                else
+                    pInputHandler->toggleInputState(INPUT_BOMB_GEM);
+            }
+            break;
         case GLFW_KEY_M:
             if (g_game.game == GC_LABYRINTH)
             {
@@ -129,11 +140,24 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
             break;
         case GLFW_KEY_LEFT_SHIFT:
         case GLFW_KEY_RIGHT_SHIFT:
-            if (action == GLFW_RELEASE)
+            switch (pInputHandler->getInputState())
             {
-                INGAME_INPUT_STATE state = pInputHandler->getInputState();
-                if (state != INPUT_BUILD_WALL_DRAGGING)
-                    pInputHandler->setInputState(INPUT_IDLE);
+                case INPUT_BUILD_WALL_DRAGGING:
+                case INPUT_DRAGGING_IDLE:
+                case INPUT_DRAGGING_COMBINE:
+                    break;
+                case INPUT_BOMB_GEM:
+                    if (action == GLFW_PRESS)
+                    {
+                        Gem* pFirstGem = pCore->inventory.getFirstGem();
+                        if (pFirstGem != NULL)
+                            pInputHandler->setInputState(INPUT_BOMB_TEMPLATE);
+                    }
+                    // Intentionally no break
+                default:
+                    if (action == GLFW_RELEASE)
+                        pInputHandler->setInputState(INPUT_IDLE);
+                    break;
             }
             break;
     }
@@ -235,10 +259,24 @@ void IngameInputHandler::toggleInputState(INGAME_INPUT_STATE state)
             case INPUT_COMBINE_GEM:
                 if (inputState == INPUT_DRAGGING_COMBINE)
                     setInputState(INPUT_DRAGGING_IDLE);
-                else if (inputState == INPUT_DRAGGING_IDLE)
+                else if ((inputState == INPUT_DRAGGING_IDLE) || (inputState == INPUT_DRAGGING_BOMB))
                     setInputState(INPUT_DRAGGING_COMBINE);
                 else
                     setInputState(INPUT_COMBINE_GEM);
+                break;
+            case INPUT_BOMB_GEM:
+            case INPUT_BOMB_TEMPLATE:
+            case INPUT_BOMB_MULTIPLE:
+                if (inputState == INPUT_DRAGGING_BOMB)
+                    setInputState(INPUT_DRAGGING_IDLE);
+                else if ((inputState == INPUT_DRAGGING_IDLE) ||
+                         (inputState == INPUT_DRAGGING_COMBINE))
+                    setInputState(INPUT_DRAGGING_BOMB);
+                else if ((inputState == INPUT_BOMB_GEM) || (inputState == INPUT_BOMB_MULTIPLE) ||
+                         (inputState == INPUT_BOMB_TEMPLATE))
+                    setInputState(INPUT_IDLE);
+                else
+                    setInputState(state);
                 break;
             default:
                 setInputState(state);
@@ -280,8 +318,21 @@ void IngameInputHandler::setInputState(INGAME_INPUT_STATE state)
             core.renderer.setBuildButtonActive(button, false);
             break;
         }
+        case INPUT_DRAGGING_BOMB:
+            if (state != INPUT_DRAGGING_IDLE)
+                core.inventory.clearDraggedGem();
+            // Intentionally no break
+        case INPUT_BOMB_MULTIPLE:
+        case INPUT_BOMB_TEMPLATE:
+        case INPUT_BOMB_GEM:
+        {
+            int button = g_game.game == GC_LABYRINTH ? 6 : 3;
+            core.renderer.setBuildButtonForceColor(button, -1);
+            core.renderer.setBuildButtonActive(button, false);
+            break;
+        }
         case INPUT_DRAGGING_IDLE:
-            if (state != INPUT_DRAGGING_COMBINE)
+            if ((state != INPUT_DRAGGING_COMBINE) && (state != INPUT_DRAGGING_BOMB))
                 core.inventory.clearDraggedGem();
             break;
     }
@@ -307,6 +358,20 @@ void IngameInputHandler::setInputState(INGAME_INPUT_STATE state)
         {
             int button = g_game.game == GC_LABYRINTH ? 7 : 5;
             core.renderer.setBuildButtonActive(button, true);
+            break;
+        }
+        case INPUT_BOMB_GEM:
+        case INPUT_BOMB_TEMPLATE:
+        case INPUT_BOMB_MULTIPLE:
+        case INPUT_DRAGGING_BOMB:
+        {
+            int button = g_game.game == GC_LABYRINTH ? 6 : 3;
+            if (state == INPUT_BOMB_TEMPLATE)
+                core.renderer.setBuildButtonForceColor(button, 8);
+            if (state == INPUT_BOMB_MULTIPLE)
+                core.renderer.setBuildButtonForceColor(button, 9);
+            core.renderer.setBuildButtonActive(button, true);
+            break;
         }
     }
 

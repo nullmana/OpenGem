@@ -21,7 +21,6 @@ private:
     void checkAdjacentAmplifiers(Gem* pGem);
 
     Gem* createGem(int gemType, int grade);
-    void deleteGem(Gem* pGem);
 
 public:
     IngameInventory(IngameManaPool& manaPool_, int slots_);
@@ -51,9 +50,11 @@ public:
      */
     Gem* duplicateGemIntoSlot(Gem* pGem, int slot);
 
+    void deleteGem(Gem* pGem);
     void salvageGem(Gem* pGem);
 
     Gem* getGemInSlot(int slot) const;
+    Gem* getFirstGem() const;
 
     void startDragGem(Gem* pGem);
     void clearDraggedGem();

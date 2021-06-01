@@ -24,7 +24,7 @@ STATUS WindowButton::render(struct _fbg* pFbg)
     for (int i = 0; i < buttons.size(); ++i)
     {
         const Button& b = buttons[i];
-        uint32_t color = b.color[b.state];
+        uint32_t color = b.color[b.forceColor == -1 ? b.state : b.forceColor];
 
         fbg_rect(pFbg, (i % cols) * hscale + x, (i / cols) * vscale + y, hscale, vscale,
             (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);

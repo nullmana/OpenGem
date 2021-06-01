@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.5] - 2021-05-31
+
+### Added
+
+- Added gem bombing, multiple bombing, template bombing
+- Added gem salvage by bombing onto gem anvil, cannot template bomb since this would just burn mana
+- Template bombing backported as QoL
+
+### Fixed
+
+- Fixed input state resetting when using hotkeys while dragging a gem
+
+
 ## [0.2.4] - 2021-05-31
 
 ### Added

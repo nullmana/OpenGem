@@ -22,6 +22,34 @@ DEFFN_BUTTON_BUILD_INPUT(buttonBuildTrap_handleMouseInput, INPUT_BUILD_TRAP);
 DEFFN_BUTTON_BUILD_INPUT(buttonBuildCombine_handleMouseInput, INPUT_COMBINE_GEM);
 #undef DEFFN_BUTTON_BUILD_INPUT
 
+static void buttonBuildBomb_handleMouseInput(
+    Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)
+{
+    if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
+    {
+        IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
+        Gem* pFirstGem = pCore->inventory.getFirstGem();
+        if ((mods & GLFW_MOD_SHIFT) && (pFirstGem != NULL))
+            pCore->inputHandler.toggleInputState(INPUT_BOMB_MULTIPLE);
+        else
+            pCore->inputHandler.toggleInputState(INPUT_BOMB_GEM);
+
+        switch (pCore->inputHandler.getInputState())
+        {
+            case INPUT_BOMB_MULTIPLE:
+                thisb.forceColor = 9;
+                break;
+            case INPUT_BOMB_GEM:
+                thisb.forceColor = -1;
+                thisb.state |= BUTTON_ACTIVE;
+                break;
+            default:
+                thisb.forceColor = -1;
+                thisb.state &= ~BUTTON_ACTIVE;
+                break;
+        }
+    }
+}
 static void buttonBuildMana_handleMouseInput(
     Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)
 {
@@ -80,19 +108,47 @@ DEFFN_BUTTON_GEM_INPUT(buttonGem8_handleMouseInput, 8);
 static void buttonGemAnvil_handleMouseInput(
     Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)
 {
-    if ((action == GLFW_RELEASE) && (button == GLFW_MOUSE_BUTTON_LEFT))
+    IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
+
+    if (button != GLFW_MOUSE_BUTTON_LEFT)
+        return;
+
+    if (action == GLFW_RELEASE)
     {
-        IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
         Gem* pDraggedGem = pCore->inventory.getDraggedGem();
         if (pDraggedGem != NULL)
         {
-            pCore->inputHandler.setInputState(INPUT_IDLE);
-            if (pCore->manaPool.getMana() >= pDraggedGem->manaCost)
+            if (pCore->inputHandler.getInputState() == INPUT_DRAGGING_BOMB)
             {
-                if (NULL != pCore->inventory.duplicateGemIntoSlot(pDraggedGem, -1))
-                    pCore->manaPool.addMana(-pDraggedGem->manaCost, false);
+                pCore->inventory.salvageGem(pDraggedGem);
+            }
+            else if ((pCore->inputHandler.getInputState() == INPUT_DRAGGING_IDLE) ||
+                     (pCore->inputHandler.getInputState() == INPUT_DRAGGING_COMBINE))
+            {
+                if (pCore->manaPool.getMana() >= pDraggedGem->manaCost)
+                {
+                    if (NULL != pCore->inventory.duplicateGemIntoSlot(pDraggedGem, -1))
+                        pCore->manaPool.addMana(-pDraggedGem->manaCost, false);
+                }
+            }
+            pCore->inputHandler.setInputState(INPUT_IDLE);
+        }
+    }
+    else if (action == GLFW_PRESS)
+    {
+        Gem* pFirstGem = pCore->inventory.getFirstGem();
+        bool bClearState = true;
+        if (pFirstGem != NULL)
+        {
+            if (pCore->inputHandler.getInputState() == INPUT_BOMB_MULTIPLE)
+            {
+                pCore->inventory.salvageGem(pFirstGem);
+                if (pCore->inventory.getFirstGem() != NULL)
+                    bClearState = false;
             }
         }
+        if (bClearState)
+            pCore->inputHandler.setInputState(INPUT_IDLE);
     }
 }
 

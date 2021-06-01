@@ -12,9 +12,14 @@ enum INGAME_INPUT_STATE
 
     INPUT_CREATE_GEM,
     INPUT_COMBINE_GEM,
+    INPUT_BOMB_GEM,
 
     INPUT_DRAGGING_IDLE,
     INPUT_DRAGGING_COMBINE,
+    INPUT_DRAGGING_BOMB,
+
+    INPUT_BOMB_MULTIPLE,
+    INPUT_BOMB_TEMPLATE,
 
     INGAME_INPUT_STATE_COUNT
 };
@@ -31,8 +36,13 @@ static const char* INPUT_STATE_NAME[INGAME_INPUT_STATE_COUNT] = {
 
     "CreateGem",
     "CombineGem",
+    "BombGem",
 
     "DraggingIdle",
     "DraggingCombine",
+    "DraggingBomb",
+
+    "BombMultiple",
+    "BombTemplate",
 };
 #endif

@@ -12,11 +12,13 @@ struct Button
         handleMouseHover = d.handleMouseHover;
         memcpy(color, d.colors, sizeof(color));
         state = BUTTON_IDLE;
+        forceColor = -1;
     }
 
     buttonHandleMouseInput handleMouseInput;
     buttonHandleMouseHover handleMouseHover;
 
-    uint32_t color[8];
+    uint32_t color[10];
     int state;
+    int forceColor;
 };

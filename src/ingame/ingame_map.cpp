@@ -313,7 +313,7 @@ STATUS IngameMap::buildAmplifier(int x, int y)
     return status;
 }
 
-STATUS IngameMap::destroyStructure(int x, int y)
+STATUS IngameMap::destroyBuilding(int x, int y)
 {
     STATUS status = STATUS_OK;
     bool addedPath = false;
@@ -380,6 +380,13 @@ STATUS IngameMap::destroyStructure(int x, int y)
 
     return STATUS_OK;
 }
+
+STATUS IngameMap::demolishBuilding(int x, int y)
+{
+    return destroyBuilding(x, y);
+}
+
+void IngameMap::dropGemBomb(Gem* pGem, float x, float y) {}
 
 void IngameMap::monsterReachesTarget(Monster& monster)
 {
