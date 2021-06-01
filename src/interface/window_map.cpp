@@ -199,8 +199,7 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                         if (state == INPUT_BOMB_TEMPLATE)
                         {
                             pCore->manaPool.addMana(-pBombGem->manaCost, false);
-                            if (pCore->manaPool.getMana() >= pBombGem->manaCost)
-                                bClearState = false;
+                            bClearState = false;
                         }
                         else
                         {
