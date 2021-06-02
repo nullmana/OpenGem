@@ -290,6 +290,7 @@ void IngameInputHandler::setInputState(INGAME_INPUT_STATE state)
     switch (inputState)
     {
         case INPUT_BUILD_WALL:
+        case INPUT_BUILD_WALL_DRAGGING:
             core.renderer.setBuildButtonActive(0, false);
             break;
         case INPUT_BUILD_TOWER:
@@ -342,6 +343,7 @@ void IngameInputHandler::setInputState(INGAME_INPUT_STATE state)
     switch (state)
     {
         case INPUT_BUILD_WALL:
+        case INPUT_BUILD_WALL_DRAGGING:
             core.renderer.setBuildButtonActive(0, true);
             break;
         case INPUT_BUILD_TOWER:

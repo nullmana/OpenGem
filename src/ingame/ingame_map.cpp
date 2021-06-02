@@ -187,7 +187,6 @@ STATUS IngameMap::placeBuilding(BUILDING_TYPE building, int x, int y)
 
 STATUS IngameMap::buildWall(int x1, int y1, int x2, int y2)
 {
-    STATUS status = STATUS_OK;
     bool overlapsPath = false;
 
     if ((x1 < 0) || (x1 >= g_game.ingameMapWidth) || (y1 < 0) || (y1 >= g_game.ingameMapHeight) ||
@@ -246,11 +245,10 @@ STATUS IngameMap::buildWall(int x1, int y1, int x2, int y2)
     }
 
 #ifdef DEBUG
-    if (status == STATUS_OK)
-        printf("Build Wall: (%i %i) to (%i %i)\n", x1, y1, x2, y2);
+    printf("Build Wall: (%i %i) to (%i %i)\n", x1, y1, x2, y2);
 #endif
 
-    return status;
+    return STATUS_OK;
 }
 
 STATUS IngameMap::buildTower(int x, int y)
@@ -313,77 +311,111 @@ STATUS IngameMap::buildAmplifier(int x, int y)
     return status;
 }
 
-STATUS IngameMap::destroyBuilding(int x, int y)
+void IngameMap::destroyBuilding(Building* pBuilding)
 {
-    STATUS status = STATUS_OK;
+    bool addedPath = false;
+    int ix, iy;
+
+    for (iy = pBuilding->iy; iy < pBuilding->iy + g_game.ingameBuildingSize; ++iy)
+    {
+        for (ix = pBuilding->ix; ix < pBuilding->ix + g_game.ingameBuildingSize; ++ix)
+        {
+            BUILDING_TYPE& t = tileOccupied.at(iy, ix);
+            if ((t == BUILDING_TOWER) || (t == BUILDING_AMPLIFIER))
+            {
+                t = BUILDING_NONE;
+            }
+            else
+            {
+                t = BUILDING_PATH;
+                addedPath = true;
+            }
+
+            tileBuilding.at(iy, ix) = NULL;
+        }
+    }
+
+    ix = pBuilding->ix;
+    iy = pBuilding->iy;
+
+    buildingController.destroyBuilding(pBuilding);
+    pBuilding = NULL;
+
+    if (addedPath)
+    {
+        pathfinder.recalculatePaths(*this);
+        enemyController.forceRepath(ix, iy, g_game.ingameBuildingSize, g_game.ingameBuildingSize);
+    }
+
+#ifdef DEBUG
+    printf("Destroy Building: %i %i\n", ix, iy);
+#endif
+}
+
+void IngameMap::destroyWalls(int x, int y)
+{
+    const int wallDestroyRadius = g_game.ingameBuildingSize - 1;
     bool addedPath = false;
 
-    if (x < 0 || x >= g_game.ingameMapWidth || y < 0 || y >= g_game.ingameMapHeight)
-        return STATUS_INVALID_ARGUMENT;
-
-    Building* pBuilt = tileBuilding.at(y, x);
-
-    if (pBuilt != NULL)
+    for (int iy = std::max(0, y - wallDestroyRadius);
+         iy <= std::min(g_game.ingameMapHeight - 1, y + wallDestroyRadius); ++iy)
     {
-        if (pBuilt->pGem != NULL)
-            return STATUS_INVALID_OPERATION;
-
-        for (int iy = pBuilt->iy; iy < pBuilt->iy + g_game.ingameBuildingSize; ++iy)
+        for (int ix = std::max(0, x - wallDestroyRadius);
+             ix <= std::min(g_game.ingameMapWidth - 1, x + wallDestroyRadius); ++ix)
         {
-            for (int ix = pBuilt->ix; ix < pBuilt->ix + g_game.ingameBuildingSize; ++ix)
+            BUILDING_TYPE& t = tileOccupied.at(iy, ix);
+            switch (t)
             {
-                BUILDING_TYPE& t = tileOccupied.at(iy, ix);
-                if ((t == BUILDING_TOWER) || (t == BUILDING_AMPLIFIER))
-                {
+                case BUILDING_WALL:
                     t = BUILDING_NONE;
-                }
-                else
-                {
+                    break;
+                case BUILDING_WALL_PATH:
                     t = BUILDING_PATH;
                     addedPath = true;
-                }
-
-                tileBuilding.at(iy, ix) = NULL;
+                    break;
+                default:
+                    // Do nothing to other buildings
+                    break;
             }
-        }
-
-        buildingController.destroyBuilding(pBuilt);
-        pBuilt = NULL;
-    }
-    else
-    {
-        BUILDING_TYPE& t = tileOccupied.at(y, x);
-        switch (t)
-        {
-            case BUILDING_WALL:
-                t = BUILDING_NONE;
-                break;
-            case BUILDING_WALL_PATH:
-                t = BUILDING_PATH;
-                break;
-            default:
-                status = STATUS_INVALID_OPERATION;
-                break;
         }
     }
 
     if (addedPath)
     {
         pathfinder.recalculatePaths(*this);
-        enemyController.forceRepath(x, y, g_game.ingameBuildingSize, g_game.ingameBuildingSize);
+        enemyController.forceRepath(x - wallDestroyRadius, y - wallDestroyRadius,
+            2 * wallDestroyRadius + 1, 2 * wallDestroyRadius + 1);
     }
-
-#ifdef DEBUG
-    if (status == STATUS_OK)
-        printf("Destroy Structure: %i %i\n", x, y);
-#endif
-
-    return STATUS_OK;
 }
 
 STATUS IngameMap::demolishBuilding(int x, int y)
 {
-    return destroyBuilding(x, y);
+    if (x < 0 || x >= g_game.ingameMapWidth || y < 0 || y >= g_game.ingameMapHeight)
+        return STATUS_INVALID_ARGUMENT;
+
+    Building* pBuilding = tileBuilding.at(y, x);
+    bool shouldDestroyWalls = true;
+
+    if (pBuilding != NULL)
+    {
+        if (pBuilding->pGem == NULL)
+        {
+            // Only CS also demolishes nearby walls when bombing a building
+            if (g_game.game != GC_CHASINGSHADOWS)
+                shouldDestroyWalls = false;
+            destroyBuilding(pBuilding);
+        }
+        else
+        {
+            if (g_game.game != GC_CHASINGSHADOWS)
+                shouldDestroyWalls = false;
+        }
+    }
+
+    if (shouldDestroyWalls)
+        destroyWalls(x, y);
+
+    return STATUS_OK;
 }
 
 void IngameMap::dropGemBomb(Gem* pGem, float x, float y) {}

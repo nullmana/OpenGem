@@ -27,7 +27,8 @@ private:
 
     bool verifyBuilding(BUILDING_TYPE building, int x, int y);
     STATUS placeBuilding(BUILDING_TYPE building, int x, int y);
-    STATUS destroyBuilding(int x, int y);
+    void destroyBuilding(Building* pBuilding);
+    void destroyWalls(int x, int y);
 
 public:
     IngameMap(IngameCore& core, IngameLevelDefinition& level);

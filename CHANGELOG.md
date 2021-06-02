@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.6] - 2021-06-02
+
+### Added
+
+- Added gem bomb demolishing 3x3 area of walls for CS
+
+### Fixed
+
+- Fixed dragged gem resetting when switching between drag combine and drag bomb
+- Fixed template bomb turning off immediately when out of mana, should only turn off when a bomb failed due to not having enough mana
+- Fixed destroying walls not triggering repath of nearby monsters
+- Fixed dropping gem bomb not demolishing walls
+- Fixed build wall button turning off when dragging to build row of walls
+
+
 ## [0.2.5] - 2021-05-31
 
 ### Added

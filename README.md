@@ -55,7 +55,9 @@ v0.4:
 - [ ] Chain Hit
 - [ ] Monster stats
 - [ ] Tower targeting options
+- [ ] Target selection on map
 - [ ] Kill chain counter
+- [ ] Info tooltips
 - [ ] QoL backport: Click buildings to place gems
 - [ ] QoL backport: Tab to drop gems to inventory
 - [x] QoL backport: Template bombing

@@ -167,10 +167,7 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                 Gem* pDraggedGem = pCore->inventory.getDraggedGem();
                 if (pDraggedGem != NULL)
                 {
-                    Building* pBuilding = map.getBuilding(iy, ix);
-                    if ((pBuilding != NULL) && (pBuilding->pGem == NULL))
-                        map.demolishBuilding(ix, iy);
-
+                    map.demolishBuilding(ix, iy);
                     map.dropGemBomb(pDraggedGem, xpos - x, ypos - y);
 
                     pCore->inventory.deleteGem(pDraggedGem);
@@ -190,10 +187,7 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                     if ((state == INPUT_BOMB_MULTIPLE) ||
                         (pCore->manaPool.getMana() >= pBombGem->manaCost))
                     {
-                        Building* pBuilding = map.getBuilding(iy, ix);
-                        if ((pBuilding != NULL) && (pBuilding->pGem == NULL))
-                            map.demolishBuilding(ix, iy);
-
+                        map.demolishBuilding(ix, iy);
                         map.dropGemBomb(pBombGem, xpos - x, ypos - y);
 
                         if (state == INPUT_BOMB_TEMPLATE)
