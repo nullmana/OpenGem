@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.7] - 2021-06-04
+
+### Fixed
+
+- Fixed wall demolition to only trigger when bombing a wall or demolishable buildings, to avoid wasting demolitions
+
+### Changed
+
+- Renamed BUILDING\_TYPE to TILE\_TYPE since the type is used to describe all tiles, not just buildings
+
+
 ## [0.2.6] - 2021-06-02
 
 ### Added

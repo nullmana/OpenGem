@@ -13,6 +13,9 @@ class Building : public Amplifiable
 {
 public:
     Building(int ix_, int iy_);
+
+    virtual bool canBeDemolished() { return pGem == NULL; }
+
     TILE_TYPE type;
 
     Gem* pGem;

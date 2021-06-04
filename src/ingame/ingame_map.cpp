@@ -391,23 +391,23 @@ STATUS IngameMap::demolishBuilding(int x, int y)
     if (x < 0 || x >= g_game.ingameMapWidth || y < 0 || y >= g_game.ingameMapHeight)
         return STATUS_INVALID_ARGUMENT;
 
+    TILE_TYPE tile = tileOccupied.at(y, x);
     Building* pBuilding = tileBuilding.at(y, x);
-    bool shouldDestroyWalls = true;
+    bool shouldDestroyWalls = false;
 
     if (pBuilding != NULL)
     {
-        if (pBuilding->pGem == NULL)
+        if (pBuilding->canBeDemolished())
         {
             // Only CS also demolishes nearby walls when bombing a building
-            if (g_game.game != GC_CHASINGSHADOWS)
-                shouldDestroyWalls = false;
+            if (g_game.game == GC_CHASINGSHADOWS)
+                shouldDestroyWalls = true;
             destroyBuilding(pBuilding);
         }
-        else
-        {
-            if (g_game.game != GC_CHASINGSHADOWS)
-                shouldDestroyWalls = false;
-        }
+    }
+    else if ((tile == TILE_WALL) || (tile == TILE_WALL_PATH))
+    {
+        shouldDestroyWalls = true;
     }
 
     if (shouldDestroyWalls)
