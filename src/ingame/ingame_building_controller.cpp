@@ -37,7 +37,7 @@ static void debugDrawAmplifierDirections(
         {
             fbg_line(pFbg, x1, y1, (a->ix + 0.5f) * scale + window.x,
                 (a->iy + 0.5f) * scale + window.y, 0x00, 0xFF,
-                (pBuilding->type == BUILDING_AMPLIFIER) ? 0xFF : 0x00);
+                (pBuilding->type == TILE_AMPLIFIER) ? 0xFF : 0x00);
         }
     }
 }
@@ -189,13 +189,13 @@ void IngameBuildingController::destroyBuilding(Building* pBuilding)
 {
     switch (pBuilding->type)
     {
-        case BUILDING_TOWER:
+        case TILE_TOWER:
             destroyTower(reinterpret_cast<Tower*>(pBuilding));
             break;
-        case BUILDING_TRAP:
+        case TILE_TRAP:
             destroyTrap(reinterpret_cast<Trap*>(pBuilding));
             break;
-        case BUILDING_AMPLIFIER:
+        case TILE_AMPLIFIER:
             destroyAmplifier(reinterpret_cast<Amplifier*>(pBuilding));
             break;
     }

@@ -21,7 +21,7 @@ public:
         else
             spawnY += 5.88f;
 
-        type = BUILDING_PATH;
+        type = TILE_PATH;
     }
 
     int ix;

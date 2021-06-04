@@ -2,13 +2,13 @@
 
 #include "common/vector2d.h"
 
-#include "constants/building_type.h"
 #include "constants/game_header.h"
+#include "constants/tile_type.h"
 
 struct IngameLevelDefinition
 {
-    IngameLevelDefinition() : buildings(g_game.ingameMapHeight, g_game.ingameMapWidth) {}
+    IngameLevelDefinition() : tiles(g_game.ingameMapHeight, g_game.ingameMapWidth) {}
 
-    vector2d<BUILDING_TYPE> buildings;
+    vector2d<TILE_TYPE> tiles;
     int orbX, orbY;
 };

@@ -59,9 +59,9 @@ void Monster::pickNextTarget()
     int ix = (int)x;
     int iy = (int)y;
 
-    if (pTargetNode->type == BUILDING_ORB)
+    if (pTargetNode->type == TILE_ORB)
         distanceToOrb = 1000000 * pTargetNode->tileDistance.at(iy, ix) + 10000;
-    else if (pSourceNode->type == BUILDING_ORB)
+    else if (pSourceNode->type == TILE_ORB)
         distanceToOrb = 1000000 * pSourceNode->tileDistance.at(iy, ix) + 10000;
     else
         distanceToOrb = INT_MAX;

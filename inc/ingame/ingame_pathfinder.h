@@ -2,8 +2,8 @@
 
 #include "common/vector2d.h"
 
-#include "constants/building_type.h"
 #include "constants/status.h"
+#include "constants/tile_type.h"
 
 #include "entity/orb.h"
 #include "entity/path_edge_node.h"
@@ -24,7 +24,7 @@ private:
     Orb& orbNode;
 
     static void calculateDistanceToNode(
-        const MonsterNode& node, const vector2d<BUILDING_TYPE>& map, vector2d<int>& distance);
+        const MonsterNode& node, const vector2d<TILE_TYPE>& map, vector2d<int>& distance);
 
     void recalculateNodePaths(IngameMap& map, MonsterNode* pNode);
 

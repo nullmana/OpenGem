@@ -1,6 +1,6 @@
 #pragma once
 
-#include "constants/building_type.h"
+#include "constants/tile_type.h"
 
 #include "entity/amplifiable.h"
 
@@ -13,7 +13,7 @@ class Building : public Amplifiable
 {
 public:
     Building(int ix_, int iy_);
-    BUILDING_TYPE type;
+    TILE_TYPE type;
 
     Gem* pGem;
 

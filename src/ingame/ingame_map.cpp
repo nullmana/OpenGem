@@ -13,18 +13,18 @@ IngameMap::IngameMap(IngameCore& core, IngameLevelDefinition& level)
       buildingController(level),
       pathfinder(*this, level)
 {
-    tileOccupied = level.buildings;
+    tileOccupied = level.tiles;
 
     for (int y = 0; y < g_game.ingameMapHeight; ++y)
     {
         for (int x = 0; x < g_game.ingameMapWidth; ++x)
         {
-            BUILDING_TYPE b = level.buildings.at(y, x);
+            TILE_TYPE b = level.tiles.at(y, x);
             switch (b)
             {
-                case BUILDING_PATH:
-                case BUILDING_WALL_PATH:
-                case BUILDING_WALL:
+                case TILE_PATH:
+                case TILE_WALL_PATH:
+                case TILE_WALL:
                     break;
                 default:
                     placeBuilding(b, x, y);
@@ -44,7 +44,7 @@ STATUS IngameMap::render(struct _fbg* pFbg, const Window& window) const
     {
         for (int i = 0; i < g_game.ingameMapWidth; ++i)
         {
-            BUILDING_TYPE type = tileOccupied.at(j, i);
+            TILE_TYPE type = tileOccupied.at(j, i);
             fbg_rect(pFbg, window.x + i * scale, window.y + j * scale, scale, scale,
                 (TILE_COLOR[type] >> 16) & 0xFF, (TILE_COLOR[type] >> 8) & 0xFF,
                 (TILE_COLOR[type]) & 0xFF);
@@ -58,16 +58,16 @@ STATUS IngameMap::render(struct _fbg* pFbg, const Window& window) const
     return STATUS_OK;
 }
 
-bool IngameMap::verifyBuilding(BUILDING_TYPE building, int x, int y)
+bool IngameMap::verifyBuilding(TILE_TYPE building, int x, int y)
 {
     int bw, bh;
     bool overlapsPath = false;
 
     switch (building)
     {
-        case BUILDING_TOWER:
-        case BUILDING_TRAP:
-        case BUILDING_AMPLIFIER:
+        case TILE_TOWER:
+        case TILE_TRAP:
+        case TILE_AMPLIFIER:
             bw = bh = g_game.ingameBuildingSize;
             break;
         default:
@@ -81,16 +81,16 @@ bool IngameMap::verifyBuilding(BUILDING_TYPE building, int x, int y)
     {
         for (int i = x; i < x + bw; ++i)
         {
-            BUILDING_TYPE b = tileOccupied.at(j, i);
+            TILE_TYPE b = tileOccupied.at(j, i);
             switch (b)
             {
-                case BUILDING_NONE:
-                case BUILDING_WALL:
-                case BUILDING_WALL_PATH:
-                    if (building == BUILDING_TRAP)
+                case TILE_NONE:
+                case TILE_WALL:
+                case TILE_WALL_PATH:
+                    if (building == TILE_TRAP)
                         return false;
                     break;
-                case BUILDING_PATH:
+                case TILE_PATH:
                     overlapsPath = true;
                     break;
                 default:
@@ -99,8 +99,7 @@ bool IngameMap::verifyBuilding(BUILDING_TYPE building, int x, int y)
         }
     }
 
-    if ((building != BUILDING_TRAP) && overlapsPath &&
-        pathfinder.checkBlocking(*this, x, y, bw, bh))
+    if ((building != TILE_TRAP) && overlapsPath && pathfinder.checkBlocking(*this, x, y, bw, bh))
     {
         printf("Blocking!\n");
         return false;
@@ -109,17 +108,17 @@ bool IngameMap::verifyBuilding(BUILDING_TYPE building, int x, int y)
     return true;
 }
 
-STATUS IngameMap::placeBuilding(BUILDING_TYPE building, int x, int y)
+STATUS IngameMap::placeBuilding(TILE_TYPE building, int x, int y)
 {
     int bw, bh;
     bool overlapsPath = false;
 
     switch (building)
     {
-        case BUILDING_TOWER:
-        case BUILDING_TRAP:
-        case BUILDING_AMPLIFIER:
-        case BUILDING_ORB:
+        case TILE_TOWER:
+        case TILE_TRAP:
+        case TILE_AMPLIFIER:
+        case TILE_ORB:
             bw = bh = g_game.ingameBuildingSize;
             break;
         default:
@@ -132,13 +131,13 @@ STATUS IngameMap::placeBuilding(BUILDING_TYPE building, int x, int y)
     Building* pBuilt = NULL;
     switch (building)
     {
-        case BUILDING_TOWER:
+        case TILE_TOWER:
             pBuilt = &buildingController.addTower(x, y);
             break;
-        case BUILDING_TRAP:
+        case TILE_TRAP:
             pBuilt = &buildingController.addTrap(x, y);
             break;
-        case BUILDING_AMPLIFIER:
+        case TILE_AMPLIFIER:
             pBuilt = &buildingController.addAmplifier(x, y);
             break;
     }
@@ -147,24 +146,24 @@ STATUS IngameMap::placeBuilding(BUILDING_TYPE building, int x, int y)
     {
         for (int i = x; i < x + bw; ++i)
         {
-            BUILDING_TYPE b = tileOccupied.at(j, i);
-            bool isPath = (b == BUILDING_PATH) || (b == BUILDING_WALL_PATH);
+            TILE_TYPE b = tileOccupied.at(j, i);
+            bool isPath = (b == TILE_PATH) || (b == TILE_WALL_PATH);
 
             switch (building)
             {
-                case BUILDING_TOWER:
-                    overlapsPath |= (b == BUILDING_PATH);
-                    tileOccupied.at(j, i) = isPath ? BUILDING_TOWER_PATH : BUILDING_TOWER;
+                case TILE_TOWER:
+                    overlapsPath |= (b == TILE_PATH);
+                    tileOccupied.at(j, i) = isPath ? TILE_TOWER_PATH : TILE_TOWER;
                     break;
-                case BUILDING_AMPLIFIER:
-                    overlapsPath |= (b == BUILDING_PATH);
-                    tileOccupied.at(j, i) = isPath ? BUILDING_AMPLIFIER_PATH : BUILDING_AMPLIFIER;
+                case TILE_AMPLIFIER:
+                    overlapsPath |= (b == TILE_PATH);
+                    tileOccupied.at(j, i) = isPath ? TILE_AMPLIFIER_PATH : TILE_AMPLIFIER;
                     break;
-                case BUILDING_TRAP:
-                    tileOccupied.at(j, i) = BUILDING_TRAP;
+                case TILE_TRAP:
+                    tileOccupied.at(j, i) = TILE_TRAP;
                     break;
-                case BUILDING_ORB:
-                    tileOccupied.at(j, i) = BUILDING_ORB;
+                case TILE_ORB:
+                    tileOccupied.at(j, i) = TILE_ORB;
                     break;
             }
 
@@ -179,7 +178,7 @@ STATUS IngameMap::placeBuilding(BUILDING_TYPE building, int x, int y)
     }
 
 #ifdef DEBUG
-    printf("Placed %s@(%i, %i)\n", BUILDING_TYPE_NAME[building], x, y);
+    printf("Placed %s@(%i, %i)\n", TILE_TYPE_NAME[building], x, y);
 #endif
 
     return STATUS_OK;
@@ -206,11 +205,11 @@ STATUS IngameMap::buildWall(int x1, int y1, int x2, int y2)
         {
             switch (tileOccupied.at(y, x))
             {
-                case BUILDING_NONE:
-                case BUILDING_WALL:
-                case BUILDING_WALL_PATH:
+                case TILE_NONE:
+                case TILE_WALL:
+                case TILE_WALL_PATH:
                     break;
-                case BUILDING_PATH:
+                case TILE_PATH:
                     overlapsPath = true;
                     break;
                 default:
@@ -230,11 +229,10 @@ STATUS IngameMap::buildWall(int x1, int y1, int x2, int y2)
     {
         for (int y = y1; y <= y2; ++y)
         {
-            if ((tileOccupied.at(y, x) == BUILDING_PATH) ||
-                (tileOccupied.at(y, x) == BUILDING_WALL_PATH))
-                tileOccupied.at(y, x) = BUILDING_WALL_PATH;
+            if ((tileOccupied.at(y, x) == TILE_PATH) || (tileOccupied.at(y, x) == TILE_WALL_PATH))
+                tileOccupied.at(y, x) = TILE_WALL_PATH;
             else
-                tileOccupied.at(y, x) = BUILDING_WALL;
+                tileOccupied.at(y, x) = TILE_WALL;
         }
     }
 
@@ -258,10 +256,10 @@ STATUS IngameMap::buildTower(int x, int y)
     if (x < 0 || x >= g_game.ingameMapWidth || y < 0 || y >= g_game.ingameMapHeight)
         return STATUS_INVALID_ARGUMENT;
 
-    if (!verifyBuilding(BUILDING_TOWER, x, y))
+    if (!verifyBuilding(TILE_TOWER, x, y))
         return STATUS_INVALID_OPERATION;
 
-    status = placeBuilding(BUILDING_TOWER, x, y);
+    status = placeBuilding(TILE_TOWER, x, y);
 
 #ifdef DEBUG
     if (status == STATUS_OK)
@@ -278,10 +276,10 @@ STATUS IngameMap::buildTrap(int x, int y)
     if (x < 0 || x >= g_game.ingameMapWidth || y < 0 || y >= g_game.ingameMapHeight)
         return STATUS_INVALID_ARGUMENT;
 
-    if (!verifyBuilding(BUILDING_TRAP, x, y))
+    if (!verifyBuilding(TILE_TRAP, x, y))
         return STATUS_INVALID_OPERATION;
 
-    status = placeBuilding(BUILDING_TRAP, x, y);
+    status = placeBuilding(TILE_TRAP, x, y);
 
 #ifdef DEBUG
     if (status == STATUS_OK)
@@ -298,10 +296,10 @@ STATUS IngameMap::buildAmplifier(int x, int y)
     if (x < 0 || x >= g_game.ingameMapWidth || y < 0 || y >= g_game.ingameMapHeight)
         return STATUS_INVALID_ARGUMENT;
 
-    if (!verifyBuilding(BUILDING_AMPLIFIER, x, y))
+    if (!verifyBuilding(TILE_AMPLIFIER, x, y))
         return STATUS_INVALID_OPERATION;
 
-    status = placeBuilding(BUILDING_AMPLIFIER, x, y);
+    status = placeBuilding(TILE_AMPLIFIER, x, y);
 
 #ifdef DEBUG
     if (status == STATUS_OK)
@@ -320,14 +318,14 @@ void IngameMap::destroyBuilding(Building* pBuilding)
     {
         for (ix = pBuilding->ix; ix < pBuilding->ix + g_game.ingameBuildingSize; ++ix)
         {
-            BUILDING_TYPE& t = tileOccupied.at(iy, ix);
-            if ((t == BUILDING_TOWER) || (t == BUILDING_AMPLIFIER))
+            TILE_TYPE& t = tileOccupied.at(iy, ix);
+            if ((t == TILE_TOWER) || (t == TILE_AMPLIFIER))
             {
-                t = BUILDING_NONE;
+                t = TILE_NONE;
             }
             else
             {
-                t = BUILDING_PATH;
+                t = TILE_PATH;
                 addedPath = true;
             }
 
@@ -363,14 +361,14 @@ void IngameMap::destroyWalls(int x, int y)
         for (int ix = std::max(0, x - wallDestroyRadius);
              ix <= std::min(g_game.ingameMapWidth - 1, x + wallDestroyRadius); ++ix)
         {
-            BUILDING_TYPE& t = tileOccupied.at(iy, ix);
+            TILE_TYPE& t = tileOccupied.at(iy, ix);
             switch (t)
             {
-                case BUILDING_WALL:
-                    t = BUILDING_NONE;
+                case TILE_WALL:
+                    t = TILE_NONE;
                     break;
-                case BUILDING_WALL_PATH:
-                    t = BUILDING_PATH;
+                case TILE_WALL_PATH:
+                    t = TILE_PATH;
                     addedPath = true;
                     break;
                 default:

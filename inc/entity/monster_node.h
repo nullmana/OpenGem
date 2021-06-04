@@ -2,8 +2,8 @@
 
 #include "common/vector2d.h"
 
-#include "constants/building_type.h"
 #include "constants/game_header.h"
+#include "constants/tile_type.h"
 
 #include <cstring>
 
@@ -41,7 +41,7 @@ public:
 
     vector2d<PathWeight> tileDirection;
     vector2d<int> tileDistance;
-    BUILDING_TYPE type;
+    TILE_TYPE type;
     float x;
     float y;
 

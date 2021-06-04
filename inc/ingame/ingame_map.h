@@ -2,8 +2,8 @@
 
 #include "common/vector2d.h"
 
-#include "constants/building_type.h"
 #include "constants/status.h"
+#include "constants/tile_type.h"
 
 #include "ingame/ingame_building_controller.h"
 #include "ingame/ingame_enemy_controller.h"
@@ -22,11 +22,11 @@ class IngameMap
 {
 private:
     IngameManaPool& manaPool;
-    vector2d<BUILDING_TYPE> tileOccupied;
+    vector2d<TILE_TYPE> tileOccupied;
     vector2d<Building*> tileBuilding;
 
-    bool verifyBuilding(BUILDING_TYPE building, int x, int y);
-    STATUS placeBuilding(BUILDING_TYPE building, int x, int y);
+    bool verifyBuilding(TILE_TYPE building, int x, int y);
+    STATUS placeBuilding(TILE_TYPE building, int x, int y);
     void destroyBuilding(Building* pBuilding);
     void destroyWalls(int x, int y);
 
@@ -45,7 +45,7 @@ public:
 
     Building* getBuilding(int y, int x) const { return tileBuilding.at(y, x); }
 
-    const vector2d<BUILDING_TYPE>& getTileOccupiedMap() const { return tileOccupied; }
+    const vector2d<TILE_TYPE>& getTileOccupiedMap() const { return tileOccupied; }
 
     void monsterReachesTarget(Monster& monster);
 

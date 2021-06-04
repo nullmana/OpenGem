@@ -52,15 +52,15 @@ int main(int argc, char* argv[])
     level.orbY = g_game.ingameMapHeight / 2;
     for (int y = g_game.ingameMapHeight / 4; y < g_game.ingameMapHeight * 3 / 4; ++y)
         for (int x = 0; x < g_game.ingameMapWidth; ++x)
-            level.buildings.at(y, x) = BUILDING_PATH;
+            level.tiles.at(y, x) = TILE_PATH;
     for (int y = 0; y < g_game.ingameMapHeight / 4; ++y)
         for (int x = g_game.ingameMapWidth * 3 / 8; x < g_game.ingameMapWidth * 5 / 8; ++x)
-            level.buildings.at(y, x) = BUILDING_PATH;
+            level.tiles.at(y, x) = TILE_PATH;
     for (int y = g_game.ingameMapHeight * 3 / 4; y < g_game.ingameMapHeight; ++y)
         for (int x = g_game.ingameMapWidth * 3 / 8; x < g_game.ingameMapWidth * 5 / 8; ++x)
-            level.buildings.at(y, x) = BUILDING_PATH;
+            level.tiles.at(y, x) = TILE_PATH;
 
-    level.buildings.at(level.orbY, level.orbX) = BUILDING_ORB;
+    level.tiles.at(level.orbY, level.orbX) = TILE_ORB;
 
     IngameCore core(level);
 

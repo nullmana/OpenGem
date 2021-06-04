@@ -2,30 +2,30 @@
 
 #include <cstdint>
 
-enum BUILDING_TYPE
+enum TILE_TYPE
 {
-    BUILDING_NONE = 0,
-    BUILDING_PATH = 1,
+    TILE_NONE = 0,
+    TILE_PATH = 1,
 
-    BUILDING_WALL = 2,
-    BUILDING_WALL_PATH = 3,
-    BUILDING_TOWER = 4,
-    BUILDING_TOWER_PATH = 5,
-    BUILDING_TRAP = 6,
-    BUILDING_AMPLIFIER = 7,
-    BUILDING_AMPLIFIER_PATH = 8,
+    TILE_WALL = 2,
+    TILE_WALL_PATH = 3,
+    TILE_TOWER = 4,
+    TILE_TOWER_PATH = 5,
+    TILE_TRAP = 6,
+    TILE_AMPLIFIER = 7,
+    TILE_AMPLIFIER_PATH = 8,
 
-    BUILDING_ORB = 9,
+    TILE_ORB = 9,
 
-    BUILDING_TYPE_COUNT
+    TILE_TYPE_COUNT
 };
 
-inline static bool isPathable(BUILDING_TYPE t)
+inline static bool isPathable(TILE_TYPE t)
 {
-    return (t == BUILDING_PATH) || (t == BUILDING_TRAP);
+    return (t == TILE_PATH) || (t == TILE_TRAP);
 }
 
-const static uint32_t TILE_COLOR[BUILDING_TYPE_COUNT] = {
+const static uint32_t TILE_COLOR[TILE_TYPE_COUNT] = {
     0x222222, // BUILDING_NONE
     0xFFFFCC, // BUILDING_PATH
 
@@ -41,7 +41,7 @@ const static uint32_t TILE_COLOR[BUILDING_TYPE_COUNT] = {
 };
 
 #ifdef DEBUG
-static const char* BUILDING_TYPE_NAME[BUILDING_TYPE_COUNT] = {
+static const char* TILE_TYPE_NAME[TILE_TYPE_COUNT] = {
     "None",
     "Path",
 

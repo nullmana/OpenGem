@@ -4,6 +4,6 @@ Orb::Orb(int ix, int iy)
     : MonsterNode(ix + 0.5f * g_game.ingameBuildingSize, iy + 0.5f * g_game.ingameBuildingSize),
       Amplifiable(ix, iy)
 {
-    type = BUILDING_ORB;
+    type = TILE_ORB;
     broken = false;
 }

@@ -11,23 +11,23 @@ IngamePathfinder::IngamePathfinder(IngameMap& map, IngameLevelDefinition& level)
 {
     for (int x = 0; x < g_game.ingameMapWidth; ++x)
     {
-        if (level.buildings.at(0, x) == BUILDING_PATH)
+        if (level.tiles.at(0, x) == TILE_PATH)
             pathEdges.emplace_back(x, 0);
-        if (level.buildings.at(g_game.ingameMapHeight - 1, x) == BUILDING_PATH)
+        if (level.tiles.at(g_game.ingameMapHeight - 1, x) == TILE_PATH)
             pathEdges.emplace_back(x, g_game.ingameMapHeight - 1);
     }
 
     for (int y = 1; y < g_game.ingameMapHeight - 1; ++y)
     {
-        if (level.buildings.at(y, 0) == BUILDING_PATH)
+        if (level.tiles.at(y, 0) == TILE_PATH)
             pathEdges.emplace_back(0, y);
-        if (level.buildings.at(y, g_game.ingameMapWidth - 1) == BUILDING_PATH)
+        if (level.tiles.at(y, g_game.ingameMapWidth - 1) == TILE_PATH)
             pathEdges.emplace_back(g_game.ingameMapWidth - 1, y);
     }
 }
 
 void IngamePathfinder::calculateDistanceToNode(
-    const MonsterNode& node, const vector2d<BUILDING_TYPE>& map, vector2d<int>& distance)
+    const MonsterNode& node, const vector2d<TILE_TYPE>& map, vector2d<int>& distance)
 {
     std::queue<std::tuple<int, int>> queue;
 
@@ -85,11 +85,11 @@ void IngamePathfinder::calculateDistanceToNode(
 
 bool IngamePathfinder::checkBlocking(const IngameMap& map, int x, int y, int w, int h)
 {
-    const vector2d<BUILDING_TYPE>& mapTiles = map.getTileOccupiedMap();
+    const vector2d<TILE_TYPE>& mapTiles = map.getTileOccupiedMap();
     vector2d<int> distance(g_game.ingameMapHeight, g_game.ingameMapWidth, INT_MAX);
 
     // Create a copy of the map with the would-be blocker applied
-    vector2d<BUILDING_TYPE> mapInstance = mapTiles;
+    vector2d<TILE_TYPE> mapInstance = mapTiles;
 
     for (int j = y; j < y + h; ++j)
     {
@@ -101,7 +101,7 @@ bool IngamePathfinder::checkBlocking(const IngameMap& map, int x, int y, int w, 
                 return true;
             }
 
-            mapInstance.at(j, i) = BUILDING_WALL;
+            mapInstance.at(j, i) = TILE_WALL;
         }
     }
 
@@ -118,7 +118,7 @@ bool IngamePathfinder::checkBlocking(const IngameMap& map, int x, int y, int w, 
     {
         for (int i = 0; i < g_game.ingameMapWidth; ++i)
         {
-            if ((mapTiles.at(j, i) == BUILDING_PATH) &&
+            if ((mapTiles.at(j, i) == TILE_PATH) &&
                 (map.enemyController.getMonstersOnTile(j, i).size() != 0U) &&
                 (distance.at(j, i) == INT_MAX))
             {
