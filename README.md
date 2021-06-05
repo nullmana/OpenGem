@@ -44,7 +44,7 @@ v0.3:
 - [x] Speed control buttons, frame advance
 - [ ] Buildings use socketed gems for stats
 - [ ] Amplifiers affect gems in adjacent tiles
-- [ ] Shrines can be placed and used, no visual effects required
+- [x] Shrines can be placed and used, no visual effects required
 - [ ] Structures, monster nests and beacons which can be placed on the map and targeted by gems
 - [ ] Mana Shards
 - [x] Gem bombing

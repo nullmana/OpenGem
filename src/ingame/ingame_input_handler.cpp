@@ -78,6 +78,14 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
             if (action == GLFW_PRESS)
                 pInputHandler->toggleInputState(INPUT_BUILD_AMPLIFIER);
             break;
+        case GLFW_KEY_C:
+            if (action == GLFW_PRESS)
+                pInputHandler->toggleInputState(INPUT_BUILD_SHRINE_CB);
+            break;
+        case GLFW_KEY_L:
+            if (action == GLFW_PRESS)
+                pInputHandler->toggleInputState(INPUT_BUILD_SHRINE_LI);
+            break;
         case GLFW_KEY_G:
             if (action == GLFW_PRESS)
                 pInputHandler->toggleInputState(INPUT_COMBINE_GEM);
@@ -299,8 +307,14 @@ void IngameInputHandler::setInputState(INGAME_INPUT_STATE state)
         case INPUT_BUILD_AMPLIFIER:
             core.renderer.setBuildButtonActive(2, false);
             break;
+        case INPUT_BUILD_SHRINE_CB:
+            core.renderer.setBuildButtonActive(3, false);
+            break;
         case INPUT_BUILD_TRAP:
             core.renderer.setBuildButtonActive(4, false);
+            break;
+        case INPUT_BUILD_SHRINE_LI:
+            core.renderer.setBuildButtonActive(5, false);
             break;
         case INPUT_CREATE_GEM:
             if (creatingGemType != -1)
@@ -352,8 +366,14 @@ void IngameInputHandler::setInputState(INGAME_INPUT_STATE state)
         case INPUT_BUILD_AMPLIFIER:
             core.renderer.setBuildButtonActive(2, true);
             break;
+        case INPUT_BUILD_SHRINE_CB:
+            core.renderer.setBuildButtonActive(3, true);
+            break;
         case INPUT_BUILD_TRAP:
             core.renderer.setBuildButtonActive(4, true);
+            break;
+        case INPUT_BUILD_SHRINE_LI:
+            core.renderer.setBuildButtonActive(5, true);
             break;
         case INPUT_COMBINE_GEM:
         case INPUT_DRAGGING_COMBINE:

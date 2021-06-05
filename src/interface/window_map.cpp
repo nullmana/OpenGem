@@ -125,6 +125,22 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                     pInputHandler->setInputState(INPUT_IDLE);
             }
             break;
+        case INPUT_BUILD_SHRINE_CB:
+            if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
+            {
+                map.buildShrine(ix, iy, SHRINE_CHARGED_BOLTS);
+                if (!(mods & GLFW_MOD_SHIFT))
+                    pInputHandler->setInputState(INPUT_IDLE);
+            }
+            break;
+        case INPUT_BUILD_SHRINE_LI:
+            if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
+            {
+                map.buildShrine(ix, iy, SHRINE_LIGHTNING);
+                if (!(mods & GLFW_MOD_SHIFT))
+                    pInputHandler->setInputState(INPUT_IDLE);
+            }
+            break;
         case INPUT_DRAGGING_IDLE:
             if ((action == GLFW_RELEASE) && (button == GLFW_MOUSE_BUTTON_LEFT))
             {

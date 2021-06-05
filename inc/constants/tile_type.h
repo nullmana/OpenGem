@@ -15,7 +15,10 @@ enum TILE_TYPE
     TILE_AMPLIFIER = 7,
     TILE_AMPLIFIER_PATH = 8,
 
-    TILE_ORB = 9,
+    TILE_SHRINE_CB = 9,
+    TILE_SHRINE_LI = 10,
+
+    TILE_ORB = 11,
 
     TILE_TYPE_COUNT
 };
@@ -26,18 +29,21 @@ inline static bool isPathable(TILE_TYPE t)
 }
 
 const static uint32_t TILE_COLOR[TILE_TYPE_COUNT] = {
-    0x222222, // BUILDING_NONE
-    0xFFFFCC, // BUILDING_PATH
+    0x222222, // TILE_NONE
+    0xFFFFCC, // TILE_PATH
 
-    0x9999AA, // BUILDING_WALL
-    0x8888AA, // BUILDING_WALL_PATH
-    0x4444BB, // BUILDING_TOWER
-    0x2222BB, // BUILDING_TOWER_PATH
-    0x884433, // BUILDING_TRAP
-    0xBB4444, // BUILDING_AMPLIFIER
-    0xBB2222, // BUILDING_AMPLIFIER_PATH
+    0x9999AA, // TILE_WALL
+    0x8888AA, // TILE_WALL_PATH
+    0x4444BB, // TILE_TOWER
+    0x2222BB, // TILE_TOWER_PATH
+    0x884433, // TILE_TRAP
+    0xBB4444, // TILE_AMPLIFIER
+    0xBB2222, // TILE_AMPLIFIER_PATH
 
-    0x4477FF, // BUILDING_ORB
+    0x226848, // TILE_SHRINE_CB
+    0x224868, // TILE_SHRINE_LI
+
+    0x4477FF, // TILE_ORB
 };
 
 #ifdef DEBUG
@@ -52,6 +58,9 @@ static const char* TILE_TYPE_NAME[TILE_TYPE_COUNT] = {
     "Trap",
     "Amplifier",
     "AmplifierPath",
+
+    "ShrineCB",
+    "ShrineLI",
 
     "Orb",
 };

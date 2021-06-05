@@ -15,6 +15,7 @@ public:
     Building(int ix_, int iy_);
 
     virtual bool canBeDemolished() { return pGem == NULL; }
+    virtual bool canBeAmplified() { return true; }
 
     TILE_TYPE type;
 

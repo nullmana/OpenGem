@@ -2,6 +2,7 @@
 
 #include "common/vector2d.h"
 
+#include "constants/shrine_type.h"
 #include "constants/status.h"
 #include "constants/tile_type.h"
 
@@ -39,6 +40,7 @@ public:
     STATUS buildTower(int x, int y);
     STATUS buildTrap(int x, int y);
     STATUS buildAmplifier(int x, int y);
+    STATUS buildShrine(int x, int y, SHRINE_TYPE type);
     STATUS demolishBuilding(int x, int y);
 
     void dropGemBomb(Gem* pGem, float x, float y);

@@ -146,6 +146,25 @@ Amplifier& IngameBuildingController::addAmplifier(int x, int y)
     return amplifiers.back();
 }
 
+Shrine* IngameBuildingController::addShrine(IngameMap& map, int x, int y, SHRINE_TYPE type)
+{
+    Shrine* pShrine = NULL;
+
+    switch (type)
+    {
+        case SHRINE_CHARGED_BOLTS:
+            shrinesCB.emplace_back(map, x, y);
+            pShrine = &shrinesCB.back();
+            break;
+        case SHRINE_LIGHTNING:
+            shrinesLI.emplace_back(map, x, y);
+            pShrine = &shrinesLI.back();
+            break;
+    }
+
+    return pShrine;
+}
+
 void IngameBuildingController::destroyTower(Tower* pTower)
 {
     for (std::list<Tower>::iterator it = towers.begin(); it != towers.end(); ++it)

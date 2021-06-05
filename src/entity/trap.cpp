@@ -17,10 +17,10 @@ void Trap::tick(IngameMap& map, int frames)
         throw "Game Code Unavailable!";
 
     for (int j = std::max(0, iy - 1);
-         j <= std::min(g_game.ingameMapHeight, iy + g_game.ingameBuildingSize); ++j)
+         j <= std::min(g_game.ingameMapHeight - 1, iy + g_game.ingameBuildingSize); ++j)
     {
         for (int i = std::max(0, ix - 1);
-             i <= std::min(g_game.ingameMapWidth, ix + g_game.ingameBuildingSize); ++i)
+             i <= std::min(g_game.ingameMapWidth - 1, ix + g_game.ingameBuildingSize); ++i)
         {
             const std::vector<Monster*>& tile = map.enemyController.getMonstersOnTile(j, i);
             for (Monster* m : tile)

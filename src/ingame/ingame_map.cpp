@@ -68,6 +68,8 @@ bool IngameMap::verifyBuilding(TILE_TYPE building, int x, int y)
         case TILE_TOWER:
         case TILE_TRAP:
         case TILE_AMPLIFIER:
+        case TILE_SHRINE_CB:
+        case TILE_SHRINE_LI:
             bw = bh = g_game.ingameBuildingSize;
             break;
         default:
@@ -118,6 +120,8 @@ STATUS IngameMap::placeBuilding(TILE_TYPE building, int x, int y)
         case TILE_TOWER:
         case TILE_TRAP:
         case TILE_AMPLIFIER:
+        case TILE_SHRINE_CB:
+        case TILE_SHRINE_LI:
         case TILE_ORB:
             bw = bh = g_game.ingameBuildingSize;
             break;
@@ -140,30 +144,41 @@ STATUS IngameMap::placeBuilding(TILE_TYPE building, int x, int y)
         case TILE_AMPLIFIER:
             pBuilt = &buildingController.addAmplifier(x, y);
             break;
+        case TILE_SHRINE_CB:
+            pBuilt = buildingController.addShrine(*this, x, y, SHRINE_CHARGED_BOLTS);
+            break;
+        case TILE_SHRINE_LI:
+            pBuilt = buildingController.addShrine(*this, x, y, SHRINE_LIGHTNING);
+            break;
     }
 
     for (int j = y; j < y + bh; ++j)
     {
         for (int i = x; i < x + bw; ++i)
         {
-            TILE_TYPE b = tileOccupied.at(j, i);
-            bool isPath = (b == TILE_PATH) || (b == TILE_WALL_PATH);
+            TILE_TYPE& t = tileOccupied.at(j, i);
+            bool isPath = (t == TILE_PATH) || (t == TILE_WALL_PATH);
 
             switch (building)
             {
                 case TILE_TOWER:
-                    overlapsPath |= (b == TILE_PATH);
-                    tileOccupied.at(j, i) = isPath ? TILE_TOWER_PATH : TILE_TOWER;
+                    overlapsPath |= (t == TILE_PATH);
+                    t = isPath ? TILE_TOWER_PATH : TILE_TOWER;
                     break;
                 case TILE_AMPLIFIER:
-                    overlapsPath |= (b == TILE_PATH);
-                    tileOccupied.at(j, i) = isPath ? TILE_AMPLIFIER_PATH : TILE_AMPLIFIER;
+                    overlapsPath |= (t == TILE_PATH);
+                    t = isPath ? TILE_AMPLIFIER_PATH : TILE_AMPLIFIER;
+                    break;
+                case TILE_SHRINE_CB:
+                case TILE_SHRINE_LI:
+                    overlapsPath |= (t == TILE_PATH);
+                    t = building;
                     break;
                 case TILE_TRAP:
-                    tileOccupied.at(j, i) = TILE_TRAP;
+                    t = TILE_TRAP;
                     break;
                 case TILE_ORB:
-                    tileOccupied.at(j, i) = TILE_ORB;
+                    t = TILE_ORB;
                     break;
             }
 
@@ -304,6 +319,39 @@ STATUS IngameMap::buildAmplifier(int x, int y)
 #ifdef DEBUG
     if (status == STATUS_OK)
         printf("Build Amplifier: %i %i\n", x, y);
+#endif
+
+    return status;
+}
+
+STATUS IngameMap::buildShrine(int x, int y, SHRINE_TYPE type)
+{
+    STATUS status = STATUS_OK;
+    TILE_TYPE tile;
+
+    switch (type)
+    {
+        case SHRINE_CHARGED_BOLTS:
+            tile = TILE_SHRINE_CB;
+            break;
+        case SHRINE_LIGHTNING:
+            tile = TILE_SHRINE_LI;
+            break;
+        default:
+            return STATUS_INVALID_ARGUMENT;
+    }
+
+    if (x < 0 || x >= g_game.ingameMapWidth || y < 0 || y >= g_game.ingameMapHeight)
+        return STATUS_INVALID_ARGUMENT;
+
+    if (!verifyBuilding(tile, x, y))
+        return STATUS_INVALID_OPERATION;
+
+    status = placeBuilding(tile, x, y);
+
+#ifdef DEBUG
+    if (status == STATUS_OK)
+        printf("Build Shrine (%s): %i %i\n", SHRINE_TYPE_NAME[type], x, y);
 #endif
 
     return status;

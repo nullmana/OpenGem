@@ -2,9 +2,14 @@
 
 ## [0.2.7] - 2021-06-04
 
+### Added
+
+- Added GCL shrines with attack patterns matching source, activate instantly and with no visual effects
+
 ### Fixed
 
 - Fixed wall demolition to only trigger when bombing a wall or demolishable buildings, to avoid wasting demolitions
+- Fixed trap causing overflow when placed on bottom row
 
 ### Changed
 

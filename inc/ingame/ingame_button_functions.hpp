@@ -15,10 +15,9 @@
 DEFFN_BUTTON_BUILD_INPUT(buttonBuildWall_handleMouseInput, INPUT_BUILD_WALL);
 DEFFN_BUTTON_BUILD_INPUT(buttonBuildTower_handleMouseInput, INPUT_BUILD_TOWER);
 DEFFN_BUTTON_BUILD_INPUT(buttonBuildAmplifier_handleMouseInput, INPUT_BUILD_AMPLIFIER);
-// Charged Bolt Shrine (C)
+DEFFN_BUTTON_BUILD_INPUT(buttonBuildShrineCB_handleMouseInput, INPUT_BUILD_SHRINE_CB);
 DEFFN_BUTTON_BUILD_INPUT(buttonBuildTrap_handleMouseInput, INPUT_BUILD_TRAP);
-// Lightning Shrine (L)
-// Gem Bomb (B)
+DEFFN_BUTTON_BUILD_INPUT(buttonBuildShrineLI_handleMouseInput, INPUT_BUILD_SHRINE_LI);
 DEFFN_BUTTON_BUILD_INPUT(buttonBuildCombine_handleMouseInput, INPUT_COMBINE_GEM);
 #undef DEFFN_BUTTON_BUILD_INPUT
 

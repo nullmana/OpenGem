@@ -13,9 +13,9 @@ static const std::vector<ButtonDefinition> buildButtonDefs_GCL = {
     {buttonBuildWall_handleMouseInput, button_handleMouseHover},
     {buttonBuildTower_handleMouseInput, button_handleMouseHover},
     {buttonBuildAmplifier_handleMouseInput, button_handleMouseHover},
-    {NULL, button_handleMouseHover}, // Charged Bolt Shrine (C)
+    {buttonBuildShrineCB_handleMouseInput, button_handleMouseHover},
     {buttonBuildTrap_handleMouseInput, button_handleMouseHover},
-    {NULL, button_handleMouseHover}, // Lightning Shrine (L)
+    {buttonBuildShrineLI_handleMouseInput, button_handleMouseHover},
     {buttonBuildBomb_handleMouseInput, button_handleMouseHover},
     {buttonBuildCombine_handleMouseInput, button_handleMouseHover},
     {buttonBuildMana_handleMouseInput, button_handleMouseHover},

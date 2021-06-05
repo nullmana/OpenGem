@@ -2,6 +2,7 @@
 #include "ingame/ingame_mana_pool.h"
 
 #include "entity/building.h"
+#include "entity/shrine.h"
 
 #include "wrapfbg.h"
 
@@ -118,19 +119,42 @@ void IngameInventory::placeGemIntoBuilding(Gem* pGem, Building* pBuilding, bool 
     }
     else
     {
-        if (pGem->pBuilding != NULL)
-            removeGemFromBuilding(pGem->pBuilding);
-        else
-            removeGemFromInventory(pGem);
-
-        if (forceReplace && (pBuilding->pGem != NULL))
-            pBuilding->pGem->pBuilding = NULL;
-        pBuilding->pGem = pGem;
-        pGem->pBuilding = pBuilding;
         if (pGem->isDragged)
         {
             pGem->isDragged = false;
             pDraggedGem = NULL;
+        }
+
+        switch (pBuilding->type)
+        {
+            case TILE_SHRINE_CB:
+            case TILE_SHRINE_LI:
+            {
+                Shrine* pShrine = reinterpret_cast<Shrine*>(pBuilding);
+                if (pShrine->canActivate())
+                {
+                    if (pGem->pBuilding != NULL)
+                        removeGemFromBuilding(pGem->pBuilding);
+                    else
+                        removeGemFromInventory(pGem);
+
+                    pShrine->activate(pGem);
+
+                    deleteGem(pGem);
+                }
+                break;
+            }
+            default:
+                if (pGem->pBuilding != NULL)
+                    removeGemFromBuilding(pGem->pBuilding);
+                else
+                    removeGemFromInventory(pGem);
+
+                if (forceReplace && (pBuilding->pGem != NULL))
+                    pBuilding->pGem->pBuilding = NULL;
+                pBuilding->pGem = pGem;
+                pGem->pBuilding = pBuilding;
+                break;
         }
     }
 }

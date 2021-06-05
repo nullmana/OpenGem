@@ -9,6 +9,8 @@ enum INGAME_INPUT_STATE
     INPUT_BUILD_TOWER,
     INPUT_BUILD_TRAP,
     INPUT_BUILD_AMPLIFIER,
+    INPUT_BUILD_SHRINE_CB,
+    INPUT_BUILD_SHRINE_LI,
 
     INPUT_CREATE_GEM,
     INPUT_COMBINE_GEM,
@@ -33,6 +35,8 @@ static const char* INPUT_STATE_NAME[INGAME_INPUT_STATE_COUNT] = {
     "BuildTower",
     "BuildTrap",
     "BuildAmplifier",
+    "BuildShrineCB",
+    "BuildShrineLI",
 
     "CreateGem",
     "CombineGem",

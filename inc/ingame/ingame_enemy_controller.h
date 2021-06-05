@@ -19,6 +19,10 @@ private:
     std::list<Monster> monsters;
     vector2d<std::vector<Monster*>> monstersOnTile;
 
+    std::vector<Targetable*> getTargetsWithinRangeSq(
+        float y, float x, float rangeSq, bool ignoreKillingShot);
+    bool hasTargetsWithinRangeSq(float y, float x, float rangeSq, bool ignoreKillingShot) const;
+
 public:
     IngameEnemyController();
     void spawnMonsters(const IngamePathfinder& pathfinder, int num);
@@ -36,7 +40,19 @@ public:
     }
     const std::vector<Monster*>& getMonstersOnTile(int y, int x) { return monstersOnTile.at(y, x); }
 
-    std::vector<Monster*> getLiveTargetsWithinRangeSq(float y, float x, float rangeSq);
+    std::vector<Targetable*> getTowerTargetsWithinRangeSq(float y, float x, float rangeSq)
+    {
+        return getTargetsWithinRangeSq(y, x, rangeSq, false);
+    }
+    std::vector<Targetable*> getShrineTargetsWithinRangeSq(float y, float x, float rangeSq)
+    {
+        return getTargetsWithinRangeSq(y, x, rangeSq, true);
+    }
+    bool hasShrineTargetsWithinRangeSq(float y, float x, float rangeSq) const
+    {
+        return hasTargetsWithinRangeSq(y, x, rangeSq, true);
+    }
+
 #ifdef DEBUG
     const std::list<Monster>& getMonsters() const { return monsters; }
 #endif

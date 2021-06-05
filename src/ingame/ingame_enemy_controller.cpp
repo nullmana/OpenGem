@@ -92,17 +92,33 @@ void IngameEnemyController::render(struct _fbg* pFbg, const Window& window) cons
     }
 }
 
-std::vector<Monster*> IngameEnemyController::getLiveTargetsWithinRangeSq(
-    float y, float x, float rangeSq)
+std::vector<Targetable*> IngameEnemyController::getTargetsWithinRangeSq(
+    float y, float x, float rangeSq, bool ignoreKillingShot)
 {
-    std::vector<Monster*> targets;
+    std::vector<Targetable*> targets;
 
     for (Monster& m : monsters)
     {
-        if (!m.isKilled && !m.isKillingShotOnTheWay &&
+        if (!m.isKilled && (ignoreKillingShot || !m.isKillingShotOnTheWay) &&
             ((m.y - y) * (m.y - y) + (m.x - x) * (m.x - x) <= rangeSq))
+        {
             targets.push_back(&m);
+        }
     }
 
     return targets;
+}
+
+bool IngameEnemyController::hasTargetsWithinRangeSq(
+    float y, float x, float rangeSq, bool ignoreKillingShot) const
+{
+    for (const Monster& m : monsters)
+    {
+        if (!m.isKilled && (ignoreKillingShot || !m.isKillingShotOnTheWay) &&
+            ((m.y - y) * (m.y - y) + (m.x - x) * (m.x - x) <= rangeSq))
+        {
+            return true;
+        }
+    }
+    return false;
 }

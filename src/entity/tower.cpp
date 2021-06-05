@@ -6,13 +6,15 @@
 
 void Tower::tick(IngameMap& map, int frames)
 {
-    std::vector<Monster*> targetsInRange =
-        map.enemyController.getLiveTargetsWithinRangeSq(y, x, 100.0f);
+    std::vector<Targetable*> targetsInRange =
+        map.enemyController.getTowerTargetsWithinRangeSq(y, x, 100.0f);
 
     if (!targetsInRange.empty())
     {
         std::sort(targetsInRange.begin(), targetsInRange.end(),
-            [](const Monster* a, const Monster* b) { return a->distanceToOrb < b->distanceToOrb; });
+            [](const Targetable* a, const Targetable* b) {
+                return a->distanceToOrb < b->distanceToOrb;
+            });
     }
 
     int shots = frames;
