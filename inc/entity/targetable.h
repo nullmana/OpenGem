@@ -18,6 +18,8 @@ public:
     }
 
     virtual void receiveShotDamage() = 0;
+    virtual float getShotVariance() { return 0.0f; }
+    virtual float canBeTargeted() { return true; }
 
     float x;
     float y;

@@ -32,8 +32,8 @@ class MonsterNode
 {
 public:
     MonsterNode(float x_, float y_)
-        : x(x_),
-          y(y_),
+        : nodeX(x_),
+          nodeY(y_),
           tileDirection(g_game.ingameMapHeight, g_game.ingameMapWidth),
           tileDistance(g_game.ingameMapHeight, g_game.ingameMapWidth)
     {
@@ -42,8 +42,8 @@ public:
     vector2d<PathWeight> tileDirection;
     vector2d<int> tileDistance;
     TILE_TYPE type;
-    float x;
-    float y;
+    float nodeX;
+    float nodeY;
 
     static int pickDirection(const PathWeight& path);
 

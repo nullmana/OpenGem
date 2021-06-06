@@ -17,6 +17,7 @@ int main(int argc, char* argv[])
         g_game.ingameMapWidth = GCCS_INGAME_MAP_WIDTH;
         g_game.ingameMapHeight = GCCS_INGAME_MAP_HEIGHT;
         g_game.ingameBuildingSize = GCCS_INGAME_BUILDING_SIZE;
+        g_game.ingameMonsterNestSize = GCCS_INGAME_MONSTER_NEST_SIZE;
         g_game.ingameFramerate = GCCS_INGAME_FRAMERATE;
     }
     else
@@ -25,6 +26,7 @@ int main(int argc, char* argv[])
         g_game.ingameMapWidth = GCL_INGAME_MAP_WIDTH;
         g_game.ingameMapHeight = GCL_INGAME_MAP_HEIGHT;
         g_game.ingameBuildingSize = GCL_INGAME_BUILDING_SIZE;
+        g_game.ingameMonsterNestSize = GCL_INGAME_MONSTER_NEST_SIZE;
         g_game.ingameFramerate = GCL_INGAME_FRAMERATE;
     }
 
@@ -50,15 +52,23 @@ int main(int argc, char* argv[])
 
     level.orbX = g_game.ingameMapWidth / 2;
     level.orbY = g_game.ingameMapHeight / 2;
+    // Horizontal stripe
     for (int y = g_game.ingameMapHeight / 4; y < g_game.ingameMapHeight * 3 / 4; ++y)
-        for (int x = 0; x < g_game.ingameMapWidth; ++x)
+        for (int x = 3; x < g_game.ingameMapWidth; ++x)
             level.tiles.at(y, x) = TILE_PATH;
+    // Vertical stripe top half
     for (int y = 0; y < g_game.ingameMapHeight / 4; ++y)
         for (int x = g_game.ingameMapWidth * 3 / 8; x < g_game.ingameMapWidth * 5 / 8; ++x)
             level.tiles.at(y, x) = TILE_PATH;
+    // Vertical strip bottom half
     for (int y = g_game.ingameMapHeight * 3 / 4; y < g_game.ingameMapHeight; ++y)
         for (int x = g_game.ingameMapWidth * 3 / 8; x < g_game.ingameMapWidth * 5 / 8; ++x)
             level.tiles.at(y, x) = TILE_PATH;
+
+    level.monsterNests.emplace_back(
+        2, (g_game.ingameMapHeight + g_game.ingameMonsterNestSize) / 2, true);
+    level.monsterNests.emplace_back(
+        2, (g_game.ingameMapHeight - 2 * g_game.ingameMonsterNestSize) / 2, false);
 
     level.tiles.at(level.orbY, level.orbX) = TILE_ORB;
 

@@ -6,23 +6,40 @@
 #include <queue>
 #include <tuple>
 
-IngamePathfinder::IngamePathfinder(IngameMap& map, IngameLevelDefinition& level)
-    : orbNode(map.buildingController.getOrb())
+IngamePathfinder::IngamePathfinder(
+    IngameMap& map, IngameStructureController& structure, IngameLevelDefinition& level)
+    : orbNode(map.buildingController.getOrb()), monsterNests(structure.getMonsterNests())
 {
     for (int x = 0; x < g_game.ingameMapWidth; ++x)
     {
-        if (level.tiles.at(0, x) == TILE_PATH)
+        if (isPathable(level.tiles.at(0, x)))
             pathEdges.emplace_back(x, 0);
-        if (level.tiles.at(g_game.ingameMapHeight - 1, x) == TILE_PATH)
+        if (isPathable(level.tiles.at(g_game.ingameMapHeight - 1, x)))
             pathEdges.emplace_back(x, g_game.ingameMapHeight - 1);
     }
 
     for (int y = 1; y < g_game.ingameMapHeight - 1; ++y)
     {
-        if (level.tiles.at(y, 0) == TILE_PATH)
+        if (isPathable(level.tiles.at(y, 0)))
             pathEdges.emplace_back(0, y);
-        if (level.tiles.at(y, g_game.ingameMapWidth - 1) == TILE_PATH)
+        if (isPathable(level.tiles.at(y, g_game.ingameMapWidth - 1)))
             pathEdges.emplace_back(g_game.ingameMapWidth - 1, y);
+    }
+
+    if (pathEdges.empty())
+    {
+        bool hasIndestructibleMonsterNest = false;
+        for (const MonsterNest& n : monsterNests)
+        {
+            if (n.isIndestructible)
+            {
+                hasIndestructibleMonsterNest = true;
+                break;
+            }
+        }
+
+        if (!hasIndestructibleMonsterNest)
+            throw "Map has no indestructible spawn nodes!";
     }
 }
 
@@ -31,14 +48,14 @@ void IngamePathfinder::calculateDistanceToNode(
 {
     std::queue<std::tuple<int, int>> queue;
 
-    int nx = (int)(node.x - 0.25f);
-    int ny = (int)(node.y - 0.25f);
+    int nx = (int)(node.nodeX - 0.25f);
+    int ny = (int)(node.nodeY - 0.25f);
 
     distance.at(ny, nx) = 0;
     queue.emplace(ny, nx);
 
     if ((g_game.ingameBuildingSize == 2) &&
-        ((nx != (int)(node.x + 0.25f)) || (ny != (int)(node.y + 0.25f))))
+        ((nx != (int)(node.nodeX + 0.25f)) || (ny != (int)(node.nodeY + 0.25f))))
     {
         // node is aligned between tiles, start with 2x2
         distance.at(ny + 1, nx) = 0;
@@ -97,9 +114,7 @@ bool IngamePathfinder::checkBlocking(const IngameMap& map, int x, int y, int w, 
         {
             // Early fail if any tiles the building occupies have something on them
             if (map.enemyController.getMonstersOnTile(y, x).size() != 0U)
-            {
                 return true;
-            }
 
             mapInstance.at(j, i) = TILE_WALL;
         }
@@ -108,9 +123,15 @@ bool IngamePathfinder::checkBlocking(const IngameMap& map, int x, int y, int w, 
     calculateDistanceToNode(orbNode, mapInstance, distance);
 
     // Check whether any nodes are unreachable - if so, blocking
-    for (PathEdgeNode& node : pathEdges)
+    for (const PathEdgeNode& node : pathEdges)
     {
         if (distance.at(node.iy, node.ix) == INT_MAX)
+            return true;
+    }
+
+    for (const MonsterNest& nest : monsterNests)
+    {
+        if (!nest.isKilled && (distance.at(int(nest.nodeY), int(nest.nodeX)) == INT_MAX))
             return true;
     }
 
@@ -118,7 +139,7 @@ bool IngamePathfinder::checkBlocking(const IngameMap& map, int x, int y, int w, 
     {
         for (int i = 0; i < g_game.ingameMapWidth; ++i)
         {
-            if ((mapTiles.at(j, i) == TILE_PATH) &&
+            if (isPathable(mapTiles.at(j, i)) &&
                 (map.enemyController.getMonstersOnTile(j, i).size() != 0U) &&
                 (distance.at(j, i) == INT_MAX))
             {
@@ -257,6 +278,8 @@ void IngamePathfinder::recalculatePaths(IngameMap& map)
     recalculateNodePaths(map, &map.buildingController.getOrb());
     for (PathEdgeNode& node : pathEdges)
         recalculateNodePaths(map, &node);
+    for (MonsterNest& nest : monsterNests)
+        recalculateNodePaths(map, &nest);
 }
 
 std::vector<const MonsterSpawnNode*> IngamePathfinder::getMonsterSpawnNodes() const
@@ -264,9 +287,11 @@ std::vector<const MonsterSpawnNode*> IngamePathfinder::getMonsterSpawnNodes() co
     std::vector<const MonsterSpawnNode*> nodes;
 
     for (const PathEdgeNode& p : pathEdges)
-    {
         nodes.push_back(&p);
-    }
+
+    for (const MonsterNest& n : monsterNests)
+        if (!n.isKilled)
+            nodes.push_back(&n);
 
     return nodes;
 }
@@ -283,7 +308,7 @@ void IngamePathfinder::debugDrawPathWeights(IngameCore& core, int node)
 
     if (node == -1)
         core.map.buildingController.getOrb().debugDrawPathWeights(core);
-    else if (node >= 0 && node < pathEdges.size())
+    else if ((node >= 0) && (node < pathEdges.size()))
         pathEdges[node].debugDrawPathWeights(core);
 }
 #endif

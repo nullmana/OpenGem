@@ -18,14 +18,17 @@ enum TILE_TYPE
     TILE_SHRINE_CB = 9,
     TILE_SHRINE_LI = 10,
 
-    TILE_ORB = 11,
+    TILE_MONSTER_NEST = 11,
+    TILE_MONSTER_NEST_PATH = 12,
+
+    TILE_ORB = 13,
 
     TILE_TYPE_COUNT
 };
 
 inline static bool isPathable(TILE_TYPE t)
 {
-    return (t == TILE_PATH) || (t == TILE_TRAP);
+    return (t == TILE_PATH) || (t == TILE_TRAP) || (t == TILE_MONSTER_NEST_PATH);
 }
 
 const static uint32_t TILE_COLOR[TILE_TYPE_COUNT] = {
@@ -42,6 +45,9 @@ const static uint32_t TILE_COLOR[TILE_TYPE_COUNT] = {
 
     0x226848, // TILE_SHRINE_CB
     0x224868, // TILE_SHRINE_LI
+
+    0x222222, // TILE_MONSTER_NEST = TILE_NONE
+    0xFFFFCC, // TILE_MONSTER_NEST_PATH = TILE_PATH
 
     0x4477FF, // TILE_ORB
 };
@@ -61,6 +67,9 @@ static const char* TILE_TYPE_NAME[TILE_TYPE_COUNT] = {
 
     "ShrineCB",
     "ShrineLI",
+
+    "MonsterNest",
+    "MonsterNestPath",
 
     "Orb",
 };

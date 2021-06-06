@@ -79,12 +79,18 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
                 pInputHandler->toggleInputState(INPUT_BUILD_AMPLIFIER);
             break;
         case GLFW_KEY_C:
-            if (action == GLFW_PRESS)
-                pInputHandler->toggleInputState(INPUT_BUILD_SHRINE_CB);
+            if (g_game.game == GC_LABYRINTH)
+            {
+                if (action == GLFW_PRESS)
+                    pInputHandler->toggleInputState(INPUT_BUILD_SHRINE_CB);
+            }
             break;
         case GLFW_KEY_L:
-            if (action == GLFW_PRESS)
-                pInputHandler->toggleInputState(INPUT_BUILD_SHRINE_LI);
+            if (g_game.game == GC_LABYRINTH)
+            {
+                if (action == GLFW_PRESS)
+                    pInputHandler->toggleInputState(INPUT_BUILD_SHRINE_LI);
+            }
             break;
         case GLFW_KEY_G:
             if (action == GLFW_PRESS)

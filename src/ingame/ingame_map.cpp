@@ -11,7 +11,8 @@ IngameMap::IngameMap(IngameCore& core, IngameLevelDefinition& level)
       tileBuilding(g_game.ingameMapHeight, g_game.ingameMapWidth),
       manaPool(core.manaPool),
       buildingController(level),
-      pathfinder(*this, level)
+      structureController(level),
+      pathfinder(*this, structureController, level)
 {
     tileOccupied = level.tiles;
 
@@ -29,6 +30,24 @@ IngameMap::IngameMap(IngameCore& core, IngameLevelDefinition& level)
                 default:
                     placeBuilding(b, x, y);
                     break;
+            }
+        }
+    }
+
+    for (const std::tuple<int, int, bool>& n : level.monsterNests)
+    {
+        int nx = std::get<0>(n);
+        int ny = std::get<1>(n);
+        printf("%d %d - %d\n", nx, ny, g_game.ingameMonsterNestSize);
+        for (int y = ny; y < ny + g_game.ingameMonsterNestSize; ++y)
+        {
+            for (int x = nx; x < nx + g_game.ingameMonsterNestSize; ++x)
+            {
+                TILE_TYPE t = level.tiles.at(y, x);
+                if (t == TILE_PATH)
+                    tileOccupied.at(y, x) = TILE_MONSTER_NEST_PATH;
+                else
+                    tileOccupied.at(y, x) = TILE_MONSTER_NEST;
             }
         }
     }
@@ -53,6 +72,7 @@ STATUS IngameMap::render(struct _fbg* pFbg, const Window& window) const
 
     buildingController.render(pFbg, window);
     enemyController.render(pFbg, window);
+    structureController.render(pFbg, window);
     projectileController.render(pFbg, window);
 
     return STATUS_OK;

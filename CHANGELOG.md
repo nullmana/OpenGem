@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.8] - 2021-06-05
+
+### Added
+
+- Added structure controller and monster nests. Nests spawn monsters and can be destroyed by a tower if they are not indestructible. Can mouse over a monster nest to see underneath it.
+
+### Fixed
+
+- Fixed pathfinder blocking check only looking for monsters on path tiles instead of any pathable tile, eg traps
+- Fixed shrine building hotkeys working outside GCL
+
+
 ## [0.2.7] - 2021-06-04
 
 ### Added

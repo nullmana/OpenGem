@@ -12,6 +12,7 @@
 #include "ingame/ingame_level_definition.h"
 #include "ingame/ingame_pathfinder.h"
 #include "ingame/ingame_projectile_controller.h"
+#include "ingame/ingame_structure_controller.h"
 
 #include "interface/window.h"
 
@@ -52,6 +53,7 @@ public:
     void monsterReachesTarget(Monster& monster);
 
     IngameBuildingController buildingController;
+    IngameStructureController structureController;
     IngameEnemyController enemyController;
     IngameProjectileController projectileController;
     IngamePathfinder pathfinder;

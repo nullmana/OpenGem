@@ -9,8 +9,8 @@ class PathEdgeNode : public MonsterSpawnNode
 public:
     PathEdgeNode(int ix_, int iy_) : MonsterSpawnNode(ix_ + 0.5f, iy_ + 0.5f), ix(ix_), iy(iy_)
     {
-        spawnX = x;
-        spawnY = y;
+        spawnX = nodeX;
+        spawnY = nodeY;
 
         if (ix_ == 0)
             spawnX -= 5.88f;

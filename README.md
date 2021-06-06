@@ -45,7 +45,8 @@ v0.3:
 - [ ] Buildings use socketed gems for stats
 - [ ] Amplifiers affect gems in adjacent tiles
 - [x] Shrines can be placed and used, no visual effects required
-- [ ] Structures, monster nests and beacons which can be placed on the map and targeted by gems
+- [x] Structures, such as monster nests and beacons which can be placed on the map and targeted by gems
+- [ ] Beacons
 - [ ] Mana Shards
 - [x] Gem bombing
 - [ ] Waves and Monster Types, spawn when called

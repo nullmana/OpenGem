@@ -16,6 +16,10 @@ void Tower::tick(IngameMap& map, int frames)
                 return a->distanceToOrb < b->distanceToOrb;
             });
     }
+    else
+    {
+        targetsInRange = map.structureController.getTargetableStructuresWithinRangeSq(y, x, 100.0f);
+    }
 
     int shots = frames;
     for (size_t i = 0; (shots > 0) && (i < targetsInRange.size()); ++i)
