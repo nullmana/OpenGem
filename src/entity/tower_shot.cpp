@@ -1,4 +1,5 @@
 #include "entity/tower_shot.h"
+#include "entity/gem.h"
 #include "entity/tower.h"
 
 #include "constants/game_header.h"
@@ -11,6 +12,8 @@ TowerShot::TowerShot(const Tower& tower, Targetable* pTarget_) : pTarget(pTarget
     lastTargetY = pTarget_->y;
     x = tower.x;
     y = tower.y;
+
+    RGB = tower.pGem->RGB;
 
     if (g_game.game == GC_LABYRINTH)
     {

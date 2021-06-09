@@ -68,7 +68,8 @@ void IngameProjectileController::render(struct _fbg* pFbg, const Window& window)
         if ((s.x > 0.0f) && (s.x < g_game.ingameMapWidth) && (s.y > 0.0f) &&
             (s.y < g_game.ingameMapHeight))
         {
-            fbg_pixel(pFbg, scale * s.x + window.x, scale * s.y + window.y, 0xDD, 0xDD, 0xEE);
+            fbg_pixel(pFbg, scale * s.x + window.x, scale * s.y + window.y, s.RGB >> 16, s.RGB >> 8,
+                s.RGB);
         }
     }
 }

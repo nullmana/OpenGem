@@ -5,12 +5,60 @@
 
 #include <cstdio>
 
+static const int gemButtonIndex_GCL[GEM_COMPONENT_TYPE_COUNT] = {
+    7, // GEM_SLOW,
+    0, // GEM_CHAIN,
+    3, // GEM_POISON,
+    8, // GEM_ARMOR,
+    6, // GEM_SHOCK,
+    5, // GEM_BLOODBOUND,
+    1, // GEM_CRITICAL,
+    2, // GEM_LEECH,
+    0, // GEM_POOLBOUND,
+    0, // GEM_SUPPRESSING,
+};
+static const int gemButtonIndex_GCCS[GEM_COMPONENT_TYPE_COUNT] = {
+    7, // GEM_SLOW,
+    3, // GEM_CHAIN,
+    4, // GEM_POISON,
+    8, // GEM_ARMOR,
+    0, // GEM_SHOCK,
+    6, // GEM_BLOODBOUND,
+    1, // GEM_CRITICAL,
+    0, // GEM_LEECH,
+    2, // GEM_POOLBOUND,
+    5, // GEM_SUPPRESSING,
+};
+
+static const GEM_COMPONENT_TYPE gemNumpadMapping_GCL[9] = {
+    GEM_SHOCK,
+    GEM_SLOW,
+    GEM_ARMOR,
+    GEM_POISON,
+    GEM_COMPONENT_TYPE_COUNT,
+    GEM_BLOODBOUND,
+    GEM_CHAIN,
+    GEM_CRITICAL,
+    GEM_LEECH,
+};
+static const GEM_COMPONENT_TYPE gemNumpadMapping_GCCS[9] = {
+    GEM_BLOODBOUND,
+    GEM_SLOW,
+    GEM_ARMOR,
+    GEM_CHAIN,
+    GEM_POISON,
+    GEM_SUPPRESSING,
+    GEM_LEECH,
+    GEM_CRITICAL,
+    GEM_POOLBOUND,
+};
+
 IngameInputHandler::IngameInputHandler(IngameCore& core_) : core(core_)
 {
     speedMultiplier = 0;
     savedSpeedMultiplier = 1;
     pendingFrameAdvance = false;
-    creatingGemType = -1;
+    creatingGemType = GEM_COMPONENT_TYPE_COUNT;
 }
 
 static void mouseButtonCallback(GLFWwindow* pWindow, int button, int action, int mods)
@@ -114,43 +162,27 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
             }
             break;
         case GLFW_KEY_KP_1:
-            if (action == GLFW_PRESS)
-                pInputHandler->startCreateGem(6);
-            break;
         case GLFW_KEY_KP_2:
-            if (action == GLFW_PRESS)
-                pInputHandler->startCreateGem(7);
-            break;
         case GLFW_KEY_KP_3:
-            if (action == GLFW_PRESS)
-                pInputHandler->startCreateGem(8);
-            break;
         case GLFW_KEY_KP_4:
+        case GLFW_KEY_KP_6:
+        case GLFW_KEY_KP_7:
+        case GLFW_KEY_KP_8:
+        case GLFW_KEY_KP_9:
             if (action == GLFW_PRESS)
-                pInputHandler->startCreateGem(3);
+            {
+                if (g_game.game == GC_LABYRINTH)
+                    pInputHandler->startCreateGem(gemNumpadMapping_GCL[key - GLFW_KEY_KP_1]);
+                else if (g_game.game == GC_CHASINGSHADOWS)
+                    pInputHandler->startCreateGem(gemNumpadMapping_GCCS[key - GLFW_KEY_KP_1]);
+            }
             break;
         case GLFW_KEY_KP_5:
             if (g_game.game != GC_LABYRINTH)
             {
                 if (action == GLFW_PRESS)
-                    pInputHandler->startCreateGem(4);
+                    pInputHandler->startCreateGem(gemNumpadMapping_GCCS[4]);
             }
-            break;
-        case GLFW_KEY_KP_6:
-            if (action == GLFW_PRESS)
-                pInputHandler->startCreateGem(5);
-            break;
-        case GLFW_KEY_KP_7:
-            if (action == GLFW_PRESS)
-                pInputHandler->startCreateGem(0);
-            break;
-        case GLFW_KEY_KP_8:
-            if (action == GLFW_PRESS)
-                pInputHandler->startCreateGem(1);
-            break;
-        case GLFW_KEY_KP_9:
-            if (action == GLFW_PRESS)
-                pInputHandler->startCreateGem(2);
             break;
         case GLFW_KEY_LEFT_SHIFT:
         case GLFW_KEY_RIGHT_SHIFT:
@@ -323,10 +355,13 @@ void IngameInputHandler::setInputState(INGAME_INPUT_STATE state)
             core.renderer.setBuildButtonActive(5, false);
             break;
         case INPUT_CREATE_GEM:
-            if (creatingGemType != -1)
+            if (creatingGemType != GEM_COMPONENT_TYPE_COUNT)
             {
-                core.renderer.setGemButtonActive(creatingGemType, false);
-                creatingGemType = -1;
+                if (g_game.game == GC_LABYRINTH)
+                    core.renderer.setGemButtonActive(gemButtonIndex_GCL[creatingGemType], false);
+                else if (g_game.game == GC_CHASINGSHADOWS)
+                    core.renderer.setGemButtonActive(gemButtonIndex_GCCS[creatingGemType], false);
+                creatingGemType = GEM_COMPONENT_TYPE_COUNT;
             }
             break;
         case INPUT_DRAGGING_COMBINE:
@@ -408,18 +443,22 @@ void IngameInputHandler::setInputState(INGAME_INPUT_STATE state)
 #endif
 }
 
-void IngameInputHandler::startCreateGem(int gemType)
+void IngameInputHandler::startCreateGem(GEM_COMPONENT_TYPE gemType)
 {
     if (gemType == creatingGemType)
     {
         setInputState(INPUT_IDLE);
-        creatingGemType = -1;
+        creatingGemType = GEM_COMPONENT_TYPE_COUNT;
     }
     else
     {
         setInputState(INPUT_CREATE_GEM);
         creatingGemType = gemType;
-        core.renderer.setGemButtonActive(gemType, true);
+
+        if (g_game.game == GC_LABYRINTH)
+            core.renderer.setGemButtonActive(gemButtonIndex_GCL[gemType], true);
+        else if (g_game.game == GC_CHASINGSHADOWS)
+            core.renderer.setGemButtonActive(gemButtonIndex_GCCS[gemType], true);
     }
 }
 

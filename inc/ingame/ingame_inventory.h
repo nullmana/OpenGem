@@ -20,7 +20,7 @@ private:
 
     void checkAdjacentAmplifiers(Gem* pGem);
 
-    Gem* createGem(int gemType, int grade);
+    Gem* createGem(GEM_COMPONENT_TYPE gemType, int grade);
 
 public:
     IngameInventory(IngameManaPool& manaPool_, int slots_);
@@ -60,6 +60,6 @@ public:
     void clearDraggedGem();
     Gem* getDraggedGem() const { return pDraggedGem; }
 
-    bool createGemInSlot(int gemType, int slot);
-    bool createAllGemsInSlot(int gemType, int slot);
+    bool createGemInSlot(GEM_COMPONENT_TYPE gemType, int slot);
+    bool createAllGemsInSlot(GEM_COMPONENT_TYPE gemType, int slot);
 };

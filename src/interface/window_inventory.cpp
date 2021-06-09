@@ -75,7 +75,7 @@ void WindowInventory::handleMouseInput(GLFWwindow* pWindow, int button, int acti
             }
             case INPUT_CREATE_GEM:
             {
-                int gemType = pInputHandler->getCreatingGemType();
+                GEM_COMPONENT_TYPE gemType = pInputHandler->getCreatingGemType();
                 if (gemType != -1)
                 {
                     if ((mods & GLFW_MOD_CONTROL))
@@ -132,6 +132,17 @@ void WindowInventory::handleMouseInput(GLFWwindow* pWindow, int button, int acti
             }
         }
     }
+#ifdef DEBUG
+    else if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_MIDDLE))
+    {
+        if (pInputHandler->getInputState() == INPUT_IDLE)
+        {
+            Gem* pGem = inventory.getGemInSlot(slot);
+            if (pGem != NULL)
+                pGem->debugPrint();
+        }
+    }
+#endif
 }
 
 void WindowInventory::handleKeyInput(

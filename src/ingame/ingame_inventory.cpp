@@ -25,8 +25,8 @@ STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
         if ((inventory[i] != NULL) && !inventory[i]->isDragged)
         {
             fbg_rect(pFbg, (i % 3) * scale + window.x, (i / 3) * scale + window.y, scale, scale,
-                (inventory[i]->color >> 16) & 0xFF, (inventory[i]->color >> 8) & 0xFF,
-                inventory[i]->color & 0xFF);
+                (inventory[i]->RGB >> 16) & 0xFF, (inventory[i]->RGB >> 8) & 0xFF,
+                inventory[i]->RGB & 0xFF);
         }
     }
 
@@ -59,8 +59,8 @@ STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
 
         if ((iw > 0) && (ih > 0))
         {
-            fbg_rect(pFbg, ix, iy, iw, ih, (pDraggedGem->color >> 16) & 0xFF,
-                (pDraggedGem->color >> 8) & 0xFF, pDraggedGem->color & 0xFF);
+            fbg_rect(pFbg, ix, iy, iw, ih, (pDraggedGem->RGB >> 16) & 0xFF,
+                (pDraggedGem->RGB >> 8) & 0xFF, pDraggedGem->RGB & 0xFF);
         }
     }
 
@@ -191,13 +191,8 @@ void IngameInventory::swapGems(Gem* pGem1, Gem* pGem2)
 
 Gem* IngameInventory::combineGems(Gem* pGem1, Gem* pGem2)
 {
-    if (pGem1->grade == pGem2->grade)
-        ++pGem1->grade;
-    else
-        pGem1->grade = std::max<int>(pGem1->grade, pGem2->grade);
-
-    pGem1->color = (pGem1->color + pGem2->color) / 2;
-    pGem1->manaCost += pGem2->manaCost + Gem::gemCombineCostCurrent;
+    pGem1->combineWith(pGem2);
+    pGem1->recalculateShotData();
 
     if (pGem1 != pGem2)
         deleteGem(pGem2);
@@ -277,10 +272,9 @@ void IngameInventory::clearDraggedGem()
     }
 }
 
-Gem* IngameInventory::createGem(int gemType, int grade)
+Gem* IngameInventory::createGem(GEM_COMPONENT_TYPE gemType, int grade)
 {
-    gems.emplace_back(
-        grade, (0x11 * gemType) | (0x1100 * (15 - gemType)) | (0x110000 * std::min(grade, 15)));
+    gems.emplace_back(grade, gemType);
     return &gems.back();
 }
 
@@ -304,10 +298,10 @@ void IngameInventory::deleteGem(Gem* pGem)
     }
 }
 
-bool IngameInventory::createGemInSlot(int gemType, int slot)
+bool IngameInventory::createGemInSlot(GEM_COMPONENT_TYPE gemType, int slot)
 {
     int foundSlot = -1;
-    int grade = (inventory.size() / 3) - (slot / 3);
+    int grade = (inventory.size() / 3) - (slot / 3) - 1;
 
     if (manaPool.getMana() < Gem::gemCreateCost(grade))
         return false;
@@ -343,7 +337,7 @@ bool IngameInventory::createGemInSlot(int gemType, int slot)
     return false;
 }
 
-bool IngameInventory::createAllGemsInSlot(int gemType, int slot)
+bool IngameInventory::createAllGemsInSlot(GEM_COMPONENT_TYPE gemType, int slot)
 {
     bool createdGems = false;
     bool status = true;

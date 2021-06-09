@@ -1,5 +1,6 @@
 #pragma once
 
+#include "constants/gem_component_type.h"
 #include "constants/ingame_input_state.h"
 #include "constants/status.h"
 
@@ -13,7 +14,7 @@ private:
     int speedMultiplier;
     int savedSpeedMultiplier;
 
-    int creatingGemType;
+    GEM_COMPONENT_TYPE creatingGemType;
 
     bool pendingFrameAdvance;
 
@@ -27,8 +28,8 @@ public:
     void toggleInputState(INGAME_INPUT_STATE state);
     void setInputState(INGAME_INPUT_STATE state);
     INGAME_INPUT_STATE getInputState() { return inputState; }
-    void startCreateGem(int gemType);
-    int getCreatingGemType() { return creatingGemType; }
+    void startCreateGem(GEM_COMPONENT_TYPE gemType);
+    GEM_COMPONENT_TYPE getCreatingGemType() { return creatingGemType; }
 
     void togglePause();
     void cycleSpeedMultiplier();

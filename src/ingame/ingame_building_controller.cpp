@@ -54,7 +54,7 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
         {
             fbg_rect(pFbg, t.x * scale + window.x - 0.5f * gemScale,
                 t.y * scale + window.y - 0.5f * gemScale, gemScale, gemScale,
-                (t.pGem->color >> 16) & 0xFF, (t.pGem->color >> 8) & 0xFF, t.pGem->color & 0xFF);
+                (t.pGem->RGB >> 16) & 0xFF, (t.pGem->RGB >> 8) & 0xFF, t.pGem->RGB & 0xFF);
         }
 #ifdef DEBUG
         debugDrawAmplifierDirections(pFbg, window, &t);
@@ -67,7 +67,7 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
         {
             fbg_rect(pFbg, t.x * scale + window.x - 0.5f * gemScale,
                 t.y * scale + window.y - 0.5f * gemScale, gemScale, gemScale,
-                (t.pGem->color >> 16) & 0xFF, (t.pGem->color >> 8) & 0xFF, t.pGem->color & 0xFF);
+                (t.pGem->RGB >> 16) & 0xFF, (t.pGem->RGB >> 8) & 0xFF, t.pGem->RGB & 0xFF);
         }
 #ifdef DEBUG
         debugDrawAmplifierDirections(pFbg, window, &t);
@@ -80,7 +80,7 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
         {
             fbg_rect(pFbg, t.x * scale + window.x - 0.5f * gemScale,
                 t.y * scale + window.y - 0.5f * gemScale, gemScale, gemScale,
-                (t.pGem->color >> 16) & 0xFF, (t.pGem->color >> 8) & 0xFF, t.pGem->color & 0xFF);
+                (t.pGem->RGB >> 16) & 0xFF, (t.pGem->RGB >> 8) & 0xFF, t.pGem->RGB & 0xFF);
         }
 #ifdef DEBUG
         debugDrawAmplifierDirections(pFbg, window, &t);

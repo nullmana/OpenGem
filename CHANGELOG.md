@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.9] - 2021-06-08
+
+### Added
+
+- Added gem stats in ShotData, created and combined using correct formulas
+- Added gem coloring based on components, with GCL and GCCS gems available.
+- Towers now use gem range. Towers and traps no longer fire without a socketed gem. Tower shots are now colored based on gem towers.
+
+### Fixed
+
+- Fixed creating gems in inventory creating a gem one grade higher than desired
+
+
 ## [0.2.8] - 2021-06-05
 
 ### Added

@@ -3,6 +3,8 @@
 
 #include "ingame/ingame_map.h"
 
+#include <cmath>
+
 ShrineChargedBolts::ShrineChargedBolts(IngameMap& map_, int ix_, int iy_) : Shrine(map_, ix_, iy_)
 {
     type = TILE_SHRINE_CB;

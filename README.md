@@ -39,7 +39,7 @@ v0.2:
 v0.3:
 - [x] Mana pool displayed and used for gem creation, combining, banishment, etc.
 - [x] Gem Combining
-- [ ] Gems have stats and can be combined to create higher-grade gems
+- [x] Gems have stats and can be combined to create higher-grade gems
 - [x] GCL Gem Anvil, hotkey gem duplicate, upgrade, and salvage
 - [x] Speed control buttons, frame advance
 - [ ] Buildings use socketed gems for stats

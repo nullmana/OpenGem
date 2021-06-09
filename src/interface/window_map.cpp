@@ -48,6 +48,18 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                     }
                 }
             }
+#ifdef DEBUG
+            else if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_MIDDLE))
+            {
+                Building* pBuilding = map.getBuilding(iy, ix);
+                if (pBuilding != NULL)
+                {
+                    Gem* pGem = pBuilding->pGem;
+                    if (pGem != NULL)
+                        pGem->debugPrint();
+                }
+            }
+#endif
             break;
         case INPUT_COMBINE_GEM:
             if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))

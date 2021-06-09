@@ -31,27 +31,27 @@ static const std::vector<ButtonDefinition> buildButtonDefs_GCCS = {
 };
 
 static const std::vector<ButtonDefinition> gemButtonDefs_GCL = {
-    {buttonGem0_handleMouseInput, button_handleMouseHover},
-    {buttonGem1_handleMouseInput, button_handleMouseHover},
-    {buttonGem2_handleMouseInput, button_handleMouseHover},
-    {buttonGem3_handleMouseInput, button_handleMouseHover},
+    {buttonGemCH_handleMouseInput, button_handleMouseHover, 0x669900},
+    {buttonGemCR_handleMouseInput, button_handleMouseHover, 0x999100},
+    {buttonGemML_handleMouseInput, button_handleMouseHover, 0x994D00},
+    {buttonGemPO_handleMouseInput, button_handleMouseHover, 0x009912},
     {buttonGemAnvil_handleMouseInput, NULL},
-    {buttonGem5_handleMouseInput, button_handleMouseHover},
-    {buttonGem6_handleMouseInput, button_handleMouseHover},
-    {buttonGem7_handleMouseInput, button_handleMouseHover},
-    {buttonGem8_handleMouseInput, button_handleMouseHover},
+    {buttonGemBB_handleMouseInput, button_handleMouseHover, 0x990000},
+    {buttonGemSH_handleMouseInput, button_handleMouseHover, 0x007399},
+    {buttonGemSL_handleMouseInput, button_handleMouseHover, 0x1A0099},
+    {buttonGemAT_handleMouseInput, button_handleMouseHover, 0x990099},
 };
 
 static const std::vector<ButtonDefinition> gemButtonDefs_GCCS = {
-    {buttonGem0_handleMouseInput, button_handleMouseHover},
-    {buttonGem1_handleMouseInput, button_handleMouseHover},
-    {buttonGem2_handleMouseInput, button_handleMouseHover},
-    {buttonGem3_handleMouseInput, button_handleMouseHover},
-    {buttonGem4_handleMouseInput, button_handleMouseHover},
-    {buttonGem5_handleMouseInput, button_handleMouseHover},
-    {buttonGem6_handleMouseInput, button_handleMouseHover},
-    {buttonGem7_handleMouseInput, button_handleMouseHover},
-    {buttonGem8_handleMouseInput, button_handleMouseHover},
+    {buttonGemML_handleMouseInput, button_handleMouseHover, 0x994D00},
+    {buttonGemCR_handleMouseInput, button_handleMouseHover, 0x999100},
+    {buttonGemPB_handleMouseInput, button_handleMouseHover, 0x999999},
+    {buttonGemCH_handleMouseInput, button_handleMouseHover, 0x990000},
+    {buttonGemPO_handleMouseInput, button_handleMouseHover, 0x009912},
+    {buttonGemSP_handleMouseInput, button_handleMouseHover, 0x007399},
+    {buttonGemBB_handleMouseInput, button_handleMouseHover, 0x333333},
+    {buttonGemSL_handleMouseInput, button_handleMouseHover, 0x1A0099},
+    {buttonGemAT_handleMouseInput, button_handleMouseHover, 0x990099},
 };
 
 static const std::vector<ButtonDefinition> speedButtonDefs = {

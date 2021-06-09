@@ -93,15 +93,16 @@ DEFFN_BUTTON_BUILD_HOVER(button_handleMouseHover);
         }                                                                                          \
     }
 
-DEFFN_BUTTON_GEM_INPUT(buttonGem0_handleMouseInput, 0);
-DEFFN_BUTTON_GEM_INPUT(buttonGem1_handleMouseInput, 1);
-DEFFN_BUTTON_GEM_INPUT(buttonGem2_handleMouseInput, 2);
-DEFFN_BUTTON_GEM_INPUT(buttonGem3_handleMouseInput, 3);
-DEFFN_BUTTON_GEM_INPUT(buttonGem4_handleMouseInput, 4);
-DEFFN_BUTTON_GEM_INPUT(buttonGem5_handleMouseInput, 5);
-DEFFN_BUTTON_GEM_INPUT(buttonGem6_handleMouseInput, 6);
-DEFFN_BUTTON_GEM_INPUT(buttonGem7_handleMouseInput, 7);
-DEFFN_BUTTON_GEM_INPUT(buttonGem8_handleMouseInput, 8);
+DEFFN_BUTTON_GEM_INPUT(buttonGemSL_handleMouseInput, GEM_SLOW);
+DEFFN_BUTTON_GEM_INPUT(buttonGemCH_handleMouseInput, GEM_CHAIN);
+DEFFN_BUTTON_GEM_INPUT(buttonGemPO_handleMouseInput, GEM_POISON);
+DEFFN_BUTTON_GEM_INPUT(buttonGemAT_handleMouseInput, GEM_ARMOR);
+DEFFN_BUTTON_GEM_INPUT(buttonGemSH_handleMouseInput, GEM_SHOCK);
+DEFFN_BUTTON_GEM_INPUT(buttonGemBB_handleMouseInput, GEM_BLOODBOUND);
+DEFFN_BUTTON_GEM_INPUT(buttonGemCR_handleMouseInput, GEM_CRITICAL);
+DEFFN_BUTTON_GEM_INPUT(buttonGemML_handleMouseInput, GEM_LEECH);
+DEFFN_BUTTON_GEM_INPUT(buttonGemPB_handleMouseInput, GEM_POOLBOUND);
+DEFFN_BUTTON_GEM_INPUT(buttonGemSP_handleMouseInput, GEM_SUPPRESSING);
 #undef DEFFN_BUTTON_GEM_INPUT
 
 static void buttonGemAnvil_handleMouseInput(

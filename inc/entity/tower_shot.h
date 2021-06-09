@@ -2,12 +2,16 @@
 
 #include "entity/targetable.h"
 
+#include <cstdint>
+
 class Tower;
 
 class TowerShot
 {
 public:
     TowerShot(const Tower& tower, Targetable* pTarget_);
+
+    bool tick(int frames);
 
     Targetable* pTarget;
     float lastTargetX;
@@ -21,5 +25,5 @@ public:
     float velY;
     float velZ;
 
-    bool tick(int frames);
+    uint32_t RGB;
 };
