@@ -100,12 +100,9 @@ void IngameInventory::placeGemIntoInventory(Gem* pGem, int slot, bool forceRepla
     }
 }
 
-Gem* IngameInventory::removeGemFromBuilding(Building* pBuilding)
+void IngameInventory::removeGemFromBuilding(Building* pBuilding)
 {
-    Gem* pGem = pBuilding->pGem;
-    pBuilding->pGem = NULL;
-    pGem->pBuilding = NULL;
-    return pGem;
+    pBuilding->removeGem();
 }
 
 void IngameInventory::placeGemIntoBuilding(Gem* pGem, Building* pBuilding, bool forceReplace)
@@ -152,8 +149,9 @@ void IngameInventory::placeGemIntoBuilding(Gem* pGem, Building* pBuilding, bool 
 
                 if (forceReplace && (pBuilding->pGem != NULL))
                     pBuilding->pGem->pBuilding = NULL;
-                pBuilding->pGem = pGem;
-                pGem->pBuilding = pBuilding;
+
+                pBuilding->insertGem(pGem);
+
                 break;
         }
     }
@@ -193,6 +191,9 @@ Gem* IngameInventory::combineGems(Gem* pGem1, Gem* pGem2)
 {
     pGem1->combineWith(pGem2);
     pGem1->recalculateShotData();
+
+    if (pGem1->pBuilding != NULL)
+        pGem1->pBuilding->updateGem();
 
     if (pGem1 != pGem2)
         deleteGem(pGem2);

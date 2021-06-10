@@ -10,4 +10,7 @@ public:
     Tower(int ix_, int iy_) : Building(ix_, iy_) { type = TILE_TOWER; }
 
     void tick(IngameMap& map, int frames);
+
+    virtual void insertGem(Gem* pGem_);
+    virtual void removeGem();
 };

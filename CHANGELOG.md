@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.10] - 2021-06-09
+
+### Added
+
+- Added amplifiers affecting gem stats
+
+### Fixed
+
+- Fixed towers and traps still firing when their socketed gem is being dragged
+
+
 ## [0.2.9] - 2021-06-08
 
 ### Added

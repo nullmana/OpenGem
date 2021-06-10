@@ -35,11 +35,16 @@ public:
 
     // Recalculate own ShotData based on combining pOther into this gem
     void combineWith(const Gem* pOther);
+
+    // Apply pure/dual/etc gem bonuses to sd
+    ShotData transformShotDataComponents(const ShotData& sd) const;
+    ShotData getShotDataComponents() const { return transformShotDataComponents(shotRaw); }
+
     void recalculateShotData();
 
     static double gemCreateCost(int grade);
 
 #ifdef DEBUG
-    void debugPrint();
+    void debugPrint() const;
 #endif
 };

@@ -1,4 +1,5 @@
 #include "entity/gem.h"
+#include "entity/building.h"
 
 #include "constants/game_header.h"
 
@@ -121,7 +122,7 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
             shotRaw.damageMin = 5.0;
             shotRaw.damageMax = 12.0;
             shotRaw.range = 77.0f * rangeScale;
-            shotRaw.fireRate = 2.1f;
+            shotRaw.fireRate = 2.1f * 30.0f / 100.0f;
             break;
         case GEM_CHAIN:
             if (g_game.game == GC_LABYRINTH)
@@ -131,28 +132,28 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
             shotRaw.damageMin = 6.0;
             shotRaw.damageMax = 10.0;
             shotRaw.range = 78.0f * rangeScale;
-            shotRaw.fireRate = 2.2f;
+            shotRaw.fireRate = 2.2f * 30.0f / 100.0f;
             break;
         case GEM_POISON:
             HSV = (127 << 16) | (100 << 8) | 100;
             shotRaw.damageMin = 5.0;
             shotRaw.damageMax = 10.0;
             shotRaw.range = 79.0f * rangeScale;
-            shotRaw.fireRate = 2.1f;
+            shotRaw.fireRate = 2.1f * 30.0f / 100.0f;
             break;
         case GEM_ARMOR:
             HSV = (300 << 16) | (100 << 8) | 100;
             shotRaw.damageMin = 3.0;
             shotRaw.damageMax = 11.0;
             shotRaw.range = 73.0f * rangeScale;
-            shotRaw.fireRate = 2.2f;
+            shotRaw.fireRate = 2.2f * 30.0f / 100.0f;
             break;
         case GEM_SHOCK:
             HSV = (195 << 16) | (100 << 8) | 100;
             shotRaw.damageMin = 4.0;
             shotRaw.damageMax = 10.0;
             shotRaw.range = 75.0f * rangeScale;
-            shotRaw.fireRate = 2.2f;
+            shotRaw.fireRate = 2.2f * 30.0f / 100.0f;
             break;
         case GEM_BLOODBOUND:
             if (g_game.game == GC_LABYRINTH)
@@ -162,35 +163,35 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
             shotRaw.damageMin = 4.0;
             shotRaw.damageMax = 13.0;
             shotRaw.range = 80.0f * rangeScale;
-            shotRaw.fireRate = 2.0f;
+            shotRaw.fireRate = 2.0f * 30.0f / 100.0f;
             break;
         case GEM_CRITICAL:
             HSV = (57 << 16) | (100 << 8) | 100;
             shotRaw.damageMin = 4.0;
             shotRaw.damageMax = 11.0;
             shotRaw.range = 78.0f * rangeScale;
-            shotRaw.fireRate = 2.0f;
+            shotRaw.fireRate = 2.0f * 30.0f / 100.0f;
             break;
         case GEM_LEECH:
             HSV = (30 << 16) | (100 << 8) | 100;
             shotRaw.damageMin = 4.0;
             shotRaw.damageMax = 8.0;
             shotRaw.range = 77.0f * rangeScale;
-            shotRaw.fireRate = 1.8f;
+            shotRaw.fireRate = 1.8f * 30.0f / 100.0f;
             break;
         case GEM_POOLBOUND:
             HSV = 100;
             shotRaw.damageMin = 4.0;
             shotRaw.damageMax = 12.0;
             shotRaw.range = 76.0f * rangeScale;
-            shotRaw.fireRate = 2.2f;
+            shotRaw.fireRate = 2.2f * 30.0f / 100.0f;
             break;
         case GEM_SUPPRESSING:
             HSV = (195 << 16) | (100 << 8) | 100;
             shotRaw.damageMin = 3.0;
             shotRaw.damageMax = 12.0;
             shotRaw.range = 75.0f * rangeScale;
-            shotRaw.fireRate = 2.1f;
+            shotRaw.fireRate = 2.1f * 30.0f / 100.0f;
             break;
         default:
             throw "Invalid Gem Type!\n";
@@ -203,6 +204,8 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
         shotRaw.damageMin *= 2.0;
         shotRaw.damageMax *= 2.0;
     }
+    shotRaw = shotRaw.round();
+
     RGB = HSVtoRGB(HSV);
 
     for (int i = 0; i < grade_; ++i)
@@ -302,10 +305,25 @@ void Gem::combineWith(const Gem* pOther)
     }
 }
 
+ShotData Gem::transformShotDataComponents(const ShotData& sd) const
+{
+    // TODO
+    return sd;
+}
+
 void Gem::recalculateShotData()
 {
-    shotAmplified = shotRaw;
-    shotFinal = shotAmplified;
+    ShotData shotComponents = transformShotDataComponents(shotRaw);
+
+    if (pBuilding != NULL)
+        shotAmplified = pBuilding->transformShotDataAmplify(shotComponents);
+    else
+        shotAmplified = shotComponents;
+
+    if (pBuilding != NULL)
+        shotFinal = pBuilding->transformShotDataBuilding(shotAmplified);
+    else
+        shotFinal = shotAmplified;
 }
 
 double Gem::gemCreateCost(int grade)
@@ -315,11 +333,15 @@ double Gem::gemCreateCost(int grade)
 }
 
 #ifdef DEBUG
-void Gem::debugPrint()
+void Gem::debugPrint() const
 {
     printf("Gem:\n");
     printf("\tGrade: %d | Cost: %f:\n", grade + 1, manaCost);
-    printf("\tD: (%f - %f) | R: %f | F: %f\n", shotFinal.damageMin, shotFinal.damageMax,
-        shotFinal.range, shotFinal.fireRate);
+    printf("Raw:\t");
+    shotRaw.debugPrint();
+    printf("Amp:\t");
+    shotAmplified.debugPrint();
+    printf("Fin:\t");
+    shotFinal.debugPrint();
 }
 #endif

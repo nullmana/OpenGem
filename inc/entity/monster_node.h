@@ -41,7 +41,7 @@ public:
 
     vector2d<PathWeight> tileDirection;
     vector2d<int> tileDistance;
-    TILE_TYPE type;
+    TILE_TYPE nodeType;
     float nodeX;
     float nodeY;
 

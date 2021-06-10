@@ -43,7 +43,7 @@ v0.3:
 - [x] GCL Gem Anvil, hotkey gem duplicate, upgrade, and salvage
 - [x] Speed control buttons, frame advance
 - [ ] Buildings use socketed gems for stats
-- [ ] Amplifiers affect gems in adjacent tiles
+- [x] Amplifiers affect gems in adjacent tiles
 - [x] Shrines can be placed and used, no visual effects required
 - [x] Structures, such as monster nests and beacons which can be placed on the map and targeted by gems
 - [ ] Beacons
@@ -54,6 +54,7 @@ v0.3:
 v0.4:
 - [ ] Status effects
 - [ ] Chain Hit
+- [ ] Socketing cooldown
 - [ ] Monster stats
 - [ ] Tower targeting options
 - [ ] Target selection on map

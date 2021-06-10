@@ -7,7 +7,7 @@
 
 void Tower::tick(IngameMap& map, int frames)
 {
-    if (pGem != NULL)
+    if ((pGem != NULL) && !pGem->isDragged)
     {
         const float rangeSq = pGem->shotFinal.rangeSq();
         std::vector<Targetable*> targetsInRange =
@@ -34,4 +34,26 @@ void Tower::tick(IngameMap& map, int frames)
             --shots;
         }
     }
+}
+
+void Tower::insertGem(Gem* pGem_)
+{
+    Building::insertGem(pGem_);
+
+    pGem->recalculateShotData();
+
+    if (g_game.game == GC_LABYRINTH)
+        recalculateAdjacentGCLAmplifiers();
+}
+
+void Tower::removeGem()
+{
+    Gem* pOldGem = pGem;
+
+    Building::removeGem();
+
+    pOldGem->recalculateShotData();
+
+    if (g_game.game == GC_LABYRINTH)
+        recalculateAdjacentGCLAmplifiers();
 }

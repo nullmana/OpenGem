@@ -21,7 +21,7 @@ public:
         else
             spawnY += 5.88f;
 
-        type = TILE_PATH;
+        nodeType = TILE_PATH;
     }
 
     int ix;

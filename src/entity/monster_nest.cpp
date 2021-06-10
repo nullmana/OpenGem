@@ -7,4 +7,5 @@ MonsterNest::MonsterNest(int ix_, int iy_)
 {
     x = spawnX = nodeX;
     y = spawnY = nodeY;
+    nodeType = TILE_MONSTER_NEST;
 }

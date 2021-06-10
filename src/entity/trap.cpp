@@ -1,13 +1,14 @@
 #include "entity/trap.h"
+#include "entity/gem.h"
 
 #include "ingame/ingame_map.h"
 
 #include <algorithm>
-#include <cstdio>
+#include <cmath>
 
 void Trap::tick(IngameMap& map, int frames)
 {
-    if (pGem != NULL)
+    if ((pGem != NULL) && !pGem->isDragged)
     {
         std::vector<Targetable*> targetsInRange;
         float rangeSq = 1.0f;
@@ -43,4 +44,40 @@ void Trap::tick(IngameMap& map, int frames)
             }
         }
     }
+}
+
+ShotData Trap::transformShotDataBuilding(const ShotData& sd)
+{
+    double damageMultiplier = 0.2;
+    float speedMultiplier = 1.2f;
+
+    ShotData out = sd;
+    out.damageMin = std::max(1.0, std::round(sd.damageMin * damageMultiplier));
+    out.damageMax = std::max(2.0, std::round(sd.damageMax * damageMultiplier));
+    if (g_game.game != GC_LABYRINTH)
+        out.fireRate = sd.fireRate * speedMultiplier;
+
+    return out;
+}
+
+void Trap::insertGem(Gem* pGem_)
+{
+    Building::insertGem(pGem_);
+
+    pGem->recalculateShotData();
+
+    if (g_game.game == GC_LABYRINTH)
+        recalculateAdjacentGCLAmplifiers();
+}
+
+void Trap::removeGem()
+{
+    Gem* pOldGem = pGem;
+
+    Building::removeGem();
+
+    pOldGem->recalculateShotData();
+
+    if (g_game.game == GC_LABYRINTH)
+        recalculateAdjacentGCLAmplifiers();
 }

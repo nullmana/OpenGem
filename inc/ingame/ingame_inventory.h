@@ -29,7 +29,7 @@ public:
 
     void removeGemFromInventory(Gem* pGem);
     void placeGemIntoInventory(Gem* pGem, int slot, bool forceReplace);
-    Gem* removeGemFromBuilding(Building* pBuilding);
+    void removeGemFromBuilding(Building* pBuilding);
     void placeGemIntoBuilding(Gem* pGem, Building* pBuilding, bool forceReplace);
 
     void swapGems(Gem* pGem1, Gem* pGem2);
