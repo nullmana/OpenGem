@@ -39,7 +39,8 @@ void Trap::tick(IngameMap& map, int frames)
         {
             if (!targetsInRange[i]->isKilled)
             {
-                targetsInRange[i]->receiveShotDamage();
+                targetsInRange[i]->receiveShotDamage(
+                    pGem->shotFinal, pGem->shotFinal.rollDamage(), pGem);
                 --shots;
             }
         }

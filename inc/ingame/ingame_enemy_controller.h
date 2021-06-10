@@ -11,11 +11,14 @@
 
 class IngameMap;
 class IngamePathfinder;
+class IngameManaPool;
 struct _fbg;
 
 class IngameEnemyController
 {
 private:
+    IngameManaPool& manaPool;
+
     std::list<Monster> monsters;
     vector2d<std::vector<Monster*>> monstersOnTile;
 
@@ -24,7 +27,7 @@ private:
     bool hasTargetsWithinRangeSq(float y, float x, float rangeSq, bool ignoreKillingShot) const;
 
 public:
-    IngameEnemyController();
+    IngameEnemyController(IngameManaPool& mp_);
     void spawnMonsters(const IngamePathfinder& pathfinder, int num);
 
     void tickMonsters(IngameMap& map, int frames);

@@ -1,4 +1,5 @@
 #include "ingame/ingame_enemy_controller.h"
+#include "ingame/ingame_mana_pool.h"
 #include "ingame/ingame_map.h"
 #include "ingame/ingame_pathfinder.h"
 
@@ -7,8 +8,8 @@
 #include <cstdio>
 #include <unordered_set>
 
-IngameEnemyController::IngameEnemyController()
-    : monstersOnTile(g_game.ingameMapHeight, g_game.ingameMapWidth)
+IngameEnemyController::IngameEnemyController(IngameManaPool& mp_)
+    : manaPool(mp_), monstersOnTile(g_game.ingameMapHeight, g_game.ingameMapWidth)
 {
 }
 
@@ -16,11 +17,18 @@ void IngameEnemyController::spawnMonsters(const IngamePathfinder& pathfinder, in
 {
     static int nodeOffset = 0;
     const std::vector<const MonsterSpawnNode*> nodes = pathfinder.getMonsterSpawnNodes();
+
+    MonsterPrototype mp;
+    mp.hp = 10.0;
+    mp.armor = 2.0;
+    mp.mana = 8.0;
+    mp.banishmentCostMultiplier = 1.0;
+
     for (int i = 0; i < num; ++i)
     {
         // Multiply by large primes to make node order less consistent
         monsters.emplace_back(
-            nodes[(797 * nodeOffset + 337 * i) % nodes.size()], pathfinder.getOrbNode());
+            nodes[(797 * nodeOffset + 337 * i) % nodes.size()], pathfinder.getOrbNode(), mp);
     }
     ++nodeOffset;
 
@@ -35,6 +43,7 @@ void IngameEnemyController::tickMonsters(IngameMap& map, int frames)
     {
         if (it->tick(map, frames))
         {
+            manaPool.addMana(it->mana, true);
             if (it->incomingShots > 0)
                 invalidatedWithShots.insert(&(*it));
             monsters.erase(it++);
@@ -88,6 +97,36 @@ void IngameEnemyController::render(struct _fbg* pFbg, const Window& window) cons
         {
             fbg_pixel(pFbg, scale * m.x + window.x, scale * m.y + window.y, (m.color >> 16) & 0xFF,
                 (m.color >> 8) & 0xFF, m.color & 0xFF);
+        }
+    }
+
+    for (const Monster& m : monsters)
+    {
+        float y = m.y - 1.2f;
+        float x1 = m.x - 0.6f;
+        float x2 = m.x + 0.6f;
+
+        if ((m.healthBarTimer > 0) && (m.x > 0.0f) && (m.x < g_game.ingameMapWidth) && (y > 0.0f) &&
+            (m.y < g_game.ingameMapHeight))
+        {
+            float x3 = (x2 - x1) * (m.hp / m.hpMax) + x1;
+            if (x1 < 0.0f)
+                x1 = 0.0f;
+            if (x2 > g_game.ingameMapWidth)
+                x2 = g_game.ingameMapWidth;
+
+            y = y * scale + window.y;
+
+            if (x3 > 0.0f)
+            {
+                fbg_line(pFbg, x1 * scale + window.x, y, x3 * scale + window.x, y,
+                    m.hp < m.hpMax * 0.67 ? 0xFF : 0, m.hp > m.hpMax * 0.33 ? 0xFF : 0, 0x00);
+            }
+            if (x3 < g_game.ingameMapWidth)
+            {
+                fbg_line(
+                    pFbg, x3 * scale + window.x, y, x2 * scale + window.x, y, 0x10, 0x10, 0x10);
+            }
         }
     }
 }

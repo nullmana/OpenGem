@@ -11,6 +11,7 @@ public:
     float fireRate;
 
     float rangeSq() const { return range * range; }
+    double rollDamage() const;
 
     ShotData operator+(const ShotData& other) const;
     ShotData& operator+=(const ShotData& other);

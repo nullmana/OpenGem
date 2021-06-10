@@ -9,12 +9,18 @@ IngameProjectileController::IngameProjectileController() {}
 
 void IngameProjectileController::createTowerShots(const Tower& tower, Targetable* pTarget, int num)
 {
+    double damage = 0.0;
     for (int i = 0; i < num; ++i)
     {
         shots.emplace_back(tower, pTarget);
+        damage += pTarget->calculateIncomingDamage(shots.back().damage);
     }
     pTarget->incomingShots += num;
-    pTarget->isKillingShotOnTheWay = true;
+    pTarget->incomingDamage += damage;
+    if (pTarget->hp <= pTarget->incomingDamage)
+    {
+        pTarget->isKillingShotOnTheWay = true;
+    }
 }
 
 void IngameProjectileController::warpShotsToTarget(Targetable* pTarget)
@@ -24,7 +30,8 @@ void IngameProjectileController::warpShotsToTarget(Targetable* pTarget)
         if (it->pTarget == pTarget)
         {
             --pTarget->incomingShots;
-            pTarget->receiveShotDamage();
+            pTarget->incomingDamage -= pTarget->calculateIncomingDamage(it->damage);
+            pTarget->receiveShotDamage(it->shot, it->damage, it->pSourceGem);
             shots.erase(it++);
         }
         else
@@ -41,6 +48,15 @@ void IngameProjectileController::clearShotsFromTarget(
     {
         if (invalidatedTargets.count(t.pTarget) > 0)
             t.pTarget = NULL;
+    }
+}
+
+void IngameProjectileController::clearShotsFromGem(const Gem* pGem)
+{
+    for (TowerShot& t : shots)
+    {
+        if (t.pSourceGem == pGem)
+            t.pSourceGem = NULL;
     }
 }
 

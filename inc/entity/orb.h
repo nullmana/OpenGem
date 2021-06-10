@@ -15,4 +15,5 @@ public:
     void breakOrb() { broken = true; }
 
     virtual void recalculateAmplifyEffects();
+    double getBanishmentCostMultiplierFinal() const;
 };

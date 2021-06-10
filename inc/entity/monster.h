@@ -1,5 +1,6 @@
 #pragma once
 
+#include "entity/monster_prototype.h"
 #include "entity/targetable.h"
 
 #include <cstdint>
@@ -15,11 +16,13 @@ private:
     void adjustMotionAngle();
 
 public:
-    Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget);
+    Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget, const MonsterPrototype& mp);
 
     void spawn();
 
-    virtual void receiveShotDamage() { isKilled = true; }
+    virtual void receiveShotDamage(ShotData& shot, double damage, Gem* pSourceGem);
+    virtual void receiveShrineDamage(double damage);
+    virtual double calculateIncomingDamage(double damage);
 
     /*!
      * @brief Frame tick for this monster
@@ -30,10 +33,21 @@ public:
 
     void pickNextTarget();
 
+    double getBanishmentCost() const { return mana * 2.0 * banishmentCostMultiplier; }
+    virtual void setKillingShot()
+    {
+        isKillingShotOnTheWay = true;
+        killingShotTimer = 45;
+    }
+
     int nextX;
     int nextY;
     float nearNextX;
     float nearNextY;
+
+    double armor;
+    double mana;
+    double banishmentCostMultiplier;
 
     float speed;
     float speedCos;
@@ -43,7 +57,8 @@ public:
     const MonsterSpawnNode* pSourceNode;
     const MonsterNode* pTargetNode;
 
-    uint32_t color;
+    int8_t healthBarTimer;
+    int8_t killingShotTimer;
 
-    int banishmentCost;
+    uint32_t color;
 };

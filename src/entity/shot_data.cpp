@@ -14,6 +14,11 @@ ShotData::ShotData()
     fireRate = 0.0f;
 }
 
+double ShotData::rollDamage() const
+{
+    return std::round((damageMax - damageMin) * (rand() / double(RAND_MAX)) + damageMin);
+}
+
 ShotData ShotData::operator+(const ShotData& other) const
 {
     ShotData out;

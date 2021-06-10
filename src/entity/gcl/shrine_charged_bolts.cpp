@@ -20,10 +20,21 @@ void ShrineChargedBolts::activate(Gem* pGem)
 {
     int numTargets = 0.5f + 0.5f * pow(5.0f + pGem->grade * 11.0f, 1.13f);
 
+    double damageMultiplier = 1.8 * (5.0 + pGem->grade * 0.7);
+    pGem->shotFinal.damageMin *= damageMultiplier;
+    pGem->shotFinal.damageMax *= damageMultiplier;
+
+    double shredRatio = std::min(0.9, 0.02 * (1 + pGem->grade));
+
     cachedTargets = getTargets();
 
+    for (Targetable* t : cachedTargets)
+        t->receiveShrineDamage(std::min(t->hp - 1.0, std::max(0.0, shredRatio * t->hp)));
+
     for (size_t i = 0; (i < cachedTargets.size()) && (i < numTargets); ++i)
-        cachedTargets[i]->receiveShotDamage();
+    {
+        cachedTargets[i]->receiveShotDamage(pGem->shotFinal, pGem->shotFinal.rollDamage(), pGem);
+    }
 }
 
 std::vector<Targetable*> ShrineChargedBolts::getTargets()

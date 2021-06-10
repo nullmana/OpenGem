@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.11] - 2021-06-10
+
+### Added
+
+- Monsters and structures have HP and armor, take appropriate damage from gems and shrines, respect killingShotOnTheWay
+- Monster HP rendered as a basic healthbar
+- Monster banishment cost multiplier increases when banished by the orb, and is affected by gems amplifying the orb
+- Monsters give mana when killed
+
+### Fixed
+
+- Monsters which spawned from a destroyed monster nest will pick a new source node when banished
+
+
 ## [0.2.10] - 2021-06-09
 
 ### Added

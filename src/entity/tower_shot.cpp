@@ -8,6 +8,10 @@
 
 TowerShot::TowerShot(const Tower& tower, Targetable* pTarget_) : pTarget(pTarget_)
 {
+    pSourceGem = tower.pGem;
+    shot = pSourceGem->shotFinal;
+    damage = shot.rollDamage();
+
     lastTargetX = pTarget_->x;
     lastTargetY = pTarget_->y;
     x = tower.x;
@@ -66,7 +70,8 @@ bool TowerShot::tick(int frames)
             if (pTarget != NULL)
             {
                 --pTarget->incomingShots;
-                pTarget->receiveShotDamage();
+                pTarget->incomingDamage -= pTarget->calculateIncomingDamage(damage);
+                pTarget->receiveShotDamage(shot, damage, pSourceGem);
             }
             return true;
         }
@@ -94,7 +99,8 @@ bool TowerShot::tick(int frames)
             if (pTarget != NULL)
             {
                 --pTarget->incomingShots;
-                pTarget->receiveShotDamage();
+                pTarget->incomingDamage -= pTarget->calculateIncomingDamage(damage);
+                pTarget->receiveShotDamage(shot, damage, pSourceGem);
             }
             return true;
         }

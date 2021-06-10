@@ -1,4 +1,5 @@
 #include "entity/monster.h"
+#include "entity/gem.h"
 #include "entity/monster_node.h"
 
 #include "ingame/ingame_level_definition.h"
@@ -7,8 +8,11 @@
 #include <cmath>
 
 #define MONSTER_SPEED_FLOAT_FACTOR (1.0f / 17.0f)
+#define HEALTH_BAR_FADEOUT_TIME 30
 
-Monster::Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget)
+Monster::Monster(
+    const MonsterSpawnNode* pStart, const MonsterNode* pTarget, const MonsterPrototype& mp)
+    : Targetable(std::min(mp.hp, 1E300))
 {
     pSourceNode = pStart;
     pTargetNode = pTarget;
@@ -16,7 +20,12 @@ Monster::Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget)
     color = 0xFFFFFF * (rand() / float(RAND_MAX));
     speed = 0.4f + (rand() / float(RAND_MAX));
 
-    banishmentCost = 1;
+    armor = mp.armor;
+    mana = mp.mana;
+    banishmentCostMultiplier = mp.banishmentCostMultiplier;
+
+    healthBarTimer = 0;
+    killingShotTimer = 0;
 
     spawn();
 }
@@ -52,6 +61,48 @@ void Monster::spawn()
         // Started on-screen, pick next node immediately
         pickNextTarget();
     }
+}
+
+void Monster::receiveShotDamage(ShotData& shot, double damage, Gem* pSourceGem)
+{
+    if (isKilled)
+        return;
+
+    damage = std::max<double>(1, damage - armor);
+    if (isKillingShotOnTheWay)
+        damage += 2.0 * hpMax;
+
+    hp -= damage;
+
+    if (pSourceGem != NULL)
+        ++pSourceGem->hits;
+
+    if (hp < hpMax)
+        healthBarTimer = HEALTH_BAR_FADEOUT_TIME;
+
+    if (hp < 1.0)
+    {
+        isKilled = true;
+
+        if (pSourceGem != NULL)
+            ++pSourceGem->kills;
+    }
+}
+
+void Monster::receiveShrineDamage(double damage)
+{
+    if (isKilled)
+        return;
+
+    hp -= damage;
+
+    if (hp < hpMax)
+        healthBarTimer = HEALTH_BAR_FADEOUT_TIME;
+}
+
+double Monster::calculateIncomingDamage(double damage)
+{
+    return std::max<double>(1, damage - armor);
 }
 
 void Monster::pickNextTarget()
@@ -101,6 +152,11 @@ bool Monster::tick(IngameMap& map, int frames)
 
     if (frames > 0)
     {
+        if (healthBarTimer > 0)
+            --healthBarTimer;
+        if ((killingShotTimer > 0) && (killingShotTimer -= frames <= 0))
+            isKillingShotOnTheWay = false;
+
         for (int f = 0; f < frames; ++f)
         {
             x += speedCos;
@@ -115,7 +171,6 @@ bool Monster::tick(IngameMap& map, int frames)
                 if (pTargetNode->tileDirection.at(nextY, nextX).sum == 0)
                 {
                     // On zero weight tile, assume reached destination
-                    // Just delete for now
                     map.monsterReachesTarget(*this);
                     if (isKilled)
                         return true;

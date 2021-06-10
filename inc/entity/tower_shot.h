@@ -1,10 +1,12 @@
 #pragma once
 
+#include "entity/shot_data.h"
 #include "entity/targetable.h"
 
 #include <cstdint>
 
 class Tower;
+class Gem;
 
 class TowerShot
 {
@@ -13,6 +15,10 @@ public:
 
     bool tick(int frames);
 
+    ShotData shot;
+    double damage;
+
+    Gem* pSourceGem;
     Targetable* pTarget;
     float lastTargetX;
     float lastTargetY;

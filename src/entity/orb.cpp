@@ -26,3 +26,8 @@ void Orb::recalculateAmplifyEffects()
         }
     }
 }
+
+double Orb::getBanishmentCostMultiplierFinal() const
+{
+    return 1.0 - std::min<double>(banishmentCostReductionAmplifiersRaw, 0.5);
+}

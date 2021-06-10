@@ -1,5 +1,6 @@
 #include "ingame/ingame_inventory.h"
 #include "ingame/ingame_mana_pool.h"
+#include "ingame/ingame_projectile_controller.h"
 
 #include "entity/building.h"
 #include "entity/shrine.h"
@@ -10,8 +11,8 @@
 
 #include <cstddef>
 
-IngameInventory::IngameInventory(IngameManaPool& manaPool_, int slots_)
-    : manaPool(manaPool_), inventory(slots_)
+IngameInventory::IngameInventory(IngameManaPool& mp_, IngameProjectileController& pc_, int slots_)
+    : manaPool(mp_), projectileController(pc_), inventory(slots_)
 {
     pDraggedGem = NULL;
 }
@@ -288,6 +289,8 @@ void IngameInventory::deleteGem(Gem* pGem)
 
     if (pGem == pDraggedGem)
         pDraggedGem = NULL;
+
+    projectileController.clearShotsFromGem(pGem);
 
     for (std::list<Gem>::iterator it = gems.begin(); it != gems.end(); ++it)
     {

@@ -31,6 +31,11 @@ public:
      * @param[in] targets Set of INVALIDATED pointers for comparison, should NOT be dereferenced
      */
     void clearShotsFromTarget(const std::unordered_set<Targetable*>& invalidatedTargets);
+    /*!
+     * @brief Clear source gem any projectiles from this gem
+     * @param[in] pGem Gem to be removed
+     */
+    void clearShotsFromGem(const Gem* pGem);
 
     void tickProjectiles(int frames);
 

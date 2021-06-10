@@ -286,7 +286,7 @@ void Gem::combineWith(const Gem* pOther)
     shotNew.damageMax =
         std::max(shotNew.damageMax, std::max(shotRaw.damageMax, pOther->shotRaw.damageMax));
     shotNew.range = std::min(shotNew.range, 48.0f);
-    shotNew.fireRate = std::min(shotNew.fireRate, 160.0f);
+    shotNew.fireRate = std::min(shotNew.fireRate, 48.0f);
 
     shotRaw = shotNew;
 

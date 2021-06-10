@@ -26,6 +26,9 @@ public:
     uint32_t HSV;
     uint32_t RGB;
 
+    uint64_t hits;
+    uint64_t kills;
+
     int grade;
     double manaCost;
 

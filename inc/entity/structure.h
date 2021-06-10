@@ -12,13 +12,14 @@ public:
     int width;
     int height;
 
+    double armor;
+
     bool isIndestructible;
 
-    virtual void receiveShotDamage()
-    {
-        if (!isIndestructible)
-            isKilled = true;
-    }
-    virtual float canBeTargeted() { return !isIndestructible; }
+    virtual void receiveShotDamage(ShotData& shot, double damage, Gem* pSourceGem);
+    virtual void receiveShrineDamage(double damage) {}
+    virtual double calculateIncomingDamage(double damage);
+
+    virtual bool canBeTargeted() { return !isIndestructible; }
     virtual float getShotVariance() { return 0.5f * width; }
 };

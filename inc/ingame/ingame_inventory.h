@@ -9,11 +9,14 @@
 
 class Building;
 class IngameManaPool;
+class IngameProjectileController;
 
 class IngameInventory
 {
 private:
     IngameManaPool& manaPool;
+    IngameProjectileController& projectileController;
+
     std::vector<Gem*> inventory;
     std::list<Gem> gems;
     Gem* pDraggedGem;
@@ -23,7 +26,7 @@ private:
     Gem* createGem(GEM_COMPONENT_TYPE gemType, int grade);
 
 public:
-    IngameInventory(IngameManaPool& manaPool_, int slots_);
+    IngameInventory(IngameManaPool& mp_, IngameProjectileController& pc_, int slots_);
 
     STATUS render(struct _fbg* pFbg, const Window& window) const;
 

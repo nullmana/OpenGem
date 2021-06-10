@@ -12,6 +12,7 @@ IngameMap::IngameMap(IngameCore& core, IngameLevelDefinition& level)
       manaPool(core.manaPool),
       buildingController(level),
       structureController(level),
+      enemyController(manaPool),
       pathfinder(*this, structureController, level)
 {
     tileOccupied = level.tiles;
@@ -511,13 +512,25 @@ void IngameMap::monsterReachesTarget(Monster& monster)
         }
         if (!monster.isKilled)
         {
-            manaPool.addMana(-monster.banishmentCost, false);
+            double banishmentCost = monster.getBanishmentCost() *
+                                    buildingController.getOrb().getBanishmentCostMultiplierFinal();
+            monster.banishmentCostMultiplier *= 1.68;
+
+            manaPool.addMana(-banishmentCost, false);
             if (manaPool.getMana() < 0)
             {
                 buildingController.getOrb().breakOrb();
             }
             else
             {
+                if ((monster.pSourceNode == NULL) ||
+                    ((monster.pSourceNode->nodeType == TILE_MONSTER_NEST) &&
+                        reinterpret_cast<const MonsterNest*>(monster.pSourceNode)->isKilled))
+                {
+                    const std::vector<const MonsterSpawnNode*> nodes =
+                        pathfinder.getMonsterSpawnNodes();
+                    monster.pSourceNode = nodes[rand() % nodes.size()];
+                }
                 monster.spawn();
             }
         }
