@@ -67,7 +67,7 @@ ShotData Building::transformShotDataAmplify(const ShotData& sd)
             ampSD.multiply(damageMultiplier, rangeMultiplier, speedMultiplier, specialMultiplier);
     }
 
-    return sd + amplifyEffectsSD.round();
+    return sd.addExisting(amplifyEffectsSD.round());
 }
 
 void Building::recalculateAdjacentGCLAmplifiers()

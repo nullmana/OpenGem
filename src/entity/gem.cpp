@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
+#include <cstring>
 
 #ifdef DEBUG
 #include <cstdio>
@@ -58,9 +59,28 @@ static uint32_t HSVtoRGB(uint32_t HSV)
            uint32_t((b + m) * 0xFF);
 }
 
-static uint32_t combineHSV(uint32_t a, uint32_t b)
+static uint32_t combineHSV(uint32_t a, uint32_t b, bool increaseSat)
 {
     int H, S, V;
+
+    if (a == b)
+    {
+        if (g_game.game == GC_LABYRINTH)
+        {
+            H = a >> 16;
+            V = a & 0xFF;
+
+            S = ((a >> 8) & 0xFF) / 2 + ((b >> 8) & 0xFF) / 2;
+            if (increaseSat)
+                S = std::min<int>(100, S + 10);
+            else
+                S = std::max<int>(50, S - 10);
+
+            return (uint32_t(H) << 16) | (uint32_t(S) << 8) | uint32_t(V);
+        }
+        else
+            return a;
+    }
 
     if ((a & 0xFF00) == 0)
     {
@@ -94,7 +114,19 @@ static uint32_t combineHSV(uint32_t a, uint32_t b)
             {
                 H = std::min<int>(a >> 16, b >> 16) + dH / 2;
             }
-            S = std::max<int>((a >> 8) & 0xFF, (b >> 8) & 0xFF);
+
+            if (g_game.game == GC_LABYRINTH)
+            {
+                S = ((a >> 8) & 0xFF) / 2 + ((b >> 8) & 0xFF) / 2;
+                if (increaseSat)
+                    S = std::min<int>(100, S + 10);
+                else
+                    S = std::max<int>(50, S - 10);
+            }
+            else
+            {
+                S = std::max<int>(((a >> 8) & 0xFF), ((b >> 8) & 0xFF));
+            }
         }
     }
 
@@ -115,6 +147,11 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
     grade = 0;
     manaCost = gemCreateCostCurrent;
 
+    componentMask = (1 << type);
+    displayComponents[0] = type;
+    displayComponents[1] = GEM_COMPONENT_TYPE_COUNT;
+    displayComponents[2] = GEM_COMPONENT_TYPE_COUNT;
+
     switch (type)
     {
         case GEM_SLOW:
@@ -123,6 +160,16 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
             shotRaw.damageMax = 12.0;
             shotRaw.range = 77.0f * rangeScale;
             shotRaw.fireRate = 2.1f * 30.0f / 100.0f;
+            if (g_game.game == GC_LABYRINTH)
+            {
+                shotRaw.component[COMPONENT_SLOW_POWER] = 0.18;
+                shotRaw.component[COMPONENT_SLOW_DURATION] = 120;
+            }
+            else
+            {
+                shotRaw.component[COMPONENT_SLOW_POWER] = 1.04;
+                shotRaw.component[COMPONENT_SLOW_DURATION] = 60;
+            }
             break;
         case GEM_CHAIN:
             if (g_game.game == GC_LABYRINTH)
@@ -133,6 +180,10 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
             shotRaw.damageMax = 10.0;
             shotRaw.range = 78.0f * rangeScale;
             shotRaw.fireRate = 2.2f * 30.0f / 100.0f;
+            if (g_game.game == GC_LABYRINTH)
+                shotRaw.component[COMPONENT_CHAIN] = 0.15;
+            else
+                shotRaw.component[COMPONENT_CHAIN] = 1.01;
             break;
         case GEM_POISON:
             HSV = (127 << 16) | (100 << 8) | 100;
@@ -140,6 +191,7 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
             shotRaw.damageMax = 10.0;
             shotRaw.range = 79.0f * rangeScale;
             shotRaw.fireRate = 2.1f * 30.0f / 100.0f;
+            shotRaw.component[COMPONENT_POISON] = 8.0;
             break;
         case GEM_ARMOR:
             HSV = (300 << 16) | (100 << 8) | 100;
@@ -147,6 +199,10 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
             shotRaw.damageMax = 11.0;
             shotRaw.range = 73.0f * rangeScale;
             shotRaw.fireRate = 2.2f * 30.0f / 100.0f;
+            if (g_game.game == GC_LABYRINTH)
+                shotRaw.component[COMPONENT_ARMOR] = 0.18;
+            else
+                shotRaw.component[COMPONENT_ARMOR] = 1.73;
             break;
         case GEM_SHOCK:
             HSV = (195 << 16) | (100 << 8) | 100;
@@ -154,6 +210,7 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
             shotRaw.damageMax = 10.0;
             shotRaw.range = 75.0f * rangeScale;
             shotRaw.fireRate = 2.2f * 30.0f / 100.0f;
+            shotRaw.component[COMPONENT_SHOCK] = 0.17;
             break;
         case GEM_BLOODBOUND:
             if (g_game.game == GC_LABYRINTH)
@@ -164,6 +221,10 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
             shotRaw.damageMax = 13.0;
             shotRaw.range = 80.0f * rangeScale;
             shotRaw.fireRate = 2.0f * 30.0f / 100.0f;
+            if (g_game.game == GC_LABYRINTH)
+                shotRaw.component[COMPONENT_BLOODBOUND] = 0.18;
+            else
+                shotRaw.component[COMPONENT_BLOODBOUND] = 0.036;
             break;
         case GEM_CRITICAL:
             HSV = (57 << 16) | (100 << 8) | 100;
@@ -171,6 +232,15 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
             shotRaw.damageMax = 11.0;
             shotRaw.range = 78.0f * rangeScale;
             shotRaw.fireRate = 2.0f * 30.0f / 100.0f;
+            if (g_game.game == GC_LABYRINTH)
+            {
+                shotRaw.component[COMPONENT_CRITICAL_POWER] = 0.14;
+            }
+            else
+            {
+                shotRaw.component[COMPONENT_CRITICAL_POWER] = 0.35;
+                shotRaw.component[COMPONENT_CRITICAL_CHANCE] = 0.111;
+            }
             break;
         case GEM_LEECH:
             HSV = (30 << 16) | (100 << 8) | 100;
@@ -178,6 +248,10 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
             shotRaw.damageMax = 8.0;
             shotRaw.range = 77.0f * rangeScale;
             shotRaw.fireRate = 1.8f * 30.0f / 100.0f;
+            if (g_game.game == GC_LABYRINTH)
+                shotRaw.component[COMPONENT_LEECH] = 0.26;
+            else
+                shotRaw.component[COMPONENT_LEECH] = 0.39;
             break;
         case GEM_POOLBOUND:
             HSV = 100;
@@ -185,6 +259,7 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
             shotRaw.damageMax = 12.0;
             shotRaw.range = 76.0f * rangeScale;
             shotRaw.fireRate = 2.2f * 30.0f / 100.0f;
+            shotRaw.component[COMPONENT_POOLBOUND] = 1.01;
             break;
         case GEM_SUPPRESSING:
             HSV = (195 << 16) | (100 << 8) | 100;
@@ -192,6 +267,7 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
             shotRaw.damageMax = 12.0;
             shotRaw.range = 75.0f * rangeScale;
             shotRaw.fireRate = 2.1f * 30.0f / 100.0f;
+            shotRaw.component[COMPONENT_SUPPRESS] = 13.3;
             break;
         default:
             throw "Invalid Gem Type!\n";
@@ -225,8 +301,13 @@ Gem::Gem(Gem* pSourceGem) // Duplicate Gem Constructor, not Copy
     y = 0.0f;
     isDragged = false;
 
-    RGB = pSourceGem->RGB;
     HSV = pSourceGem->HSV;
+    RGB = pSourceGem->RGB;
+
+    hits = 0;
+    kills = 0;
+
+    memcpy(displayComponents, pSourceGem->displayComponents, sizeof(displayComponents));
 
     grade = pSourceGem->grade;
     manaCost = pSourceGem->manaCost;
@@ -234,6 +315,11 @@ Gem::Gem(Gem* pSourceGem) // Duplicate Gem Constructor, not Copy
     shotRaw = pSourceGem->shotRaw;
     recalculateShotData();
 }
+
+#define COMBINE_COMPONENT(r1, r2, comp)                                                            \
+    shotNew.component[comp] =                                                                      \
+        (r1)*std::max(shotRaw.component[comp], pOther->shotRaw.component[comp]) +                  \
+        (r2)*std::min(shotRaw.component[comp], pOther->shotRaw.component[comp])
 
 void Gem::combineWith(const Gem* pOther)
 {
@@ -254,6 +340,32 @@ void Gem::combineWith(const Gem* pOther)
                         0.388f * std::min(shotRaw.range, pOther->shotRaw.range);
         shotNew.fireRate = 0.74f * std::max(shotRaw.fireRate, pOther->shotRaw.fireRate) +
                            0.44f * std::min(shotRaw.fireRate, pOther->shotRaw.fireRate);
+        if (g_game.game == GC_LABYRINTH)
+        {
+            COMBINE_COMPONENT(0.78, 0.31, COMPONENT_BLOODBOUND);
+            COMBINE_COMPONENT(0.87, 0.38, COMPONENT_SLOW_POWER);
+            COMBINE_COMPONENT(0.96, 0.62, COMPONENT_POISON);
+            COMBINE_COMPONENT(0.88, 0.50, COMPONENT_CRITICAL_POWER);
+            COMBINE_COMPONENT(0.88, 0.50, COMPONENT_CHAIN);
+            COMBINE_COMPONENT(0.88, 0.50, COMPONENT_LEECH);
+            COMBINE_COMPONENT(0.93, 0.45, COMPONENT_ARMOR);
+            COMBINE_COMPONENT(0.87, 0.38, COMPONENT_SHOCK);
+        }
+        else if (g_game.game == GC_CHASINGSHADOWS)
+        {
+            COMBINE_COMPONENT(0.78, 0.31, COMPONENT_BLOODBOUND);
+            COMBINE_COMPONENT(0.81, 0.35, COMPONENT_SLOW_POWER);
+            COMBINE_COMPONENT(0.96, 0.85, COMPONENT_POISON);
+            COMBINE_COMPONENT(0.88, 0.50, COMPONENT_CRITICAL_POWER);
+            COMBINE_COMPONENT(0.81, 0.35, COMPONENT_CRITICAL_CHANCE);
+            COMBINE_COMPONENT(0.88, 0.50, COMPONENT_CHAIN);
+            COMBINE_COMPONENT(0.88, 0.50, COMPONENT_LEECH);
+            COMBINE_COMPONENT(0.94, 0.69, COMPONENT_ARMOR);
+            COMBINE_COMPONENT(0.87, 0.38, COMPONENT_POOLBOUND);
+            COMBINE_COMPONENT(0.96, 1.91, COMPONENT_SUPPRESS);
+        }
+        else
+            throw "Game Code Unavailable!";
     }
     else if ((grade == pOther->grade + 1) || (grade == pOther->grade - 1))
     {
@@ -267,6 +379,32 @@ void Gem::combineWith(const Gem* pOther)
                         0.25f * std::min(shotRaw.range, pOther->shotRaw.range);
         shotNew.fireRate = 0.80f * std::max(shotRaw.fireRate, pOther->shotRaw.fireRate) +
                            0.25f * std::min(shotRaw.fireRate, pOther->shotRaw.fireRate);
+        if (g_game.game == GC_LABYRINTH)
+        {
+            COMBINE_COMPONENT(0.79, 0.29, COMPONENT_BLOODBOUND);
+            COMBINE_COMPONENT(0.88, 0.35, COMPONENT_SLOW_POWER);
+            COMBINE_COMPONENT(0.97, 0.42, COMPONENT_POISON);
+            COMBINE_COMPONENT(0.90, 0.45, COMPONENT_CRITICAL_POWER);
+            COMBINE_COMPONENT(0.90, 0.47, COMPONENT_CHAIN);
+            COMBINE_COMPONENT(0.89, 0.44, COMPONENT_LEECH);
+            COMBINE_COMPONENT(0.94, 0.42, COMPONENT_ARMOR);
+            COMBINE_COMPONENT(0.89, 0.34, COMPONENT_SHOCK);
+        }
+        else if (g_game.game == GC_CHASINGSHADOWS)
+        {
+            COMBINE_COMPONENT(0.79, 0.29, COMPONENT_BLOODBOUND);
+            COMBINE_COMPONENT(0.80, 0.28, COMPONENT_SLOW_POWER);
+            COMBINE_COMPONENT(0.97, 0.62, COMPONENT_POISON);
+            COMBINE_COMPONENT(0.88, 0.44, COMPONENT_CRITICAL_POWER);
+            COMBINE_COMPONENT(0.80, 0.28, COMPONENT_CRITICAL_CHANCE);
+            COMBINE_COMPONENT(0.90, 0.47, COMPONENT_CHAIN);
+            COMBINE_COMPONENT(0.89, 0.44, COMPONENT_LEECH);
+            COMBINE_COMPONENT(0.95, 0.57, COMPONENT_ARMOR);
+            COMBINE_COMPONENT(0.87, 0.38, COMPONENT_POOLBOUND);
+            COMBINE_COMPONENT(0.92, 1.13, COMPONENT_SUPPRESS);
+        }
+        else
+            throw "Game Code Unavailable!";
     }
     else
     {
@@ -280,6 +418,32 @@ void Gem::combineWith(const Gem* pOther)
                         0.09f * std::min(shotRaw.range, pOther->shotRaw.range);
         shotNew.fireRate = 0.92f * std::max(shotRaw.fireRate, pOther->shotRaw.fireRate) +
                            0.09f * std::min(shotRaw.fireRate, pOther->shotRaw.fireRate);
+        if (g_game.game == GC_LABYRINTH)
+        {
+            COMBINE_COMPONENT(0.80, 0.27, COMPONENT_BLOODBOUND);
+            COMBINE_COMPONENT(0.89, 0.33, COMPONENT_SLOW_POWER);
+            COMBINE_COMPONENT(0.98, 0.22, COMPONENT_POISON);
+            COMBINE_COMPONENT(0.92, 0.40, COMPONENT_CRITICAL_POWER);
+            COMBINE_COMPONENT(0.92, 0.44, COMPONENT_CHAIN);
+            COMBINE_COMPONENT(0.90, 0.38, COMPONENT_LEECH);
+            COMBINE_COMPONENT(0.95, 0.39, COMPONENT_ARMOR);
+            COMBINE_COMPONENT(0.91, 0.30, COMPONENT_SHOCK);
+        }
+        else if (g_game.game == GC_CHASINGSHADOWS)
+        {
+            COMBINE_COMPONENT(0.80, 0.27, COMPONENT_BLOODBOUND);
+            COMBINE_COMPONENT(0.79, 0.26, COMPONENT_SLOW_POWER);
+            COMBINE_COMPONENT(0.98, 0.42, COMPONENT_POISON);
+            COMBINE_COMPONENT(0.88, 0.44, COMPONENT_CRITICAL_POWER);
+            COMBINE_COMPONENT(0.79, 0.26, COMPONENT_CRITICAL_CHANCE);
+            COMBINE_COMPONENT(0.92, 0.44, COMPONENT_CHAIN);
+            COMBINE_COMPONENT(0.90, 0.38, COMPONENT_LEECH);
+            COMBINE_COMPONENT(0.96, 0.45, COMPONENT_ARMOR);
+            COMBINE_COMPONENT(0.87, 0.38, COMPONENT_POOLBOUND);
+            COMBINE_COMPONENT(0.92, 0.73, COMPONENT_SUPPRESS);
+        }
+        else
+            throw "Game Code Unavailable!";
     }
     shotNew.damageMin =
         std::max(shotNew.damageMin, std::max(shotRaw.damageMin, pOther->shotRaw.damageMin));
@@ -288,26 +452,135 @@ void Gem::combineWith(const Gem* pOther)
     shotNew.range = std::min(shotNew.range, 48.0f);
     shotNew.fireRate = std::min(shotNew.fireRate, 48.0f);
 
+    if (g_game.game == GC_LABYRINTH)
+    {
+        if (shotNew.component[COMPONENT_BLOODBOUND] < 0.01)
+            shotNew.component[COMPONENT_BLOODBOUND] = 0.0;
+        if (shotNew.component[COMPONENT_SLOW_POWER] < 0.01)
+            shotNew.component[COMPONENT_SLOW_POWER] = 0.0;
+        if (shotNew.component[COMPONENT_POISON] < 0.5)
+            shotNew.component[COMPONENT_POISON] = 0.0;
+        if (shotNew.component[COMPONENT_CRITICAL_POWER] < 0.01)
+            shotNew.component[COMPONENT_CRITICAL_POWER] = 0.0;
+        if (shotNew.component[COMPONENT_CHAIN] < 0.01)
+            shotNew.component[COMPONENT_CHAIN] = 0.0;
+        if (shotNew.component[COMPONENT_LEECH] < 0.09)
+            shotNew.component[COMPONENT_LEECH] = 0.0;
+        if (shotNew.component[COMPONENT_ARMOR] < 0.09)
+            shotNew.component[COMPONENT_ARMOR] = 0.0;
+        if (shotNew.component[COMPONENT_SHOCK] < 0.01)
+            shotNew.component[COMPONENT_SHOCK] = 0.0;
+    }
+    else
+    {
+        if (shotNew.component[COMPONENT_BLOODBOUND] < 0.001)
+            shotNew.component[COMPONENT_BLOODBOUND] = 0.0;
+        if (shotNew.component[COMPONENT_BLOODBOUND] < 0.01)
+            shotNew.component[COMPONENT_BLOODBOUND] = 0.0;
+        if (shotNew.component[COMPONENT_SLOW_POWER] < 0.01)
+            shotNew.component[COMPONENT_SLOW_POWER] = 0.0;
+        if (shotNew.component[COMPONENT_POISON] < 0.5)
+            shotNew.component[COMPONENT_POISON] = 0.0;
+        if ((shotNew.component[COMPONENT_CRITICAL_POWER] < 0.01) ||
+            (shotNew.component[COMPONENT_CRITICAL_CHANCE] < 0.01))
+            shotNew.component[COMPONENT_CRITICAL_POWER] = 0.0;
+        if (shotNew.component[COMPONENT_CHAIN] < 0.01)
+            shotNew.component[COMPONENT_CHAIN] = 0.0;
+        if (shotNew.component[COMPONENT_LEECH] < 0.09)
+            shotNew.component[COMPONENT_LEECH] = 0.0;
+        if (shotNew.component[COMPONENT_ARMOR] < 0.09)
+            shotNew.component[COMPONENT_ARMOR] = 0.0;
+        if (shotNew.component[COMPONENT_POOLBOUND] < 0.001)
+            shotNew.component[COMPONENT_POOLBOUND] = 0.0;
+        if (shotNew.component[COMPONENT_SUPPRESS] < 0.01)
+            shotNew.component[COMPONENT_SUPPRESS] = 0.0;
+    }
+
     shotRaw = shotNew;
+
+    HSV = combineHSV(HSV, pOther->HSV, grade == pOther->grade);
+    RGB = HSVtoRGB(HSV);
 
     grade = (grade == pOther->grade) ? (grade + 1) : std::max(grade, pOther->grade);
     manaCost = floor(gemCombineCostCurrent + manaCost + pOther->manaCost);
 
-    if (HSV == pOther->HSV)
+    componentMask |= pOther->componentMask;
+    if (displayComponents[1] == GEM_COMPONENT_TYPE_COUNT)
     {
-        HSV = pOther->HSV;
-        RGB = pOther->RGB;
+        for (int i = 0; i < 3; ++i)
+        {
+            if (pOther->displayComponents[i] == GEM_COMPONENT_TYPE_COUNT)
+                break;
+
+            if (displayComponents[0] != pOther->displayComponents[i])
+            {
+                displayComponents[1] = pOther->displayComponents[i];
+                break;
+            }
+        }
     }
-    else
+    if (displayComponents[2] == GEM_COMPONENT_TYPE_COUNT)
     {
-        HSV = combineHSV(HSV, pOther->HSV);
-        RGB = HSVtoRGB(HSV);
+        for (int i = 0; i < 3; ++i)
+        {
+            if ((displayComponents[0] != pOther->displayComponents[i]) &&
+                (displayComponents[1] != pOther->displayComponents[i]))
+            {
+                displayComponents[2] = pOther->displayComponents[i];
+                break;
+            }
+        }
     }
 }
 
+#undef COMBINE_COMPONENT
+
 ShotData Gem::transformShotDataComponents(const ShotData& sd) const
 {
-    // TODO
+    ShotData comp = sd;
+    int cc = numComponents();
+
+    if (g_game.game == GC_LABYRINTH)
+    {
+        if (cc == 2)
+        {
+            comp.multiply(1.05, 1.05, 1.05, 0.8);
+        }
+        else if (cc == 3)
+        {
+            comp.multiply(1.1, 1.1, 1.1, 0.8);
+        }
+        else if (cc >= 4)
+        {
+            // Mixing two enums here... fine since GCL's gems all line up with components
+            memset(comp.component, 0, sizeof(comp.component));
+            for (int i = 0; i < 3; ++i)
+                comp.component[displayComponents[i]] = 0.6 * sd.component[displayComponents[i]];
+            comp.component[COMPONENT_SLOW_DURATION] = sd.component[COMPONENT_SLOW_DURATION];
+        }
+    }
+    else if (g_game.game == GC_CHASINGSHADOWS)
+    {
+        static const double multComponents[] = {
+            0.0, 1.0, 0.7, 0.5, 0.4, 0.35, 0.30, 0.25, 0.20, 0.20};
+        double mc = multComponents[cc];
+
+        if (cc == 1) {}
+        else if (cc < 5)
+        {
+            comp.damageMin *= 1.2;
+            comp.damageMax *= 1.2;
+        }
+
+        for (int i = 0; i < GEM_COMPONENT_TYPE_COUNT; ++i)
+        {
+            if (sd.component[i] > 0.0)
+                comp.component[i] *= mc;
+        }
+    }
+    else
+        throw "Game Code Unavailable!";
+
     return sd;
 }
 
@@ -332,11 +605,41 @@ double Gem::gemCreateCost(int grade)
     return floor(gemCreateCostCurrent * numCreates + gemCombineCostCurrent * (numCreates - 1.0));
 }
 
+int Gem::numComponents() const
+{
+    int count = 0;
+    int mask = componentMask;
+    while (mask != 0)
+    {
+        mask &= (mask - 1);
+        ++count;
+    }
+    return count;
+}
+
 #ifdef DEBUG
 void Gem::debugPrint() const
 {
+    static const char* color[GEM_COMPONENT_TYPE_COUNT] = {
+        "Blue",
+        g_game.game == GC_LABYRINTH ? "Lime" : "Red",
+        "Green",
+        "Purple",
+        "Cyan",
+        g_game.game == GC_LABYRINTH ? "Red" : "Black",
+        "Yellow",
+        "Orange",
+
+        "White",
+        "Cyan",
+    };
+
     printf("Gem:\n");
-    printf("\tGrade: %d | Cost: %f:\n", grade + 1, manaCost);
+    printf("\tGrade: %d | Cost: %f: | %s", grade + 1, manaCost, color[displayComponents[0]]);
+    for (int i = 1; i < 3; ++i)
+        if (displayComponents[i] != GEM_COMPONENT_TYPE_COUNT)
+            printf("-%s", color[displayComponents[i]]);
+    printf("\n\t%d Color Components (0x%x)\n", numComponents(), componentMask);
     printf("Raw:\t");
     shotRaw.debugPrint();
     printf("Amp:\t");

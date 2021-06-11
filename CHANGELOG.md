@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.12] - 2021-06-11
+
+### Added
+
+- Gems have components created and combined, track own color combination and total number of components
+
+
 ## [0.2.11] - 2021-06-10
 
 ### Added

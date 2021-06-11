@@ -36,6 +36,11 @@ public:
     ShotData shotAmplified;
     ShotData shotFinal;
 
+    uint16_t componentMask;
+    GEM_COMPONENT_TYPE displayComponents[3];
+
+    int numComponents() const;
+
     // Recalculate own ShotData based on combining pOther into this gem
     void combineWith(const Gem* pOther);
 
