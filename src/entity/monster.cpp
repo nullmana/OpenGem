@@ -7,6 +7,8 @@
 
 #include <cmath>
 
+#include <cstdio>
+
 #define MONSTER_SPEED_FLOAT_FACTOR (1.0f / 17.0f)
 #define HEALTH_BAR_FADEOUT_TIME 30
 
@@ -18,20 +20,33 @@ Monster::Monster(
     pTargetNode = pTarget;
 
     color = 0xFFFFFF * (rand() / float(RAND_MAX));
-    speed = 0.4f + (rand() / float(RAND_MAX));
+    speedMax = 0.4f + (rand() / float(RAND_MAX));
 
     armor = mp.armor;
     mana = mp.mana;
     banishmentCostMultiplier = mp.banishmentCostMultiplier;
+    shockImmunity = 0.0;
+    poisonDamage = 0.0;
 
+    slowTimer = 0;
+    poisonTimer = 0;
     healthBarTimer = 0;
     killingShotTimer = 0;
+    shockTimer = 0;
 
     spawn();
 }
 
 void Monster::spawn()
 {
+    isKillingShotOnTheWay = false;
+    incomingShots = 0;
+    incomingDamage = 0.0;
+
+    slowTimer = 0;
+    speed = speedMax;
+    shockTimer = 0;
+
     x = pSourceNode->spawnX;
     y = pSourceNode->spawnY;
 
@@ -63,12 +78,12 @@ void Monster::spawn()
     }
 }
 
-void Monster::receiveShotDamage(ShotData& shot, double damage, Gem* pSourceGem)
+void Monster::receiveShotDamage(ShotData& shot, double damage, double crit, Gem* pSourceGem)
 {
     if (isKilled)
         return;
 
-    damage = std::max<double>(1, damage - armor);
+    damage = std::max<double>(1.0, damage * (1.0 + crit) - armor);
     if (isKillingShotOnTheWay)
         damage += 2.0 * hpMax;
 
@@ -85,7 +100,55 @@ void Monster::receiveShotDamage(ShotData& shot, double damage, Gem* pSourceGem)
         isKilled = true;
 
         if (pSourceGem != NULL)
+        {
             ++pSourceGem->kills;
+            ++pSourceGem->killsNonCombined;
+        }
+    }
+    else
+    {
+        if (shot.component[COMPONENT_ARMOR] > 0.0)
+            armor = std::max(0.0, armor - shot.component[COMPONENT_ARMOR]);
+
+        if ((g_game.game == GC_LABYRINTH) && (shockTimer <= 0) &&
+            (shot.component[COMPONENT_SHOCK] > 0.0))
+        {
+            if (shot.component[COMPONENT_SHOCK] - shockImmunity > (rand() / double(RAND_MAX)))
+            {
+                shockTimer = 90;
+                shockImmunity += 0.05 + 0.07 * (rand() / double(RAND_MAX));
+                shockX = x;
+                shockY = y;
+            }
+        }
+
+        if (shot.component[COMPONENT_SLOW_POWER] > 0.0)
+        {
+            if ((slowTimer <= 0) || (shot.component[COMPONENT_SLOW_POWER] < (speed / speedMax)))
+            {
+                speed = speedMax * shot.component[COMPONENT_SLOW_POWER];
+                adjustSpeedAngle();
+            }
+        }
+
+        if (shot.component[COMPONENT_POISON] > 0.0)
+        {
+            if (g_game.game == GC_LABYRINTH)
+            {
+                if (poisonTimer * poisonDamage < shot.component[COMPONENT_POISON] * 150.0)
+                {
+                    poisonTimer = 150;
+                    poisonDamage = shot.component[COMPONENT_POISON] / 150.0;
+                }
+            }
+            else
+            {
+                double a = poisonDamage * poisonTimer;
+                double b = shot.component[COMPONENT_POISON];
+                poisonDamage = (a + b * b / (a + b)) / (9.0 * 30.0);
+                poisonTimer = 9 * 30;
+            }
+        }
     }
 }
 
@@ -100,9 +163,9 @@ void Monster::receiveShrineDamage(double damage)
         healthBarTimer = HEALTH_BAR_FADEOUT_TIME;
 }
 
-double Monster::calculateIncomingDamage(double damage)
+double Monster::calculateIncomingDamage(double damage, double crit)
 {
-    return std::max<double>(1, damage - armor);
+    return std::max<double>(1, damage * (1.0 + crit) - armor);
 }
 
 void Monster::pickNextTarget()
@@ -141,6 +204,11 @@ void Monster::adjustMotionAngle()
 {
     motionAngle = atan2(nearNextY - y, nearNextX - x);
 
+    adjustSpeedAngle();
+}
+
+void Monster::adjustSpeedAngle()
+{
     speedCos = speed * cos(motionAngle) * MONSTER_SPEED_FLOAT_FACTOR;
     speedSin = speed * sin(motionAngle) * MONSTER_SPEED_FLOAT_FACTOR;
 }
@@ -154,30 +222,57 @@ bool Monster::tick(IngameMap& map, int frames)
     {
         if (healthBarTimer > 0)
             --healthBarTimer;
-        if ((killingShotTimer > 0) && (killingShotTimer -= frames <= 0))
+        if ((killingShotTimer > 0) && ((killingShotTimer -= frames) <= 0))
             isKillingShotOnTheWay = false;
-
-        for (int f = 0; f < frames; ++f)
+        if (shockTimer > 0)
+            shockTimer -= frames;
+        if ((slowTimer > 0) && (slowTimer -= frames) <= 0)
         {
-            x += speedCos;
-            y += speedSin;
-            distanceToOrb -= 100 * speed;
-
-            int ix = (int)x;
-            int iy = (int)y;
-
-            if ((ix == nextX) && (iy == nextY))
+            speed = speedMax;
+            adjustSpeedAngle();
+        }
+        if ((frames > 0) && (poisonTimer > 0))
+        {
+            double damage = frames * poisonDamage;
+            hp -= damage;
+            poisonTimer -= frames;
+            healthBarTimer = HEALTH_BAR_FADEOUT_TIME;
+            if (hp < 1.0)
             {
-                if (pTargetNode->tileDirection.at(nextY, nextX).sum == 0)
+                isKilled = true;
+                return true;
+            }
+        }
+
+        if (shockTimer > 0)
+        {
+            shockX = x + (rand() / float(RAND_MAX)) * 0.1f - 0.05f;
+            shockY = y + (rand() / float(RAND_MAX)) * 0.1f - 0.05f;
+        }
+        else
+        {
+            for (int f = 0; f < frames; ++f)
+            {
+                x += speedCos;
+                y += speedSin;
+                distanceToOrb -= 100 * speed;
+
+                int ix = (int)x;
+                int iy = (int)y;
+
+                if ((ix == nextX) && (iy == nextY))
                 {
-                    // On zero weight tile, assume reached destination
-                    map.monsterReachesTarget(*this);
-                    if (isKilled)
-                        return true;
-                }
-                else
-                {
-                    pickNextTarget();
+                    if (pTargetNode->tileDirection.at(nextY, nextX).sum == 0)
+                    {
+                        // On zero weight tile, assume reached destination
+                        map.monsterReachesTarget(*this);
+                        if (isKilled)
+                            return true;
+                    }
+                    else
+                    {
+                        pickNextTarget();
+                    }
                 }
             }
         }

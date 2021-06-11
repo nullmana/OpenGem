@@ -33,7 +33,8 @@ void ShrineChargedBolts::activate(Gem* pGem)
 
     for (size_t i = 0; (i < cachedTargets.size()) && (i < numTargets); ++i)
     {
-        cachedTargets[i]->receiveShotDamage(pGem->shotFinal, pGem->shotFinal.rollDamage(), pGem);
+        cachedTargets[i]->receiveShotDamage(
+            pGem->shotFinal, pGem->shotFinal.rollDamage(), 0.0, pGem);
     }
 }
 

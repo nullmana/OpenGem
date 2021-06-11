@@ -1,5 +1,7 @@
 #include "entity/shot_data.h"
 
+#include "constants/game_header.h"
+
 #include <cmath>
 #include <cstring>
 
@@ -20,6 +22,27 @@ ShotData::ShotData()
 double ShotData::rollDamage() const
 {
     return std::round((damageMax - damageMin) * (rand() / double(RAND_MAX)) + damageMin);
+}
+
+double ShotData::rollCritMultiplier() const
+{
+    if (component[COMPONENT_CRITICAL_POWER] <= 0.0)
+        return 0.0;
+
+    if (g_game.game == GC_LABYRINTH)
+    {
+        double multiplier = floor(component[COMPONENT_CRITICAL_POWER]);
+        if ((rand() / double(RAND_MAX)) <= fmod(component[COMPONENT_CRITICAL_POWER], 1.0))
+            multiplier += 1.0;
+        return multiplier;
+    }
+    else
+    {
+        if ((rand() / double(RAND_MAX)) <= component[COMPONENT_CRITICAL_CHANCE])
+            return component[COMPONENT_CRITICAL_POWER];
+        else
+            return 0.0;
+    }
 }
 
 ShotData ShotData::addExisting(const ShotData& other) const
@@ -156,6 +179,27 @@ ShotData ShotData::round() const
 #ifdef DEBUG
 void ShotData::debugPrint() const
 {
-    printf("D: (%f - %f) | R: %f | F: %f\n", damageMin, damageMax, range, fireRate);
+    static const char* componentName[GEM_COMPONENT_INDEX_COUNT] = {
+        "Slow Power",
+        "Chain",
+        "Poison",
+        "Armor",
+        g_game.game == GC_LABYRINTH ? "Shock" : "Suppress",
+        "Bloodbound",
+        "Critical Power",
+        "Leech",
+        "Poolbound",
+        "Slow Duration",
+        "Critical Chance",
+    };
+
+    printf("\tD: (%f - %f) | R: %f | F: %f\n", damageMin, damageMax, range, fireRate);
+    for (int i = 0; i < GEM_COMPONENT_INDEX_COUNT; ++i)
+    {
+        if (component[i] > 0.0)
+        {
+            printf("\t\t%s: %lf\n", componentName[i], component[i]);
+        }
+    }
 }
 #endif

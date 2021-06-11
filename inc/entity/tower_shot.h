@@ -17,11 +17,14 @@ public:
 
     ShotData shot;
     double damage;
+    double crit;
 
     Gem* pSourceGem;
     Targetable* pTarget;
     float lastTargetX;
     float lastTargetY;
+    float scatterX;
+    float scatterY;
 
     float x;
     float y;

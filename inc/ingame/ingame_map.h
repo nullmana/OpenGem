@@ -57,4 +57,5 @@ public:
     IngameEnemyController enemyController;
     IngameProjectileController projectileController;
     IngamePathfinder pathfinder;
+    IngameManaPool& getManaPool() { return manaPool; }
 };

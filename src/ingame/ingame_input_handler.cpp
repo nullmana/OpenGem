@@ -278,7 +278,7 @@ STATUS IngameInputHandler::handleKeyboardInput()
         }
         else
         {
-            core.map.enemyController.spawnMonsters(core.map.pathfinder, 100);
+            core.map.enemyController.spawnMonsters(core.map.pathfinder, 10);
         }
     }
     if (glfwGetKey(pGlfwContext->window, GLFW_KEY_M) == GLFW_PRESS)

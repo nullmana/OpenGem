@@ -47,7 +47,7 @@ std::vector<Targetable*> IngameStructureController::getTargetableStructuresWithi
 
     for (MonsterNest& m : monsterNests)
     {
-        if (!m.isKilled && !m.isKillingShotOnTheWay &&
+        if (!m.isKilled && !m.isKillingShotOnTheWay && m.canBeTargeted() &&
             ((m.y - y) * (m.y - y) + (m.x - x) * (m.x - x) <= rangeSq))
         {
             targets.push_back(&m);

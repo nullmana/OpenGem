@@ -16,10 +16,11 @@ public:
 
     bool isIndestructible;
 
-    virtual void receiveShotDamage(ShotData& shot, double damage, Gem* pSourceGem);
+    virtual void receiveShotDamage(ShotData& shot, double damage, double crit, Gem* pSourceGem);
     virtual void receiveShrineDamage(double damage) {}
-    virtual double calculateIncomingDamage(double damage);
+    virtual double calculateIncomingDamage(double damage, double crit);
 
     virtual bool canBeTargeted() { return !isIndestructible; }
-    virtual float getShotVariance() { return 0.5f * width; }
+    virtual float getShotVariance() { return 0.125f * width; }
+    virtual bool canLeech() { return false; }
 };

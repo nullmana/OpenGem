@@ -21,11 +21,12 @@ public:
         hp = hpMax = hp_;
     }
 
-    virtual void receiveShotDamage(ShotData& shot, double damage, Gem* pSourceGem) = 0;
+    virtual void receiveShotDamage(ShotData& shot, double damage, double crit, Gem* pSourceGem) = 0;
     virtual void receiveShrineDamage(double damage) = 0;
-    virtual double calculateIncomingDamage(double damage) { return damage; }
+    virtual double calculateIncomingDamage(double damage, double crit) { return damage; }
     virtual float getShotVariance() { return 0.0f; }
     virtual bool canBeTargeted() { return true; }
+    virtual bool canLeech() { return true; }
     virtual void setKillingShot() { isKillingShotOnTheWay = true; }
 
     float x;

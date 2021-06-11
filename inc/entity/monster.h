@@ -14,15 +14,16 @@ class Monster : public Targetable
 private:
     void setNextTarget(int nx, int ny);
     void adjustMotionAngle();
+    void adjustSpeedAngle();
 
 public:
     Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget, const MonsterPrototype& mp);
 
     void spawn();
 
-    virtual void receiveShotDamage(ShotData& shot, double damage, Gem* pSourceGem);
+    virtual void receiveShotDamage(ShotData& shot, double damage, double crit, Gem* pSourceGem);
     virtual void receiveShrineDamage(double damage);
-    virtual double calculateIncomingDamage(double damage);
+    virtual double calculateIncomingDamage(double damage, double crit);
 
     /*!
      * @brief Frame tick for this monster
@@ -44,12 +45,17 @@ public:
     int nextY;
     float nearNextX;
     float nearNextY;
+    float shockX;
+    float shockY;
 
     double armor;
     double mana;
     double banishmentCostMultiplier;
+    double shockImmunity;
+    double poisonDamage;
 
     float speed;
+    float speedMax;
     float speedCos;
     float speedSin;
     float motionAngle;
@@ -57,8 +63,11 @@ public:
     const MonsterSpawnNode* pSourceNode;
     const MonsterNode* pTargetNode;
 
+    int32_t slowTimer;
+    int16_t poisonTimer;
     int8_t healthBarTimer;
     int8_t killingShotTimer;
+    int8_t shockTimer;
 
     uint32_t color;
 };

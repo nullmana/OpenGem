@@ -1,11 +1,10 @@
 #include "ingame/ingame_projectile_controller.h"
 #include "ingame/ingame_level_definition.h"
+#include "ingame/ingame_mana_pool.h"
 
 #include "wrapfbg.h"
 
-#include <cstdio>
-
-IngameProjectileController::IngameProjectileController() {}
+IngameProjectileController::IngameProjectileController(IngameManaPool& mp_) : manaPool(mp_) {}
 
 void IngameProjectileController::createTowerShots(const Tower& tower, Targetable* pTarget, int num)
 {
@@ -13,13 +12,31 @@ void IngameProjectileController::createTowerShots(const Tower& tower, Targetable
     for (int i = 0; i < num; ++i)
     {
         shots.emplace_back(tower, pTarget);
-        damage += pTarget->calculateIncomingDamage(shots.back().damage);
+        damage += pTarget->calculateIncomingDamage(shots.back().damage, shots.back().crit);
     }
     pTarget->incomingShots += num;
     pTarget->incomingDamage += damage;
     if (pTarget->hp <= pTarget->incomingDamage)
     {
-        pTarget->isKillingShotOnTheWay = true;
+        pTarget->setKillingShot();
+    }
+}
+
+void IngameProjectileController::shotHitsTarget(TowerShot* pShot)
+{
+    Targetable* pTarget = pShot->pTarget;
+    if (pTarget != NULL)
+    {
+        --pTarget->incomingShots;
+        pTarget->incomingDamage -= pTarget->calculateIncomingDamage(pShot->damage, pShot->crit);
+        pTarget->receiveShotDamage(pShot->shot, pShot->damage, pShot->crit, pShot->pSourceGem);
+    }
+
+    // TODO chain hit
+    if (pShot->shot.component[COMPONENT_LEECH] > 0.0)
+    {
+        if (pTarget->canLeech())
+            manaPool.addMana(pShot->shot.component[COMPONENT_LEECH], true);
     }
 }
 
@@ -29,9 +46,7 @@ void IngameProjectileController::warpShotsToTarget(Targetable* pTarget)
     {
         if (it->pTarget == pTarget)
         {
-            --pTarget->incomingShots;
-            pTarget->incomingDamage -= pTarget->calculateIncomingDamage(it->damage);
-            pTarget->receiveShotDamage(it->shot, it->damage, it->pSourceGem);
+            shotHitsTarget(&(*it));
             shots.erase(it++);
         }
         else
@@ -66,6 +81,7 @@ void IngameProjectileController::tickProjectiles(int frames)
     {
         if (it->tick(frames))
         {
+            shotHitsTarget(&(*it));
             shots.erase(it++);
         }
         else

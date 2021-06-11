@@ -16,6 +16,7 @@ public:
 
     float rangeSq() const { return range * range; }
     double rollDamage() const;
+    double rollCritMultiplier() const;
 
     // Manipulate ShotData for amplification
     // Does not affect critical chance or slow duration

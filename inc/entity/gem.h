@@ -28,6 +28,7 @@ public:
 
     uint64_t hits;
     uint64_t kills;
+    uint64_t killsNonCombined;
 
     int grade;
     double manaCost;
@@ -47,6 +48,8 @@ public:
     // Apply pure/dual/etc gem bonuses to sd
     ShotData transformShotDataComponents(const ShotData& sd) const;
     ShotData getShotDataComponents() const { return transformShotDataComponents(shotRaw); }
+    // Convert raw power values into usable factors
+    ShotData transformShotDataReal(const ShotData& sd) const;
 
     void recalculateShotData();
 

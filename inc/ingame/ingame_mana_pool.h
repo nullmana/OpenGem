@@ -31,7 +31,7 @@ public:
     STATUS render(struct _fbg* pFbg, const Window& window) const;
 
     double getMana() const { return mana; }
-    void addMana(double delta, bool applyGainMultipliers);
+    double addMana(double delta, bool applyGainMultipliers);
     bool toggleAutopool() { return (autopool = !autopool); }
 
     bool castExpandManaPool();

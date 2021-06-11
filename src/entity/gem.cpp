@@ -147,6 +147,10 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
     grade = 0;
     manaCost = gemCreateCostCurrent;
 
+    hits = 0;
+    kills = 0;
+    killsNonCombined = 0;
+
     componentMask = (1 << type);
     displayComponents[0] = type;
     displayComponents[1] = GEM_COMPONENT_TYPE_COUNT;
@@ -306,6 +310,7 @@ Gem::Gem(Gem* pSourceGem) // Duplicate Gem Constructor, not Copy
 
     hits = 0;
     kills = 0;
+    killsNonCombined = 0;
 
     memcpy(displayComponents, pSourceGem->displayComponents, sizeof(displayComponents));
 
@@ -504,6 +509,10 @@ void Gem::combineWith(const Gem* pOther)
     grade = (grade == pOther->grade) ? (grade + 1) : std::max(grade, pOther->grade);
     manaCost = floor(gemCombineCostCurrent + manaCost + pOther->manaCost);
 
+    hits += pOther->hits;
+    kills += pOther->kills;
+    killsNonCombined = 0;
+
     componentMask |= pOther->componentMask;
     if (displayComponents[1] == GEM_COMPONENT_TYPE_COUNT)
     {
@@ -572,7 +581,7 @@ ShotData Gem::transformShotDataComponents(const ShotData& sd) const
             comp.damageMax *= 1.2;
         }
 
-        for (int i = 0; i < GEM_COMPONENT_TYPE_COUNT; ++i)
+        for (int i = 0; i < GEM_COMPONENT_INDEX_COUNT; ++i)
         {
             if (sd.component[i] > 0.0)
                 comp.component[i] *= mc;
@@ -582,6 +591,53 @@ ShotData Gem::transformShotDataComponents(const ShotData& sd) const
         throw "Game Code Unavailable!";
 
     return sd;
+}
+
+ShotData Gem::transformShotDataReal(const ShotData& sd) const
+{
+    ShotData real = sd;
+
+    static constexpr double invlog37 = 1.0 / std::log(3.7);
+
+    if (g_game.game == GC_LABYRINTH)
+    {
+        if (sd.component[COMPONENT_SLOW_POWER] > 0.0)
+            real.component[COMPONENT_SLOW_POWER] = 1.0 / (1.0 + sd.component[COMPONENT_SLOW_POWER]);
+    }
+    else if (g_game.game == GC_CHASINGSHADOWS)
+    {
+        // TODO
+        double boundMultiplier = 1.0;
+
+        if (sd.component[COMPONENT_SLOW_POWER] > 0.0)
+        {
+            real.component[COMPONENT_SLOW_POWER] = std::max(0.1,
+                1.0 - boundMultiplier *
+                          (1.0 - 1.0 / pow(1.0 + sd.component[COMPONENT_SLOW_POWER] / 2.0, 0.37)));
+        }
+
+        real.component[COMPONENT_CRITICAL_CHANCE] =
+            std::min(0.8, sd.component[COMPONENT_CRITICAL_CHANCE]);
+
+        if (sd.component[COMPONENT_CHAIN] > 0.0)
+        {
+            real.component[COMPONENT_CHAIN] =
+                boundMultiplier * std::log(3.7 + sd.component[COMPONENT_CHAIN]) * invlog37;
+            if (real.component[COMPONENT_CHAIN] > 8.0)
+                real.component[COMPONENT_CHAIN] =
+                    7.0 + pow(real.component[COMPONENT_CHAIN] - 7.0, 0.7);
+
+            if ((pBuilding != NULL) && (pBuilding->type == TILE_TRAP))
+            {
+                double trapEnchantMultiplier = 1.8;
+                real.component[COMPONENT_CHAIN] *= trapEnchantMultiplier;
+            }
+        }
+    }
+    else
+        throw "Game Code Unavailable!";
+
+    return real;
 }
 
 void Gem::recalculateShotData()
@@ -597,6 +653,8 @@ void Gem::recalculateShotData()
         shotFinal = pBuilding->transformShotDataBuilding(shotAmplified);
     else
         shotFinal = shotAmplified;
+
+    shotFinal = transformShotDataReal(shotFinal);
 }
 
 double Gem::gemCreateCost(int grade)
@@ -640,11 +698,11 @@ void Gem::debugPrint() const
         if (displayComponents[i] != GEM_COMPONENT_TYPE_COUNT)
             printf("-%s", color[displayComponents[i]]);
     printf("\n\t%d Color Components (0x%x)\n", numComponents(), componentMask);
-    printf("Raw:\t");
+    printf("Raw:\n");
     shotRaw.debugPrint();
-    printf("Amp:\t");
+    printf("Amp:\n");
     shotAmplified.debugPrint();
-    printf("Fin:\t");
+    printf("Fin:\n");
     shotFinal.debugPrint();
 }
 #endif

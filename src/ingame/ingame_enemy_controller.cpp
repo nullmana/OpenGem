@@ -19,7 +19,7 @@ void IngameEnemyController::spawnMonsters(const IngamePathfinder& pathfinder, in
     const std::vector<const MonsterSpawnNode*> nodes = pathfinder.getMonsterSpawnNodes();
 
     MonsterPrototype mp;
-    mp.hp = 10.0;
+    mp.hp = 50.0;
     mp.armor = 2.0;
     mp.mana = 8.0;
     mp.banishmentCostMultiplier = 1.0;
@@ -92,10 +92,16 @@ void IngameEnemyController::render(struct _fbg* pFbg, const Window& window) cons
 
     for (const Monster& m : monsters)
     {
-        if ((m.x > 0.0f) && (m.x < g_game.ingameMapWidth) && (m.y > 0.0f) &&
-            (m.y < g_game.ingameMapHeight))
+        float x = m.x;
+        float y = m.y;
+        if ((g_game.game == GC_LABYRINTH) && (m.shockTimer > 0))
         {
-            fbg_pixel(pFbg, scale * m.x + window.x, scale * m.y + window.y, (m.color >> 16) & 0xFF,
+            x = m.shockX;
+            y = m.shockY;
+        }
+        if ((x > 0.0f) && (x < g_game.ingameMapWidth) && (y > 0.0f) && (y < g_game.ingameMapHeight))
+        {
+            fbg_pixel(pFbg, scale * x + window.x, scale * y + window.y, (m.color >> 16) & 0xFF,
                 (m.color >> 8) & 0xFF, m.color & 0xFF);
         }
     }

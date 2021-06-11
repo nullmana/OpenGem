@@ -13,6 +13,7 @@ IngameMap::IngameMap(IngameCore& core, IngameLevelDefinition& level)
       buildingController(level),
       structureController(level),
       enemyController(manaPool),
+      projectileController(manaPool),
       pathfinder(*this, structureController, level)
 {
     tileOccupied = level.tiles;
@@ -39,7 +40,6 @@ IngameMap::IngameMap(IngameCore& core, IngameLevelDefinition& level)
     {
         int nx = std::get<0>(n);
         int ny = std::get<1>(n);
-        printf("%d %d - %d\n", nx, ny, g_game.ingameMonsterNestSize);
         for (int y = ny; y < ny + g_game.ingameMonsterNestSize; ++y)
         {
             for (int x = nx; x < nx + g_game.ingameMonsterNestSize; ++x)

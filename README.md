@@ -46,20 +46,22 @@ v0.3:
 - [x] Amplifiers affect gems in adjacent tiles
 - [x] Shrines can be placed and used, no visual effects required
 - [x] Structures, such as monster nests and beacons which can be placed on the map and targeted by gems
-- [ ] Beacons
-- [ ] Mana Shards
 - [x] Gem bombing
 - [ ] Waves and Monster Types, spawn when called
 
 v0.4:
-- [ ] Status effects
+- [x] Status effects
 - [ ] Chain Hit
 - [ ] Socketing cooldown
 - [ ] Monster stats
+- [ ] Tombs
+- [ ] Beacons
+- [ ] Mana Shards
 - [ ] Tower targeting options
 - [ ] Target selection on map
 - [ ] Kill chain counter
 - [ ] Info tooltips
+- [ ] QoL backport: Reduce gem range
 - [ ] QoL backport: Click buildings to place gems
 - [ ] QoL backport: Tab to drop gems to inventory
 - [x] QoL backport: Template bombing

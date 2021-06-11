@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.2.13] - 2021-06-11
+
+### Added
+
+- Gem components have effects: Bloodbound (GCL), Armor tearing, Shock (GCL), Slow, Poison, Critical hit, Leech
+- Towers firing at structures have a random scatter to their target position
+
+### Fixed
+
+- Fixed 4-component GCL gems using wrong size for iterating
+- Fixed banished monsters not being targeted by towers
+- Fixed bombing with a gem in a building failing to demolish the building that gem came from
+- Monsters did not have their killing shot reset timer set when isKillingShotOnTheWay was set directly
+- Fixed indestructible structures still being targeted by towers
+
+### Changed
+
+- Moved tower shot hitting target from TowerShot to ProjectileController, better fits encapsulation and prepares for adding chain hit
+
+
 ## [0.2.12] - 2021-06-11
 
 ### Added

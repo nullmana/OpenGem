@@ -41,7 +41,7 @@ STATUS IngameManaPool::render(struct _fbg* pFbg, const Window& window) const
     return STATUS_OK;
 }
 
-void IngameManaPool::addMana(double delta, bool applyGainMultipliers)
+double IngameManaPool::addMana(double delta, bool applyGainMultipliers)
 {
     if (applyGainMultipliers)
     {
@@ -49,6 +49,8 @@ void IngameManaPool::addMana(double delta, bool applyGainMultipliers)
     }
 
     mana += delta;
+
+    return delta;
 }
 
 void IngameManaPool::expandManaPool()

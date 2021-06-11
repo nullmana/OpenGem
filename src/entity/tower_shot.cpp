@@ -11,9 +11,27 @@ TowerShot::TowerShot(const Tower& tower, Targetable* pTarget_) : pTarget(pTarget
     pSourceGem = tower.pGem;
     shot = pSourceGem->shotFinal;
     damage = shot.rollDamage();
+    crit = shot.rollCritMultiplier();
 
-    lastTargetX = pTarget_->x;
-    lastTargetY = pTarget_->y;
+    if (g_game.game == GC_LABYRINTH)
+    {
+        if (shot.component[COMPONENT_BLOODBOUND] > 0.0)
+            damage += shot.component[COMPONENT_BLOODBOUND] * pSourceGem->kills;
+    }
+
+    const float scatter = pTarget->getShotVariance();
+    if (scatter > 0.0f)
+    {
+        scatterX = 2.0f * (rand() / float(RAND_MAX)) * scatter - scatter;
+        scatterY = 2.0f * (rand() / float(RAND_MAX)) * scatter - scatter;
+    }
+    else
+    {
+        scatterX = scatterY = 0.0f;
+    }
+
+    lastTargetX = pTarget_->x + scatterX;
+    lastTargetY = pTarget_->y + scatterY;
     x = tower.x;
     y = tower.y;
 
@@ -46,8 +64,8 @@ bool TowerShot::tick(int frames)
     // Update every frame in case pTarget is lost
     if (pTarget != NULL)
     {
-        lastTargetX = pTarget->x;
-        lastTargetY = pTarget->y;
+        lastTargetX = pTarget->x + scatterX;
+        lastTargetY = pTarget->y + scatterY;
     }
 
     if (g_game.game == GC_LABYRINTH)
@@ -66,15 +84,7 @@ bool TowerShot::tick(int frames)
         }
 
         if ((z < 20.0f) && (fabs(lastTargetX - x) + fabs(lastTargetY - y) < (4.0f / 33.0f)))
-        {
-            if (pTarget != NULL)
-            {
-                --pTarget->incomingShots;
-                pTarget->incomingDamage -= pTarget->calculateIncomingDamage(damage);
-                pTarget->receiveShotDamage(shot, damage, pSourceGem);
-            }
             return true;
-        }
     }
     else if (g_game.game == GC_CHASINGSHADOWS)
     {
@@ -95,15 +105,7 @@ bool TowerShot::tick(int frames)
         }
 
         if (fabs(lastTargetX - x) + fabs(lastTargetY - y) < (9.0f / 17.0f))
-        {
-            if (pTarget != NULL)
-            {
-                --pTarget->incomingShots;
-                pTarget->incomingDamage -= pTarget->calculateIncomingDamage(damage);
-                pTarget->receiveShotDamage(shot, damage, pSourceGem);
-            }
             return true;
-        }
     }
     else
     {

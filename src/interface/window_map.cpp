@@ -195,6 +195,8 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                 Gem* pDraggedGem = pCore->inventory.getDraggedGem();
                 if (pDraggedGem != NULL)
                 {
+                    if (pDraggedGem->pBuilding != NULL)
+                        pCore->inventory.removeGemFromBuilding(pDraggedGem->pBuilding);
                     map.demolishBuilding(ix, iy);
                     map.dropGemBomb(pDraggedGem, xpos - x, ypos - y);
 
