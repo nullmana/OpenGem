@@ -49,8 +49,8 @@ uint32_t ShotData::rollChainLength() const
 {
     if (component[COMPONENT_CHAIN] <= 0.0)
         return 0;
-    if (component[COMPONENT_CHAIN] > 1E6)
-        return 1E6;
+    if (component[COMPONENT_CHAIN] > 1E9)
+        return 1E9;
 
     double base = floor(component[COMPONENT_CHAIN]);
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.14.3] - 2021-06-12
+
+### Fixed
+
+- Shifted cap on GCL chain hit for traps from 1E6 to 1E9
+
+
 ## [0.2.14.2] - 2021-06-12
 
 ### Fixed

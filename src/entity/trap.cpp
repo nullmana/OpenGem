@@ -38,9 +38,9 @@ void Trap::tick(IngameMap& map, int frames)
         if (targetsInRange.empty())
             return;
 
-        uint32_t shots = frames;
-        uint32_t chain = 1 + pGem->shotFinal.rollChainLength();
-        uint32_t targetsLeeched = 0;
+        uint64_t shots = frames;
+        uint64_t chain = 1 + pGem->shotFinal.rollChainLength();
+        uint64_t targetsLeeched = 0;
 
         if (chain == 1)
         {
@@ -66,9 +66,9 @@ void Trap::tick(IngameMap& map, int frames)
         else
         {
             // First plusHitPerTarget take hitsPerTarget+1, rest take hitsPerTarget
-            uint32_t hitsPerTarget;
-            uint32_t plusHitPerTarget;
-            uint32_t shotsSpent = 0;
+            uint64_t hitsPerTarget;
+            uint64_t plusHitPerTarget;
+            uint64_t shotsSpent = 0;
 
             // GCL allows hitting a target multiple times with the same chain
             if ((g_game.game != GC_LABYRINTH) && (chain >= targetsInRange.size()))
@@ -95,7 +95,7 @@ void Trap::tick(IngameMap& map, int frames)
             {
                 Targetable* t = targetsInRange[ti];
 
-                uint32_t hits = (ti < plusHitPerTarget) ? hitsPerTarget + 1 : hitsPerTarget;
+                uint64_t hits = (ti < plusHitPerTarget) ? hitsPerTarget + 1 : hitsPerTarget;
                 if (hits == 0)
                     break;
 
@@ -103,16 +103,15 @@ void Trap::tick(IngameMap& map, int frames)
 
                 if (t->isKilled)
                 {
+                    uint64_t remainingTargets = targetsInRange.size() - ti;
                     // Reallocate unused shots to remaining targets
                     if (g_game.game == GC_LABYRINTH)
                     {
-                        uint32_t remainingTargets = targetsInRange.size() - ti;
                         hitsPerTarget = (shots * chain - shotsSpent) / remainingTargets;
                         plusHitPerTarget = ((shots * chain - shotsSpent) % remainingTargets) + ti;
                     }
                     else if (hitsPerTarget < shots)
                     {
-                        uint32_t remainingTargets = targetsInRange.size() - ti;
                         hitsPerTarget = std::min(shots, (shots * chain - shotsSpent) / remainingTargets);
                         plusHitPerTarget = ((shots * chain - shotsSpent) % remainingTargets) + ti;
                     }
