@@ -32,7 +32,7 @@ double ShotData::rollCritMultiplier() const
     if (g_game.game == GC_LABYRINTH)
     {
         double multiplier = floor(component[COMPONENT_CRITICAL_POWER]);
-        if ((rand() / double(RAND_MAX)) <= fmod(component[COMPONENT_CRITICAL_POWER], 1.0))
+        if ((rand() / double(RAND_MAX)) <= (component[COMPONENT_CRITICAL_POWER] - multiplier))
             multiplier += 1.0;
         return multiplier;
     }
@@ -43,6 +43,19 @@ double ShotData::rollCritMultiplier() const
         else
             return 0.0;
     }
+}
+
+uint32_t ShotData::rollChainLength() const
+{
+    if (component[COMPONENT_CHAIN] <= 0.0)
+        return 0;
+    if (component[COMPONENT_CHAIN] > 1E6)
+        return 1E6;
+
+    double base = floor(component[COMPONENT_CHAIN]);
+
+    uint32_t chain = uint32_t(base) + (((rand() / double(RAND_MAX)) <= (component[COMPONENT_CHAIN] - base)) ? 1 : 0);
+    return (g_game.game == GC_LABYRINTH) ? chain : chain - 1;
 }
 
 ShotData ShotData::addExisting(const ShotData& other) const

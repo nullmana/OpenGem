@@ -19,10 +19,11 @@ void IngameEnemyController::spawnMonsters(const IngamePathfinder& pathfinder, in
     const std::vector<const MonsterSpawnNode*> nodes = pathfinder.getMonsterSpawnNodes();
 
     MonsterPrototype mp;
-    mp.hp = 50.0;
+    mp.hp = 10000.0;
     mp.armor = 2.0;
     mp.mana = 8.0;
     mp.banishmentCostMultiplier = 1.0;
+    mp.type = TARGET_REAVER;
 
     for (int i = 0; i < num; ++i)
     {
@@ -137,32 +138,79 @@ void IngameEnemyController::render(struct _fbg* pFbg, const Window& window) cons
     }
 }
 
-std::vector<Targetable*> IngameEnemyController::getTargetsWithinRangeSq(
-    float y, float x, float rangeSq, bool ignoreKillingShot)
+std::vector<Targetable*> IngameEnemyController::getTargetsWithinRangeSq(float y, float x, float rangeSq, uint32_t typeMask, bool ignoreKillingShot)
 {
     std::vector<Targetable*> targets;
+    const double fullMapRangeSq = g_game.ingameMapWidth * g_game.ingameMapWidth +
+                                  g_game.ingameMapHeight + g_game.ingameMapHeight;
 
-    for (Monster& m : monsters)
+    if (!!(typeMask & TARGET_MONSTER))
     {
-        if (!m.isKilled && (ignoreKillingShot || !m.isKillingShotOnTheWay) &&
-            ((m.y - y) * (m.y - y) + (m.x - x) * (m.x - x) <= rangeSq))
+        if (rangeSq <= fullMapRangeSq / 2)
         {
-            targets.push_back(&m);
+            int range = ceil(sqrt(rangeSq));
+            int ix = x;
+            int iy = y;
+
+            for (int j = std::max(0, iy - range); j < std::min(g_game.ingameMapHeight - 1, iy + range); ++j)
+            {
+                for (int i = std::max(0, ix - range); i < std::min(g_game.ingameMapWidth - 1, ix + range); ++i)
+                {
+                    // Add some tolerance to avoid leaking to rounding errors, shouldn't be common or noticable
+                    if (((j - iy) * (j - iy) + (i - ix) * (i - ix)) < rangeSq + 2)
+                    {
+                        std::vector<Monster*>& mt = monstersOnTile.at(j, i);
+                        for (Monster* m : mt)
+                        {
+                            if (!m->isKilled && (ignoreKillingShot || !m->isKillingShotOnTheWay) &&
+                                (typeMask & m->type) &&
+                                (((m->y - y) * (m->y - y) + (m->x - x) * (m->x - x)) <= rangeSq))
+                            {
+                                targets.push_back(m);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if (rangeSq >= fullMapRangeSq)
+        {
+            for (Monster& m : monsters)
+            {
+                if (!m.isKilled && (ignoreKillingShot || !m.isKillingShotOnTheWay) && (typeMask & m.type))
+                {
+                    targets.push_back(&m);
+                }
+            }
+        }
+        else
+        {
+            for (Monster& m : monsters)
+            {
+                if (!m.isKilled && (ignoreKillingShot || !m.isKillingShotOnTheWay) &&
+                    (typeMask & m.type) &&
+                    (((m.y - y) * (m.y - y) + (m.x - x) * (m.x - x)) <= rangeSq))
+                {
+                    targets.push_back(&m);
+                }
+            }
         }
     }
 
     return targets;
 }
 
-bool IngameEnemyController::hasTargetsWithinRangeSq(
-    float y, float x, float rangeSq, bool ignoreKillingShot) const
+bool IngameEnemyController::hasTargetsWithinRangeSq(float y, float x, float rangeSq, uint32_t typeMask, bool ignoreKillingShot) const
 {
-    for (const Monster& m : monsters)
+    if (!!(typeMask & TARGET_MONSTER))
     {
-        if (!m.isKilled && (ignoreKillingShot || !m.isKillingShotOnTheWay) &&
-            ((m.y - y) * (m.y - y) + (m.x - x) * (m.x - x) <= rangeSq))
+        for (const Monster& m : monsters)
         {
-            return true;
+            if (!m.isKilled && (ignoreKillingShot || !m.isKillingShotOnTheWay) && (typeMask & m.type) &&
+                ((m.y - y) * (m.y - y) + (m.x - x) * (m.x - x) <= rangeSq))
+            {
+                return true;
+            }
         }
     }
     return false;

@@ -12,7 +12,8 @@ private:
     int getInventorySlot(float xpos, float ypos) const;
 
 public:
-    WindowInventory(IngameInventory& inventory_) : inventory(inventory_) {}
+    WindowInventory(IngameInventory& inventory_)
+        : inventory(inventory_) {}
 
     virtual STATUS render(struct _fbg* pFbg);
 

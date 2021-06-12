@@ -10,7 +10,8 @@
 
 struct IngameLevelDefinition
 {
-    IngameLevelDefinition() : tiles(g_game.ingameMapHeight, g_game.ingameMapWidth) {}
+    IngameLevelDefinition()
+        : tiles(g_game.ingameMapHeight, g_game.ingameMapWidth) {}
 
     vector2d<TILE_TYPE> tiles;
     std::vector<std::tuple<int, int, bool>> monsterNests;

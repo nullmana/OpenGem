@@ -321,9 +321,9 @@ Gem::Gem(Gem* pSourceGem) // Duplicate Gem Constructor, not Copy
     recalculateShotData();
 }
 
-#define COMBINE_COMPONENT(r1, r2, comp)                                                            \
-    shotNew.component[comp] =                                                                      \
-        (r1)*std::max(shotRaw.component[comp], pOther->shotRaw.component[comp]) +                  \
+#define COMBINE_COMPONENT(r1, r2, comp)                                           \
+    shotNew.component[comp] =                                                     \
+        (r1)*std::max(shotRaw.component[comp], pOther->shotRaw.component[comp]) + \
         (r2)*std::min(shotRaw.component[comp], pOther->shotRaw.component[comp])
 
 void Gem::combineWith(const Gem* pOther)
@@ -698,6 +698,7 @@ void Gem::debugPrint() const
         if (displayComponents[i] != GEM_COMPONENT_TYPE_COUNT)
             printf("-%s", color[displayComponents[i]]);
     printf("\n\t%d Color Components (0x%x)\n", numComponents(), componentMask);
+    printf("\tHits: %lu | Kills: %lu | Total Kills: %lu\n", hits, killsNonCombined, kills);
     printf("Raw:\n");
     shotRaw.debugPrint();
     printf("Amp:\n");

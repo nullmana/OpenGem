@@ -2,6 +2,8 @@
 
 #include "common/vector2d.h"
 
+#include "constants/target_type.h"
+
 #include "entity/monster.h"
 #include "entity/monster_node.h"
 
@@ -22,10 +24,6 @@ private:
     std::list<Monster> monsters;
     vector2d<std::vector<Monster*>> monstersOnTile;
 
-    std::vector<Targetable*> getTargetsWithinRangeSq(
-        float y, float x, float rangeSq, bool ignoreKillingShot);
-    bool hasTargetsWithinRangeSq(float y, float x, float rangeSq, bool ignoreKillingShot) const;
-
 public:
     IngameEnemyController(IngameManaPool& mp_);
     void spawnMonsters(const IngamePathfinder& pathfinder, int num);
@@ -43,20 +41,28 @@ public:
     }
     const std::vector<Monster*>& getMonstersOnTile(int y, int x) { return monstersOnTile.at(y, x); }
 
-    std::vector<Targetable*> getTowerTargetsWithinRangeSq(float y, float x, float rangeSq)
+    std::vector<Targetable*> getTargetsWithinRangeSq(float y, float x,
+        float rangeSq, uint32_t typeMask, bool ignoreKillingShot);
+    bool hasTargetsWithinRangeSq(float y, float x,
+        float rangeSq, uint32_t typeMask, bool ignoreKillingShot) const;
+
+    std::vector<Targetable*> getTowerTargetsWithinRangeSq(float y, float x, float rangeSq, uint32_t typeMask)
     {
-        return getTargetsWithinRangeSq(y, x, rangeSq, false);
+        return getTargetsWithinRangeSq(y, x, rangeSq, typeMask, false);
     }
     std::vector<Targetable*> getShrineTargetsWithinRangeSq(float y, float x, float rangeSq)
     {
-        return getTargetsWithinRangeSq(y, x, rangeSq, true);
+        return getTargetsWithinRangeSq(y, x, rangeSq, TARGET_ENEMY, true);
     }
     bool hasShrineTargetsWithinRangeSq(float y, float x, float rangeSq) const
     {
-        return hasTargetsWithinRangeSq(y, x, rangeSq, true);
+        return hasTargetsWithinRangeSq(y, x, rangeSq, TARGET_ENEMY, true);
     }
 
 #ifdef DEBUG
-    const std::list<Monster>& getMonsters() const { return monsters; }
+    const std::list<Monster>& getMonsters() const
+    {
+        return monsters;
+    }
 #endif
 };

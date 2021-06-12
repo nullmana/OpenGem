@@ -7,7 +7,8 @@
 class PathEdgeNode : public MonsterSpawnNode
 {
 public:
-    PathEdgeNode(int ix_, int iy_) : MonsterSpawnNode(ix_ + 0.5f, iy_ + 0.5f), ix(ix_), iy(iy_)
+    PathEdgeNode(int ix_, int iy_)
+        : MonsterSpawnNode(ix_ + 0.5f, iy_ + 0.5f), ix(ix_), iy(iy_)
     {
         spawnX = nodeX;
         spawnY = nodeY;

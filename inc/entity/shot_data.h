@@ -2,6 +2,8 @@
 
 #include "constants/gem_component_type.h"
 
+#include <cstdint>
+
 struct ShotData
 {
 public:
@@ -17,6 +19,7 @@ public:
     float rangeSq() const { return range * range; }
     double rollDamage() const;
     double rollCritMultiplier() const;
+    uint32_t rollChainLength() const;
 
     // Manipulate ShotData for amplification
     // Does not affect critical chance or slow duration

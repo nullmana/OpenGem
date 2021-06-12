@@ -18,6 +18,7 @@ public:
     ShotData shot;
     double damage;
     double crit;
+    bool isKillingShot;
 
     Gem* pSourceGem;
     Targetable* pTarget;

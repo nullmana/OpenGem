@@ -7,11 +7,11 @@
 
 void Tower::tick(IngameMap& map, int frames)
 {
-    if ((pGem != NULL) && !pGem->isDragged)
+    if ((pGem != NULL) && !pGem->isDragged && (frames > 0))
     {
         const float rangeSq = pGem->shotFinal.rangeSq();
         std::vector<Targetable*> targetsInRange =
-            map.enemyController.getTowerTargetsWithinRangeSq(y, x, rangeSq);
+            map.enemyController.getTowerTargetsWithinRangeSq(y, x, rangeSq, TARGET_ENEMY);
 
         if (!targetsInRange.empty())
         {

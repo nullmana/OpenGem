@@ -12,8 +12,7 @@
 #define MONSTER_SPEED_FLOAT_FACTOR (1.0f / 17.0f)
 #define HEALTH_BAR_FADEOUT_TIME 30
 
-Monster::Monster(
-    const MonsterSpawnNode* pStart, const MonsterNode* pTarget, const MonsterPrototype& mp)
+Monster::Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget, const MonsterPrototype& mp)
     : Targetable(std::min(mp.hp, 1E300))
 {
     pSourceNode = pStart;
@@ -25,6 +24,7 @@ Monster::Monster(
     armor = mp.armor;
     mana = mp.mana;
     banishmentCostMultiplier = mp.banishmentCostMultiplier;
+    type = mp.type;
     shockImmunity = 0.0;
     poisonDamage = 0.0;
 
@@ -78,19 +78,40 @@ void Monster::spawn()
     }
 }
 
-void Monster::receiveShotDamage(ShotData& shot, double damage, double crit, Gem* pSourceGem)
+uint32_t Monster::receiveShotDamage(ShotData& shot, uint32_t numShots, double damage, double crit, Gem* pSourceGem, bool isKillingShot)
 {
+    uint32_t shotsTaken = 0;
+
     if (isKilled)
-        return;
+        return 0;
 
-    damage = std::max<double>(1.0, damage * (1.0 + crit) - armor);
-    if (isKillingShotOnTheWay)
+    double modifiedDamage = std::max<double>(1.0, damage * (1.0 + crit) - armor);
+    if (isKillingShotOnTheWay && isKillingShot)
+    {
         damage += 2.0 * hpMax;
+        hp -= damage;
+        shotsTaken = 1;
+    }
+    else
+    {
+        while (shotsTaken < numShots)
+        {
+            hp -= damage;
+            ++shotsTaken;
 
-    hp -= damage;
+            if ((shot.component[COMPONENT_ARMOR] > 0.0) && (armor > 0.0))
+            {
+                armor = std::max(0.0, armor - shot.component[COMPONENT_ARMOR]);
+                modifiedDamage = std::max<double>(1.0, damage * (1.0 + crit) - armor);
+            }
+
+            if (hp < 1.0)
+                break;
+        }
+    }
 
     if (pSourceGem != NULL)
-        ++pSourceGem->hits;
+        pSourceGem->hits += shotsTaken;
 
     if (hp < hpMax)
         healthBarTimer = HEALTH_BAR_FADEOUT_TIME;
@@ -107,13 +128,11 @@ void Monster::receiveShotDamage(ShotData& shot, double damage, double crit, Gem*
     }
     else
     {
-        if (shot.component[COMPONENT_ARMOR] > 0.0)
-            armor = std::max(0.0, armor - shot.component[COMPONENT_ARMOR]);
-
         if ((g_game.game == GC_LABYRINTH) && (shockTimer <= 0) &&
             (shot.component[COMPONENT_SHOCK] > 0.0))
         {
-            if (shot.component[COMPONENT_SHOCK] - shockImmunity > (rand() / double(RAND_MAX)))
+            double totalChance = 1.0 - pow(1.0 - (shot.component[COMPONENT_SHOCK] - shockImmunity), shotsTaken);
+            if (totalChance > (rand() / double(RAND_MAX)))
             {
                 shockTimer = 90;
                 shockImmunity += 0.05 + 0.07 * (rand() / double(RAND_MAX));
@@ -145,11 +164,17 @@ void Monster::receiveShotDamage(ShotData& shot, double damage, double crit, Gem*
             {
                 double a = poisonDamage * poisonTimer;
                 double b = shot.component[COMPONENT_POISON];
-                poisonDamage = (a + b * b / (a + b)) / (9.0 * 30.0);
+                for (uint32_t i = 0; i < shotsTaken; ++i)
+                {
+                    a = (a + b * b / (a + b));
+                }
+                poisonDamage = a / (9.0 * 30.0);
                 poisonTimer = 9 * 30;
             }
         }
     }
+
+    return shotsTaken;
 }
 
 void Monster::receiveShrineDamage(double damage)

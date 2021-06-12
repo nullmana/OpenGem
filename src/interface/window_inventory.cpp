@@ -173,8 +173,8 @@ void WindowInventory::handleKeyInput(
             case GLFW_KEY_U:
                 if (pCore->manaPool.getMana() >= (pGem->manaCost + Gem::gemCombineCostCurrent))
                 {
-                    inventory.combineGems(pGem, pGem);
                     pCore->manaPool.addMana(-(pGem->manaCost + Gem::gemCombineCostCurrent), false);
+                    inventory.combineGems(pGem, pGem);
                 }
                 break;
             case GLFW_KEY_X:

@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.2.14] - 2021-06-11
+
+### Added
+
+- Added chain hit to towers and traps
+- Chain hit behaves as in GCL and GCCS, with a few minor bugfixes:
+    - GCCS towers got one extra hit on all chain hits, which has been removed
+    - Removed the 9xSpeed limit on GCL trap targeting
+    - Removed 2xSpeed limit on GCCS trap targeting per monster
+    - Both GCL and GCCS implemented a range minimum range to tower chain hit in a failed attempt to prevent duplicate hitsagainst the original target, removed the restriction and added working deduplication.
+- Added some premature optimization to receiveShotDamage for handling arbitrarily large numbers of hits by traps against the same target, which GCL allows
+
+### Fixed
+
+- Fixed incoming killing shot not caring which shot is the actual killing shot, resulting in monsters dying early while several other shots are on the way. This bug is present in GCL and GCCS, but was fixed in GCFW.
+- Fixed U upgrading taking mana based on gem's post-upgrade cost, costing double what it should
+- Fixed multiple warping shots potentially hitting a killed monster
+
+### Performance
+- Tower performance significantly improved with targeting change
+	- T=4:(M=100k=60fps; M=200k=50fps)
+	- T=10:(M=100k=60fps; M=200k=40fps)
+	- T=24:(M=100k=40fps; M=200k=20fps)
+- Performance now scales with how many monsters are actually in range of towers
+	- T=10|M=100k:(R=4.5=35fps; R=11.6=10fps; R=14.6=7fps)
+- Fixed towers and traps selecting targets while paused for no reason
+
+
 ## [0.2.13] - 2021-06-11
 
 ### Added

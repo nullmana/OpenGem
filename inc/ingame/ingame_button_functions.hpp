@@ -1,15 +1,15 @@
-#define DEFFN_BUTTON_BUILD_INPUT(fnname, targetState)                                              \
-    static void fnname(Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)       \
-    {                                                                                              \
-        if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))                          \
-        {                                                                                          \
-            IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);                    \
-            pCore->inputHandler.toggleInputState(targetState);                                     \
-            if (pCore->inputHandler.getInputState() == INPUT_IDLE)                                 \
-                thisb.state &= ~BUTTON_ACTIVE;                                                     \
-            else                                                                                   \
-                thisb.state |= BUTTON_ACTIVE;                                                      \
-        }                                                                                          \
+#define DEFFN_BUTTON_BUILD_INPUT(fnname, targetState)                                        \
+    static void fnname(Button& thisb, GLFWwindow* pWindow, int button, int action, int mods) \
+    {                                                                                        \
+        if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))                    \
+        {                                                                                    \
+            IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);              \
+            pCore->inputHandler.toggleInputState(targetState);                               \
+            if (pCore->inputHandler.getInputState() == INPUT_IDLE)                           \
+                thisb.state &= ~BUTTON_ACTIVE;                                               \
+            else                                                                             \
+                thisb.state |= BUTTON_ACTIVE;                                                \
+        }                                                                                    \
     }
 
 DEFFN_BUTTON_BUILD_INPUT(buttonBuildWall_handleMouseInput, INPUT_BUILD_WALL);
@@ -69,28 +69,28 @@ static void buttonBuildMana_handleMouseInput(
     }
 }
 
-#define DEFFN_BUTTON_BUILD_HOVER(fnname)                                                           \
-    static void fnname(Button& thisb, GLFWwindow* pWindow, double xpos, double ypos)               \
-    {                                                                                              \
-        IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);                        \
-        thisb.state |= BUTTON_HOVER;                                                               \
+#define DEFFN_BUTTON_BUILD_HOVER(fnname)                                             \
+    static void fnname(Button& thisb, GLFWwindow* pWindow, double xpos, double ypos) \
+    {                                                                                \
+        IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);          \
+        thisb.state |= BUTTON_HOVER;                                                 \
     }
 
 DEFFN_BUTTON_BUILD_HOVER(button_handleMouseHover);
 #undef DEFFN_BUTTON_BUILD_HOVER
 
-#define DEFFN_BUTTON_GEM_INPUT(fnname, gemType)                                                    \
-    static void fnname(Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)       \
-    {                                                                                              \
-        if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))                          \
-        {                                                                                          \
-            IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);                    \
-            pCore->inputHandler.startCreateGem(gemType);                                           \
-            if (pCore->inputHandler.getCreatingGemType() == -1)                                    \
-                thisb.state &= ~BUTTON_ACTIVE;                                                     \
-            else                                                                                   \
-                thisb.state |= BUTTON_ACTIVE;                                                      \
-        }                                                                                          \
+#define DEFFN_BUTTON_GEM_INPUT(fnname, gemType)                                              \
+    static void fnname(Button& thisb, GLFWwindow* pWindow, int button, int action, int mods) \
+    {                                                                                        \
+        if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))                    \
+        {                                                                                    \
+            IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);              \
+            pCore->inputHandler.startCreateGem(gemType);                                     \
+            if (pCore->inputHandler.getCreatingGemType() == -1)                              \
+                thisb.state &= ~BUTTON_ACTIVE;                                               \
+            else                                                                             \
+                thisb.state |= BUTTON_ACTIVE;                                                \
+        }                                                                                    \
     }
 
 DEFFN_BUTTON_GEM_INPUT(buttonGemSL_handleMouseInput, GEM_SLOW);
@@ -152,17 +152,17 @@ static void buttonGemAnvil_handleMouseInput(
     }
 }
 
-#define DEFFN_BUTTON_SPEED_INPUT(fnname, targetSpeed, elseSpeed)                                   \
-    static void fnname(Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)       \
-    {                                                                                              \
-        if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))                          \
-        {                                                                                          \
-            IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);                    \
-            if (pCore->inputHandler.getSpeedMultiplier() != targetSpeed)                           \
-                pCore->inputHandler.setSpeedMultiplier(targetSpeed);                               \
-            else                                                                                   \
-                pCore->inputHandler.setSpeedMultiplier(elseSpeed);                                 \
-        }                                                                                          \
+#define DEFFN_BUTTON_SPEED_INPUT(fnname, targetSpeed, elseSpeed)                             \
+    static void fnname(Button& thisb, GLFWwindow* pWindow, int button, int action, int mods) \
+    {                                                                                        \
+        if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))                    \
+        {                                                                                    \
+            IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);              \
+            if (pCore->inputHandler.getSpeedMultiplier() != targetSpeed)                     \
+                pCore->inputHandler.setSpeedMultiplier(targetSpeed);                         \
+            else                                                                             \
+                pCore->inputHandler.setSpeedMultiplier(elseSpeed);                           \
+        }                                                                                    \
     }
 
 DEFFN_BUTTON_SPEED_INPUT(buttonSpeed1_handleMouseInput, 1, 3);

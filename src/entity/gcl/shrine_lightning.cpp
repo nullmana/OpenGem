@@ -5,7 +5,8 @@
 
 #include <cmath>
 
-ShrineLightning::ShrineLightning(IngameMap& map_, int ix_, int iy_) : Shrine(map_, ix_, iy_)
+ShrineLightning::ShrineLightning(IngameMap& map_, int ix_, int iy_)
+    : Shrine(map_, ix_, iy_)
 {
     type = TILE_SHRINE_LI;
     shrineType = SHRINE_LIGHTNING;
@@ -66,8 +67,7 @@ void ShrineLightning::activate(Gem* pGem)
 
     for (size_t i = 0; (i < cachedTargets.size()) && (i < numTargets); ++i)
     {
-        cachedTargets[i]->receiveShotDamage(
-            pGem->shotFinal, pGem->shotFinal.rollDamage(), 0.0, pGem);
+        cachedTargets[i]->receiveShotDamage(pGem->shotFinal, 1, pGem->shotFinal.rollDamage(), 0.0, pGem, false);
     }
 }
 

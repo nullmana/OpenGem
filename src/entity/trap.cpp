@@ -9,7 +9,7 @@
 
 void Trap::tick(IngameMap& map, int frames)
 {
-    if ((pGem != NULL) && !pGem->isDragged)
+    if ((pGem != NULL) && !pGem->isDragged && (frames > 0))
     {
         std::vector<Targetable*> targetsInRange;
         float rangeSq = 1.0f;
@@ -35,30 +35,96 @@ void Trap::tick(IngameMap& map, int frames)
             }
         }
 
-        int shots = frames;
-        if (shots > targetsInRange.size())
-            shots = targetsInRange.size();
+        if (targetsInRange.empty())
+            return;
 
-        // TODO chain hit
-        for (size_t i = 0; i < shots; ++i)
+        uint32_t shots = frames;
+        uint32_t chain = 1 + pGem->shotFinal.rollChainLength();
+        uint32_t targetsLeeched = 0;
+
+        if (chain == 1)
         {
-            if (!targetsInRange[i]->isKilled)
+            if (shots > targetsInRange.size())
+                shots = targetsInRange.size();
+
+            targetsLeeched = shots;
+            for (size_t ti = 0; ti < shots; ++ti)
             {
+                // Roll individual hits without chain
                 double damage = pGem->shotFinal.rollDamage();
                 double crit = pGem->shotFinal.rollCritMultiplier();
+
                 if (g_game.game == GC_LABYRINTH)
                 {
                     if (pGem->shotFinal.component[COMPONENT_BLOODBOUND] > 0.0)
                         damage += pGem->shotFinal.component[COMPONENT_BLOODBOUND] * pGem->kills;
                 }
 
-                targetsInRange[i]->receiveShotDamage(pGem->shotFinal, damage, crit, pGem);
+                targetsInRange[ti]->receiveShotDamage(pGem->shotFinal, 1, damage, crit, pGem, false);
             }
+        }
+        else
+        {
+            // First plusHitPerTarget take hitsPerTarget+1, rest take hitsPerTarget
+            uint32_t hitsPerTarget;
+            uint32_t plusHitPerTarget;
+            uint32_t shotsSpent = 0;
+
+            // GCL allows hitting a target multiple times with the same chain
+            if ((g_game.game != GC_LABYRINTH) && (chain >= targetsInRange.size()))
+            {
+                hitsPerTarget = shots;
+                plusHitPerTarget = 0;
+            }
+            else
+            {
+                hitsPerTarget = (shots * chain) / targetsInRange.size();
+                plusHitPerTarget = (shots * chain) % targetsInRange.size();
+            }
+
+            // Don't bother with individual rolls for chain, it's unbounded in GCL
+            double damage = pGem->shotFinal.rollDamage();
+            double crit = pGem->shotFinal.rollCritMultiplier();
+            if (g_game.game == GC_LABYRINTH)
+            {
+                if (pGem->shotFinal.component[COMPONENT_BLOODBOUND] > 0.0)
+                    damage += pGem->shotFinal.component[COMPONENT_BLOODBOUND] * pGem->kills;
+            }
+
+            for (size_t ti = 0; ti < targetsInRange.size(); ++ti)
+            {
+                Targetable* t = targetsInRange[ti];
+
+                uint32_t hits = (ti < plusHitPerTarget) ? hitsPerTarget + 1 : hitsPerTarget;
+                if (hits == 0)
+                    break;
+
+                shotsSpent += t->receiveShotDamage(pGem->shotFinal, hits, damage, crit, pGem, false);
+
+                if (t->isKilled)
+                {
+                    // Reallocate unused shots to remaining targets
+                    if (g_game.game == GC_LABYRINTH)
+                    {
+                        uint32_t remainingTargets = targetsInRange.size() - ti;
+                        hitsPerTarget = (shots * chain - shotsSpent) / remainingTargets;
+                        plusHitPerTarget = ((shots * chain - shotsSpent) % remainingTargets) + ti;
+                    }
+                    else if (hitsPerTarget < shots)
+                    {
+                        uint32_t remainingTargets = targetsInRange.size() - ti;
+                        hitsPerTarget = std::min(shots, (shots * chain - shotsSpent) / remainingTargets);
+                        plusHitPerTarget = ((shots * chain - shotsSpent) % remainingTargets) + ti;
+                    }
+                    break;
+                }
+            }
+            targetsLeeched = shotsSpent;
         }
 
         if (pGem->shotFinal.component[COMPONENT_LEECH] > 0.0)
         {
-            map.getManaPool().addMana(pGem->shotFinal.component[COMPONENT_LEECH] * shots, true);
+            map.getManaPool().addMana(pGem->shotFinal.component[COMPONENT_LEECH] * targetsLeeched, true);
         }
     }
 }

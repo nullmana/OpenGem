@@ -1,10 +1,12 @@
 #include "ingame/ingame_projectile_controller.h"
 #include "ingame/ingame_level_definition.h"
 #include "ingame/ingame_mana_pool.h"
+#include "ingame/ingame_map.h"
 
 #include "wrapfbg.h"
 
-IngameProjectileController::IngameProjectileController(IngameManaPool& mp_) : manaPool(mp_) {}
+IngameProjectileController::IngameProjectileController(IngameMap& map_)
+    : map(map_) {}
 
 void IngameProjectileController::createTowerShots(const Tower& tower, Targetable* pTarget, int num)
 {
@@ -14,29 +16,64 @@ void IngameProjectileController::createTowerShots(const Tower& tower, Targetable
         shots.emplace_back(tower, pTarget);
         damage += pTarget->calculateIncomingDamage(shots.back().damage, shots.back().crit);
     }
+
     pTarget->incomingShots += num;
     pTarget->incomingDamage += damage;
+
     if (pTarget->hp <= pTarget->incomingDamage)
     {
         pTarget->setKillingShot();
+        shots.back().isKillingShot = true;
     }
 }
 
 void IngameProjectileController::shotHitsTarget(TowerShot* pShot)
 {
     Targetable* pTarget = pShot->pTarget;
-    if (pTarget != NULL)
+    uint32_t targetsLeeched = 0;
+
+    if ((pTarget != NULL) && !(pTarget->isKilled))
     {
         --pTarget->incomingShots;
         pTarget->incomingDamage -= pTarget->calculateIncomingDamage(pShot->damage, pShot->crit);
-        pTarget->receiveShotDamage(pShot->shot, pShot->damage, pShot->crit, pShot->pSourceGem);
+        pTarget->receiveShotDamage(pShot->shot, 1, pShot->damage, pShot->crit, pShot->pSourceGem, pShot->isKillingShot);
+
+        if (pTarget->canLeech())
+            ++targetsLeeched;
     }
 
-    // TODO chain hit
+    uint32_t chain = 0;
+
+    // No chain hit if hitting something that isn't a monster
+    if ((pTarget == NULL) || !!(pTarget->type & TARGET_MONSTER))
+        chain = pShot->shot.rollChainLength();
+
+    if (chain > 0)
+    {
+        const float chainRangeSq = (g_game.game == GC_LABYRINTH)
+                                       ? ((50.0f / 33.0f) * (50.0f / 33.0f))
+                                       : ((70.0f / 17.0f) * (70.0f / 17.0f));
+
+        std::vector<Targetable*> chainTargets =
+            map.enemyController.getTargetsWithinRangeSq(pShot->y, pShot->x, chainRangeSq, TARGET_MONSTER, true);
+
+        if (chain > chainTargets.size())
+            chain = chainTargets.size();
+
+        for (uint32_t i = 0; i < chain; ++i)
+        {
+            if (chainTargets[i] == pTarget)
+                continue;
+
+            chainTargets[i]->receiveShotDamage(pShot->shot, 1, pShot->damage, pShot->crit, pShot->pSourceGem, false);
+            if (chainTargets[i]->canLeech())
+                ++targetsLeeched;
+        }
+    }
+
     if (pShot->shot.component[COMPONENT_LEECH] > 0.0)
     {
-        if (pTarget->canLeech())
-            manaPool.addMana(pShot->shot.component[COMPONENT_LEECH], true);
+        map.getManaPool().addMana(pShot->shot.component[COMPONENT_LEECH] * targetsLeeched, true);
     }
 }
 
@@ -46,6 +83,8 @@ void IngameProjectileController::warpShotsToTarget(Targetable* pTarget)
     {
         if (it->pTarget == pTarget)
         {
+            it->x = pTarget->x;
+            it->y = pTarget->y;
             shotHitsTarget(&(*it));
             shots.erase(it++);
         }

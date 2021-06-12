@@ -10,7 +10,8 @@ private:
     const IngameManaPool& manaPool;
 
 public:
-    WindowMana(const IngameManaPool& manaPool_) : manaPool(manaPool_) {}
+    WindowMana(const IngameManaPool& manaPool_)
+        : manaPool(manaPool_) {}
 
     virtual STATUS render(struct _fbg* pFbg);
 

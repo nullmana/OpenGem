@@ -53,6 +53,9 @@ public:
     }
 
 #ifdef DEBUG
-    WindowMap* getMapWindow() { return &windowMap; }
+    WindowMap* getMapWindow()
+    {
+        return &windowMap;
+    }
 #endif
 };

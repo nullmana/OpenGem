@@ -6,7 +6,8 @@
 
 #include <unordered_set>
 
-Building::Building(int ix_, int iy_) : Amplifiable(ix_, iy_)
+Building::Building(int ix_, int iy_)
+    : Amplifiable(ix_, iy_)
 {
     x = ix_ + 0.5f * g_game.ingameBuildingSize;
     y = iy_ + 0.5f * g_game.ingameBuildingSize;

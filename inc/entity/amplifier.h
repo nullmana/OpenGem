@@ -5,7 +5,8 @@
 class Amplifier : public Building
 {
 public:
-    Amplifier(int ix_, int iy_) : Building(ix_, iy_) { type = TILE_AMPLIFIER; }
+    Amplifier(int ix_, int iy_)
+        : Building(ix_, iy_) { type = TILE_AMPLIFIER; }
 
     virtual void insertGem(Gem* pGem_);
     virtual void removeGem();

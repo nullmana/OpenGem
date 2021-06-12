@@ -55,7 +55,8 @@ public:
 class MonsterSpawnNode : public MonsterNode
 {
 public:
-    MonsterSpawnNode(float x_, float y_) : MonsterNode(x_, y_) {}
+    MonsterSpawnNode(float x_, float y_)
+        : MonsterNode(x_, y_) {}
     float spawnX;
     float spawnY;
 };

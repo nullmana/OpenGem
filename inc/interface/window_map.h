@@ -13,7 +13,8 @@ private:
     int dragStartY;
 
 public:
-    WindowMap(IngameMap& map_) : map(map_)
+    WindowMap(IngameMap& map_)
+        : map(map_)
     {
         dragStartX = 0;
         dragStartY = 0;

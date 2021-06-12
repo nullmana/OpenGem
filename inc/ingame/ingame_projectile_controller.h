@@ -9,19 +9,19 @@
 #include <unordered_set>
 
 class Tower;
-class IngameManaPool;
+class IngameMap;
 struct _fbg;
 
 class IngameProjectileController
 {
 private:
-    IngameManaPool& manaPool;
+    IngameMap& map;
     std::list<TowerShot> shots;
 
     void shotHitsTarget(TowerShot*);
 
 public:
-    IngameProjectileController(IngameManaPool& mp_);
+    IngameProjectileController(IngameMap& map_);
 
     void createTowerShots(const Tower& tower, Targetable* pTarget, int num);
 

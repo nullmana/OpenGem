@@ -6,12 +6,14 @@
 
 #include <cmath>
 
-TowerShot::TowerShot(const Tower& tower, Targetable* pTarget_) : pTarget(pTarget_)
+TowerShot::TowerShot(const Tower& tower, Targetable* pTarget_)
+    : pTarget(pTarget_)
 {
     pSourceGem = tower.pGem;
     shot = pSourceGem->shotFinal;
     damage = shot.rollDamage();
     crit = shot.rollCritMultiplier();
+    isKillingShot = false;
 
     if (g_game.game == GC_LABYRINTH)
     {
@@ -84,7 +86,12 @@ bool TowerShot::tick(int frames)
         }
 
         if ((z < 20.0f) && (fabs(lastTargetX - x) + fabs(lastTargetY - y) < (4.0f / 33.0f)))
+        {
+            // Set position to target so chain hit based on shot position is most accurate
+            x = lastTargetX;
+            y = lastTargetY;
             return true;
+        }
     }
     else if (g_game.game == GC_CHASINGSHADOWS)
     {
@@ -105,7 +112,11 @@ bool TowerShot::tick(int frames)
         }
 
         if (fabs(lastTargetX - x) + fabs(lastTargetY - y) < (9.0f / 17.0f))
+        {
+            x = lastTargetX;
+            y = lastTargetY;
             return true;
+        }
     }
     else
     {

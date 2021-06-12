@@ -53,7 +53,8 @@ static const GEM_COMPONENT_TYPE gemNumpadMapping_GCCS[9] = {
     GEM_POOLBOUND,
 };
 
-IngameInputHandler::IngameInputHandler(IngameCore& core_) : core(core_)
+IngameInputHandler::IngameInputHandler(IngameCore& core_)
+    : core(core_)
 {
     speedMultiplier = 0;
     savedSpeedMultiplier = 1;
@@ -285,7 +286,11 @@ STATUS IngameInputHandler::handleKeyboardInput()
     {
         if (glfwGetKey(pGlfwContext->window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
         {
-            core.manaPool.addMana(100, true);
+            double mana = 100.0;
+            if (glfwGetKey(pGlfwContext->window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS == GLFW_PRESS)
+                ;
+            mana *= 100.0;
+            core.manaPool.addMana(mana, true);
         }
     }
 #endif

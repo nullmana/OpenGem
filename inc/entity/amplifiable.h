@@ -7,7 +7,8 @@
 class Amplifiable
 {
 public:
-    Amplifiable(int ix_, int iy_) : ix(ix_), iy(iy_) {}
+    Amplifiable(int ix_, int iy_)
+        : ix(ix_), iy(iy_) {}
 
     virtual void recalculateAmplifyEffects() {}
 

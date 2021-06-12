@@ -13,7 +13,7 @@ IngameMap::IngameMap(IngameCore& core, IngameLevelDefinition& level)
       buildingController(level),
       structureController(level),
       enemyController(manaPool),
-      projectileController(manaPool),
+      projectileController(*this),
       pathfinder(*this, structureController, level)
 {
     tileOccupied = level.tiles;

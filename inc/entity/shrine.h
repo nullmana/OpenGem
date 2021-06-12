@@ -19,7 +19,8 @@ protected:
     virtual std::vector<Targetable*> getTargets() = 0;
 
 public:
-    Shrine(IngameMap& map_, int ix_, int iy_) : Building(ix_, iy_), map(map_) {}
+    Shrine(IngameMap& map_, int ix_, int iy_)
+        : Building(ix_, iy_), map(map_) {}
 
     virtual bool canBeDemolished() { return false; }
     virtual bool canBeAmplified() { return false; }

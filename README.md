@@ -51,7 +51,7 @@ v0.3:
 
 v0.4:
 - [x] Status effects
-- [ ] Chain Hit
+- [x] Chain Hit
 - [ ] Socketing cooldown
 - [ ] Monster stats
 - [ ] Tombs

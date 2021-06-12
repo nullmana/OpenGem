@@ -275,8 +275,8 @@ void WindowMap::handleKeyInput(GLFWwindow* pWindow, int key, int scancode, int a
             case GLFW_KEY_U:
                 if (pCore->manaPool.getMana() >= (pGem->manaCost + Gem::gemCombineCostCurrent))
                 {
-                    pCore->inventory.combineGems(pGem, pGem);
                     pCore->manaPool.addMana(-(pGem->manaCost + Gem::gemCombineCostCurrent), false);
+                    pCore->inventory.combineGems(pGem, pGem);
                 }
                 break;
             case GLFW_KEY_X:

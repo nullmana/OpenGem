@@ -16,7 +16,8 @@ public:
 
     bool isIndestructible;
 
-    virtual void receiveShotDamage(ShotData& shot, double damage, double crit, Gem* pSourceGem);
+    virtual uint32_t receiveShotDamage(ShotData& shot, uint32_t numShots, double damage, double crit,
+        Gem* pSourceGem, bool isKillingShot);
     virtual void receiveShrineDamage(double damage) {}
     virtual double calculateIncomingDamage(double damage, double crit);
 
