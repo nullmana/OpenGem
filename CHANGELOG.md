@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.14.2] - 2021-06-12
+
+### Fixed
+
+- Optimized GCL mana pool to predict how many times the pool should be expanded, reasonably estimates up to the trillions of mana and billions of expansions
+- Fixed gem copy not copying component mask resulting in gems with undefined numbers of components
+- Fixed GCCS mana pool exceeding limit if starting with more mana than one pool expansion would fit
+
+
 ## [0.2.14.1] - 2021-06-12
 
 ### Fixed

@@ -312,6 +312,7 @@ Gem::Gem(Gem* pSourceGem) // Duplicate Gem Constructor, not Copy
     kills = 0;
     killsNonCombined = 0;
 
+    componentMask = pSourceGem->componentMask;
     memcpy(displayComponents, pSourceGem->displayComponents, sizeof(displayComponents));
 
     grade = pSourceGem->grade;

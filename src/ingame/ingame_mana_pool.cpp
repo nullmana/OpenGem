@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include <cstdio>
+
 IngameManaPool::IngameManaPool()
 {
     mana = 1000.0;
@@ -53,23 +55,61 @@ double IngameManaPool::addMana(double delta, bool applyGainMultipliers)
     return delta;
 }
 
+void IngameManaPool::expandManaPoolOnceGCL()
+{
+    manaReplenishMultiplier += 0.05;
+    manaGainMultiplier += 0.05;
+    manaPoolCap += floor(0.5 * initialManaPoolCap);
+    mana -= currentManaPoolCost;
+    currentManaPoolCost = std::min<double>(0.95 * manaPoolCap,
+        10 * round(initialManaPoolCost * 0.02 + currentManaPoolCost * 0.005) + currentManaPoolCost);
+}
+
 void IngameManaPool::expandManaPool()
 {
     if (g_game.game == GC_LABYRINTH)
     {
-        manaReplenishMultiplier += 0.05;
-        manaGainMultiplier += 0.05;
-        mana -= currentManaPoolCost;
-        manaPoolCap += floor(0.5 * initialManaPoolCap);
-        currentManaPoolCost = std::min<double>(0.95 * manaPoolCap,
-            10 * round(initialManaPoolCost * 0.02 + currentManaPoolCost * 0.005) +
-                currentManaPoolCost);
+        const double poolIncrement = floor(0.5 * initialManaPoolCap);
+
+        while ((currentManaPoolCost < 0.95 * manaPoolCap) && (mana > manaPoolCap))
+        {
+            manaReplenishMultiplier += 0.05;
+            manaGainMultiplier += 0.05;
+            manaPoolCap += poolIncrement;
+            mana -= currentManaPoolCost;
+            currentManaPoolCost = std::min<double>(0.95 * manaPoolCap,
+                10 * round(initialManaPoolCost * 0.02 + currentManaPoolCost * 0.005) + currentManaPoolCost);
+        }
+
+        if (mana > manaPoolCap)
+        {
+            // Solved quadratic to get number of expansions necessary with 0.95 pool cost
+            double numExpansions = floor((sqrt(pow(0.95 * manaPoolCap + 0.525 * poolIncrement, 2.0) +
+                                               1.9 * poolIncrement * (mana - manaPoolCap)) -
+                                             (0.95 * manaPoolCap + 0.525 * poolIncrement)) /
+                                         (0.95 * poolIncrement));
+            double manaSpent = 0.475 * poolIncrement * numExpansions * numExpansions +
+                               (0.95 * manaPoolCap - 0.475 * poolIncrement) * numExpansions;
+
+            manaReplenishMultiplier += 0.05 * numExpansions;
+            manaGainMultiplier += 0.05 * numExpansions;
+            manaPoolCap += poolIncrement * numExpansions;
+            mana -= manaSpent;
+            currentManaPoolCost = 0.95 * manaPoolCap;
+
+            // Should only ever need to expand once afterwards to correct for the rounding down, but loop just in case
+            while (mana > manaPoolCap)
+                expandManaPoolOnceGCL();
+        }
     }
     else if (g_game.game == GC_CHASINGSHADOWS)
     {
-        manaReplenishMultiplier += 0.272;
-        manaGainMultiplier += 0.04;
-        manaPoolCap *= 1.41 + 0.035 * (++manaPoolLevel);
+        while (mana > manaPoolCap)
+        {
+            manaReplenishMultiplier += 0.272;
+            manaGainMultiplier += 0.04;
+            manaPoolCap *= 1.41 + 0.035 * (++manaPoolLevel);
+        }
     }
     else
     {
@@ -81,7 +121,10 @@ bool IngameManaPool::castExpandManaPool()
 {
     if (mana >= currentManaPoolCost)
     {
-        expandManaPool();
+        if (g_game.game == GC_LABYRINTH)
+            expandManaPoolOnceGCL();
+        else
+            expandManaPool();
         return true;
     }
 
@@ -93,10 +136,8 @@ void IngameManaPool::checkMaximumMana()
     if (autopool)
     {
         bool expanded = mana > manaPoolCap;
-        while (mana > manaPoolCap)
-        {
+        if (mana > manaPoolCap)
             expandManaPool();
-        }
     }
     else
     {

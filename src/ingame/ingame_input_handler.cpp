@@ -284,9 +284,8 @@ STATUS IngameInputHandler::handleKeyboardInput()
         if (glfwGetKey(pGlfwContext->window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
         {
             double mana = 100.0;
-            if (glfwGetKey(pGlfwContext->window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS == GLFW_PRESS)
-                ;
-            mana *= 100.0;
+            if (glfwGetKey(pGlfwContext->window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+                mana = 1E12;
             core.manaPool.addMana(mana, true);
         }
     }

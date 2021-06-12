@@ -7,8 +7,6 @@
 
 #include <cmath>
 
-#include <cstdio>
-
 #define MONSTER_SPEED_FLOAT_FACTOR (1.0f / 17.0f)
 #define HEALTH_BAR_FADEOUT_TIME 30
 

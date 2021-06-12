@@ -23,6 +23,7 @@ private:
 
     bool autopool;
 
+    void expandManaPoolOnceGCL();
     void expandManaPool();
 
 public:
