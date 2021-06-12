@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.14.1] - 2021-06-12
+
+### Fixed
+
+- Optimized case with massive chain hit with no armor tearing from an iterative solution to constant closed solution. Performance with 23 traps of 1M chain hit and 10k monsters from 15FPS to above 60FPS
+- Fixed iterative armor tearing in monster receiveDamage using damage parameter instead of modifiedDamage updated after armor
+
+
 ## [0.2.14] - 2021-06-11
 
 ### Added

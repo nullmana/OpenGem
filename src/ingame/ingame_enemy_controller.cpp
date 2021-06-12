@@ -19,7 +19,7 @@ void IngameEnemyController::spawnMonsters(const IngamePathfinder& pathfinder, in
     const std::vector<const MonsterSpawnNode*> nodes = pathfinder.getMonsterSpawnNodes();
 
     MonsterPrototype mp;
-    mp.hp = 10000.0;
+    mp.hp = 10.0;
     mp.armor = 2.0;
     mp.mana = 8.0;
     mp.banishmentCostMultiplier = 1.0;

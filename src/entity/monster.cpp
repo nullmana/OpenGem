@@ -92,11 +92,24 @@ uint32_t Monster::receiveShotDamage(ShotData& shot, uint32_t numShots, double da
         hp -= damage;
         shotsTaken = 1;
     }
+    else if (shot.component[COMPONENT_ARMOR] <= 0.0)
+    {
+        if (hp < numShots * modifiedDamage)
+        {
+            shotsTaken = ceil(hp / modifiedDamage);
+            hp -= shotsTaken * modifiedDamage;
+        }
+        else
+        {
+            hp -= numShots * modifiedDamage;
+            shotsTaken = numShots;
+        }
+    }
     else
     {
         while (shotsTaken < numShots)
         {
-            hp -= damage;
+            hp -= modifiedDamage;
             ++shotsTaken;
 
             if ((shot.component[COMPONENT_ARMOR] > 0.0) && (armor > 0.0))

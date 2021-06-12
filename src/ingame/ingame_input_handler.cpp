@@ -218,9 +218,6 @@ STATUS IngameInputHandler::init()
     glfwSetScrollCallback(pGlfwContext->window, scrollCallback);
     glfwSetKeyCallback(pGlfwContext->window, keyCallback);
 
-    glfwSetInputMode(pGlfwContext->window, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
-    glfwSetInputMode(pGlfwContext->window, GLFW_STICKY_KEYS, GLFW_TRUE);
-
     inputState = INPUT_IDLE;
 
     setSpeedMultiplier(0);
