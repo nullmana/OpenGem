@@ -37,4 +37,5 @@ public:
 
     bool castExpandManaPool();
     void checkMaximumMana();
+    bool hasPoolMana() const { return mana >= currentManaPoolCost; }
 };

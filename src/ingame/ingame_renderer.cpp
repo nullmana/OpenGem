@@ -10,55 +10,55 @@
 #include "ingame/ingame_button_functions.hpp"
 
 static const std::vector<ButtonDefinition> buildButtonDefs_GCL = {
-    {buttonBuildWall_handleMouseInput, button_handleMouseHover},
-    {buttonBuildTower_handleMouseInput, button_handleMouseHover},
-    {buttonBuildAmplifier_handleMouseInput, button_handleMouseHover},
-    {buttonBuildShrineCB_handleMouseInput, button_handleMouseHover},
-    {buttonBuildTrap_handleMouseInput, button_handleMouseHover},
-    {buttonBuildShrineLI_handleMouseInput, button_handleMouseHover},
-    {buttonBuildBomb_handleMouseInput, button_handleMouseHover},
-    {buttonBuildCombine_handleMouseInput, button_handleMouseHover},
-    {buttonBuildMana_handleMouseInput, button_handleMouseHover},
+    {buttonBuildWall_handleMouseInput, button_handleMouseHover, buttonBuildWall_checkDisable},
+    {buttonBuildTower_handleMouseInput, button_handleMouseHover, buttonBuildTower_checkDisable},
+    {buttonBuildAmplifier_handleMouseInput, button_handleMouseHover, buttonBuildAmplifier_checkDisable},
+    {buttonBuildShrineCB_handleMouseInput, button_handleMouseHover, buttonBuildShrine_checkDisable},
+    {buttonBuildTrap_handleMouseInput, button_handleMouseHover, buttonBuildTrap_checkDisable},
+    {buttonBuildShrineLI_handleMouseInput, button_handleMouseHover, buttonBuildShrine_checkDisable},
+    {buttonBuildBomb_handleMouseInput, button_handleMouseHover, NULL},
+    {buttonBuildCombine_handleMouseInput, button_handleMouseHover, buttonBuildCombine_checkDisable},
+    {buttonBuildMana_handleMouseInput, button_handleMouseHover, buttonBuildMana_checkDisable},
 };
 
 static const std::vector<ButtonDefinition> buildButtonDefs_GCCS = {
-    {buttonBuildWall_handleMouseInput, button_handleMouseHover},
-    {buttonBuildTower_handleMouseInput, button_handleMouseHover},
-    {buttonBuildAmplifier_handleMouseInput, button_handleMouseHover},
-    {buttonBuildBomb_handleMouseInput, button_handleMouseHover},
-    {buttonBuildTrap_handleMouseInput, button_handleMouseHover},
-    {buttonBuildCombine_handleMouseInput, button_handleMouseHover},
+    {buttonBuildWall_handleMouseInput, button_handleMouseHover, buttonBuildWall_checkDisable},
+    {buttonBuildTower_handleMouseInput, button_handleMouseHover, buttonBuildTower_checkDisable},
+    {buttonBuildAmplifier_handleMouseInput, button_handleMouseHover, buttonBuildAmplifier_checkDisable},
+    {buttonBuildBomb_handleMouseInput, button_handleMouseHover, NULL},
+    {buttonBuildTrap_handleMouseInput, button_handleMouseHover, buttonBuildTrap_checkDisable},
+    {buttonBuildCombine_handleMouseInput, button_handleMouseHover, buttonBuildCombine_checkDisable},
 };
 
 static const std::vector<ButtonDefinition> gemButtonDefs_GCL = {
-    {buttonGemCH_handleMouseInput, button_handleMouseHover, 0x669900},
-    {buttonGemCR_handleMouseInput, button_handleMouseHover, 0x999100},
-    {buttonGemML_handleMouseInput, button_handleMouseHover, 0x994D00},
-    {buttonGemPO_handleMouseInput, button_handleMouseHover, 0x009912},
-    {buttonGemAnvil_handleMouseInput, NULL},
-    {buttonGemBB_handleMouseInput, button_handleMouseHover, 0x990000},
-    {buttonGemSH_handleMouseInput, button_handleMouseHover, 0x007399},
-    {buttonGemSL_handleMouseInput, button_handleMouseHover, 0x1A0099},
-    {buttonGemAT_handleMouseInput, button_handleMouseHover, 0x990099},
+    {buttonGemCH_handleMouseInput, button_handleMouseHover, NULL, 0x669900},
+    {buttonGemCR_handleMouseInput, button_handleMouseHover, NULL, 0x999100},
+    {buttonGemML_handleMouseInput, button_handleMouseHover, NULL, 0x994D00},
+    {buttonGemPO_handleMouseInput, button_handleMouseHover, NULL, 0x009912},
+    {buttonGemAnvil_handleMouseInput, NULL, NULL},
+    {buttonGemBB_handleMouseInput, button_handleMouseHover, NULL, 0x990000},
+    {buttonGemSH_handleMouseInput, button_handleMouseHover, NULL, 0x007399},
+    {buttonGemSL_handleMouseInput, button_handleMouseHover, NULL, 0x1A0099},
+    {buttonGemAT_handleMouseInput, button_handleMouseHover, NULL, 0x990099},
 };
 
 static const std::vector<ButtonDefinition> gemButtonDefs_GCCS = {
-    {buttonGemML_handleMouseInput, button_handleMouseHover, 0x994D00},
-    {buttonGemCR_handleMouseInput, button_handleMouseHover, 0x999100},
-    {buttonGemPB_handleMouseInput, button_handleMouseHover, 0x999999},
-    {buttonGemCH_handleMouseInput, button_handleMouseHover, 0x990000},
-    {buttonGemPO_handleMouseInput, button_handleMouseHover, 0x009912},
-    {buttonGemSP_handleMouseInput, button_handleMouseHover, 0x007399},
-    {buttonGemBB_handleMouseInput, button_handleMouseHover, 0x333333},
-    {buttonGemSL_handleMouseInput, button_handleMouseHover, 0x1A0099},
-    {buttonGemAT_handleMouseInput, button_handleMouseHover, 0x990099},
+    {buttonGemML_handleMouseInput, button_handleMouseHover, NULL, 0x994D00},
+    {buttonGemCR_handleMouseInput, button_handleMouseHover, NULL, 0x999100},
+    {buttonGemPB_handleMouseInput, button_handleMouseHover, NULL, 0x999999},
+    {buttonGemCH_handleMouseInput, button_handleMouseHover, NULL, 0x990000},
+    {buttonGemPO_handleMouseInput, button_handleMouseHover, NULL, 0x009912},
+    {buttonGemSP_handleMouseInput, button_handleMouseHover, NULL, 0x007399},
+    {buttonGemBB_handleMouseInput, button_handleMouseHover, NULL, 0x333333},
+    {buttonGemSL_handleMouseInput, button_handleMouseHover, NULL, 0x1A0099},
+    {buttonGemAT_handleMouseInput, button_handleMouseHover, NULL, 0x990099},
 };
 
 static const std::vector<ButtonDefinition> speedButtonDefs = {
-    {buttonSpeed0_handleMouseInput, button_handleMouseHover},
-    {buttonSpeed1_handleMouseInput, button_handleMouseHover},
-    {buttonSpeed3_handleMouseInput, button_handleMouseHover},
-    {buttonSpeed9_handleMouseInput, button_handleMouseHover},
+    {buttonSpeed0_handleMouseInput, button_handleMouseHover, NULL},
+    {buttonSpeed1_handleMouseInput, button_handleMouseHover, NULL},
+    {buttonSpeed3_handleMouseInput, button_handleMouseHover, NULL},
+    {buttonSpeed9_handleMouseInput, button_handleMouseHover, NULL},
 };
 
 IngameRenderer::IngameRenderer(IngameCore& core)

@@ -21,8 +21,7 @@ DEFFN_BUTTON_BUILD_INPUT(buttonBuildShrineLI_handleMouseInput, INPUT_BUILD_SHRIN
 DEFFN_BUTTON_BUILD_INPUT(buttonBuildCombine_handleMouseInput, INPUT_COMBINE_GEM);
 #undef DEFFN_BUTTON_BUILD_INPUT
 
-static void buttonBuildBomb_handleMouseInput(
-    Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)
+static void buttonBuildBomb_handleMouseInput(Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)
 {
     if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
     {
@@ -49,8 +48,7 @@ static void buttonBuildBomb_handleMouseInput(
         }
     }
 }
-static void buttonBuildMana_handleMouseInput(
-    Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)
+static void buttonBuildMana_handleMouseInput(Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)
 {
     if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
     {
@@ -69,15 +67,45 @@ static void buttonBuildMana_handleMouseInput(
     }
 }
 
-#define DEFFN_BUTTON_BUILD_HOVER(fnname)                                             \
-    static void fnname(Button& thisb, GLFWwindow* pWindow, double xpos, double ypos) \
-    {                                                                                \
-        IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);          \
-        thisb.state |= BUTTON_HOVER;                                                 \
+static void button_handleMouseHover(Button& thisb, GLFWwindow* pWindow, double xpos, double ypos)
+{
+    IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
+    thisb.state |= BUTTON_HOVER;
+}
+
+#define DEFFN_BUTTON_BUILD_DISABLE(fnname, checktile)                                  \
+    static void fnname(Button& thisb, GLFWwindow* pWindow)                             \
+    {                                                                                  \
+        IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);            \
+        if (pCore->map.buildingController.hasBuildMana(pCore->manaPool, checktile, 1)) \
+            thisb.state &= ~BUTTON_DISABLED;                                           \
+        else                                                                           \
+            thisb.state |= BUTTON_DISABLED;                                            \
     }
 
-DEFFN_BUTTON_BUILD_HOVER(button_handleMouseHover);
-#undef DEFFN_BUTTON_BUILD_HOVER
+DEFFN_BUTTON_BUILD_DISABLE(buttonBuildWall_checkDisable, TILE_WALL);
+DEFFN_BUTTON_BUILD_DISABLE(buttonBuildTower_checkDisable, TILE_TOWER);
+DEFFN_BUTTON_BUILD_DISABLE(buttonBuildAmplifier_checkDisable, TILE_AMPLIFIER);
+DEFFN_BUTTON_BUILD_DISABLE(buttonBuildShrine_checkDisable, TILE_SHRINE_CB);
+DEFFN_BUTTON_BUILD_DISABLE(buttonBuildTrap_checkDisable, TILE_TRAP);
+#undef DEFFN_BUTTON_BUILD_DISABLE
+
+static void buttonBuildCombine_checkDisable(Button& thisb, GLFWwindow* pWindow)
+{
+    IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
+    if (pCore->manaPool.getMana() >= Gem::gemCombineCostCurrent)
+        thisb.state &= ~BUTTON_DISABLED;
+    else
+        thisb.state |= BUTTON_DISABLED;
+}
+static void buttonBuildMana_checkDisable(Button& thisb, GLFWwindow* pWindow)
+{
+    IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
+    if (pCore->manaPool.hasPoolMana())
+        thisb.state &= ~BUTTON_DISABLED;
+    else
+        thisb.state |= BUTTON_DISABLED;
+}
 
 #define DEFFN_BUTTON_GEM_INPUT(fnname, gemType)                                              \
     static void fnname(Button& thisb, GLFWwindow* pWindow, int button, int action, int mods) \
@@ -105,8 +133,7 @@ DEFFN_BUTTON_GEM_INPUT(buttonGemPB_handleMouseInput, GEM_POOLBOUND);
 DEFFN_BUTTON_GEM_INPUT(buttonGemSP_handleMouseInput, GEM_SUPPRESSING);
 #undef DEFFN_BUTTON_GEM_INPUT
 
-static void buttonGemAnvil_handleMouseInput(
-    Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)
+static void buttonGemAnvil_handleMouseInput(Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)
 {
     IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
 
@@ -168,8 +195,9 @@ static void buttonGemAnvil_handleMouseInput(
 DEFFN_BUTTON_SPEED_INPUT(buttonSpeed1_handleMouseInput, 1, 3);
 DEFFN_BUTTON_SPEED_INPUT(buttonSpeed3_handleMouseInput, 3, 1);
 DEFFN_BUTTON_SPEED_INPUT(buttonSpeed9_handleMouseInput, 9, 3);
-static void buttonSpeed0_handleMouseInput(
-    Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)
+#undef DEFFN_BUTTON_SPEED_INPUT
+
+static void buttonSpeed0_handleMouseInput(Button& thisb, GLFWwindow* pWindow, int button, int action, int mods)
 {
     if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
     {
@@ -180,4 +208,3 @@ static void buttonSpeed0_handleMouseInput(
             pCore->inputHandler.setSpeedMultiplier(0);
     }
 }
-#undef DEFFN_BUTTON_SPEED_INPUT

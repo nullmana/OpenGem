@@ -1,6 +1,9 @@
 #include "ingame/ingame_inventory.h"
+#include "ingame/ingame_core.h"
 #include "ingame/ingame_mana_pool.h"
 #include "ingame/ingame_projectile_controller.h"
+
+#include "constants/game_header.h"
 
 #include "entity/building.h"
 #include "entity/shrine.h"
@@ -28,6 +31,37 @@ STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
             fbg_rect(pFbg, (i % 3) * scale + window.x, (i / 3) * scale + window.y, scale, scale,
                 (inventory[i]->RGB >> 16) & 0xFF, (inventory[i]->RGB >> 8) & 0xFF,
                 inventory[i]->RGB & 0xFF);
+        }
+    }
+
+    if (g_game.game == GC_LABYRINTH)
+    {
+        struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)pFbg->user_context;
+        const IngameCore* pCore = (const IngameCore*)glfwGetWindowUserPointer(pGlfwContext->window);
+
+        if (pCore->inputHandler.getInputState() == INPUT_CREATE_GEM)
+        {
+            for (int i = 0; i < inventory.size() / 3; ++i)
+            {
+                if (manaPool.getMana() >= Gem::gemCreateCost(i))
+                {
+                    fbg_rect(pFbg, window.x - scale, (11 - i) * scale + window.y, scale, scale, 0xE0, 0xE0, 0xE0);
+                    fbg_rect(pFbg, window.x - scale + 1, (11 - i) * scale + window.y + 1,
+                        scale - 2, scale - 2, 0x10, 0x10, 0x10);
+                }
+                else
+                    break;
+            }
+        }
+    }
+    else if (g_game.game == GC_CHASINGSHADOWS)
+    {
+        for (int i = 0; i < inventory.size() / 3; ++i)
+        {
+            if (manaPool.getMana() >= Gem::gemCreateCost(i))
+                fbg_rect(pFbg, window.x + 3 * scale + 4, (11 - i) * scale + window.y, 4, scale, 0xE0, 0xE0, 0xE0);
+            else
+                break;
         }
     }
 

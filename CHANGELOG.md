@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.16] - 2021-06-13
+
+### Added
+
+- Added mana cost to building
+- Added visual indicators to build buttons darkening if not enough mana
+- Added visual indicators to available gem create grades
+
+
 ## [0.2.15] - 2021-06-13
 
 ### Added

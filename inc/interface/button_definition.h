@@ -19,14 +19,16 @@ struct GLFWwindow;
 
 typedef void (*buttonHandleMouseInput)(Button&, GLFWwindow*, int, int, int);
 typedef void (*buttonHandleMouseHover)(Button&, GLFWwindow*, double, double);
+typedef void (*buttonHandleCheckDisable)(Button&, GLFWwindow*);
 
 struct ButtonDefinition
 {
-    ButtonDefinition(
-        buttonHandleMouseInput input, buttonHandleMouseHover hover, uint32_t idleColor = 0x333333)
+    ButtonDefinition(buttonHandleMouseInput input, buttonHandleMouseHover hover,
+        buttonHandleCheckDisable disable, uint32_t idleColor = 0x333333)
     {
         handleMouseInput = input;
         handleMouseHover = hover;
+        handleCheckDisable = disable;
 
         colors[0] = idleColor;
         colors[1] = RGBMultiply(idleColor, 1.12f);
@@ -42,6 +44,7 @@ struct ButtonDefinition
 
     buttonHandleMouseInput handleMouseInput;
     buttonHandleMouseHover handleMouseHover;
+    buttonHandleCheckDisable handleCheckDisable;
 
     uint32_t colors[10];
 };

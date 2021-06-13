@@ -14,6 +14,7 @@
 #include <unordered_set>
 
 class IngameLevelDefinition;
+class IngameManaPool;
 class Targetable;
 
 class IngameBuildingController
@@ -29,7 +30,11 @@ private:
     std::list<ShrineLightning> shrinesLI;
     // Shrines : GCCS
 
-    bool amplifierRecalculateRequired;
+    double wallCostCurrent;
+    double towerCostCurrent;
+    double trapCostCurrent;
+    double amplifierCostCurrent;
+    double shrineCostCurrent;
 
     void destroyTower(Tower* pTower);
     void destroyTrap(Trap* pTrap);
@@ -47,6 +52,9 @@ public:
 
     void tickBuildings(IngameMap& map, int frames);
 
+    bool hasBuildMana(const IngameManaPool& manaPool, TILE_TYPE building, int num) const;
+    void spendBuildMana(IngameManaPool& manaPool, TILE_TYPE building, int num);
+
     Tower& addTower(int x, int y);
     Trap& addTrap(int x, int y);
     Amplifier& addAmplifier(int x, int y);
@@ -54,8 +62,6 @@ public:
     Shrine* addShrine(IngameMap& map, int x, int y, SHRINE_TYPE type);
 
     void destroyBuilding(Building* pBuilding);
-
-    inline void signalAmplifierRecalculateRequired() { amplifierRecalculateRequired = true; }
 
     Orb& getOrb() { return orb; }
 };

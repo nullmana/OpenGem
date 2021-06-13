@@ -16,13 +16,7 @@ private:
     struct _fbg* pFbg;
 
 public:
-    IngameCore(IngameLevelDefinition& level)
-        : inputHandler(*this),
-          renderer(*this),
-          map(*this, level),
-          inventory(manaPool, map.projectileController, 36)
-    {
-    }
+    IngameCore(IngameLevelDefinition& level);
 
     STATUS init(struct _fbg* pFbg_);
 

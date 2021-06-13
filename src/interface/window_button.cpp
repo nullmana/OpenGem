@@ -16,6 +16,8 @@ WindowButton::WindowButton(const std::vector<ButtonDefinition>& buttonDefs, int 
 
 STATUS WindowButton::render(struct _fbg* pFbg)
 {
+    struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)pFbg->user_context;
+
     fbg_rect(pFbg, x - 2, y - 2, width + 4, height + 4, 0x1D, 0x22, 0x2E);
 
     float hscale = width / float(cols);
@@ -23,8 +25,11 @@ STATUS WindowButton::render(struct _fbg* pFbg)
 
     for (int i = 0; i < buttons.size(); ++i)
     {
-        const Button& b = buttons[i];
-        uint32_t color = b.color[b.forceColor == -1 ? b.state : b.forceColor];
+        Button& b = buttons[i];
+        if (b.handleCheckDisable != NULL)
+            b.handleCheckDisable(b, pGlfwContext->window);
+
+        const uint32_t& color = b.color[(b.forceColor == -1) ? b.state : b.forceColor];
 
         fbg_rect(pFbg, (i % cols) * hscale + x, (i / cols) * vscale + y, hscale, vscale,
             (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);

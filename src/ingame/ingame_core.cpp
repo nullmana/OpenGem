@@ -2,6 +2,25 @@
 
 #include "wrapfbg.h"
 
+IngameCore::IngameCore(IngameLevelDefinition& level)
+    : inputHandler(*this), renderer(*this), map(*this, level), inventory(manaPool, map.projectileController, 36)
+{
+    switch (g_game.game)
+    {
+        case GC_LABYRINTH:
+            Gem::gemCreateCostCurrent = 77.0;
+            Gem::gemCombineCostCurrent = 77.0;
+            break;
+        case GC_CHASINGSHADOWS:
+            Gem::gemCreateCostCurrent = 60.0;
+            Gem::gemCombineCostCurrent = 120.0;
+            break;
+        default:
+            throw "Game Code Unavailable!";
+            break;
+    }
+}
+
 STATUS IngameCore::init(struct _fbg* pFbg_)
 {
     STATUS status = STATUS_OK;

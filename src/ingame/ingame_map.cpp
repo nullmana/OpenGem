@@ -98,7 +98,10 @@ bool IngameMap::verifyBuilding(TILE_TYPE building, int x, int y)
     }
 
     if ((x + bw > g_game.ingameMapWidth) || (y + bh > g_game.ingameMapHeight))
+    {
+        printf("Can't build\n");
         return false;
+    }
 
     for (int j = y; j < y + bh; ++j)
     {
@@ -111,15 +114,25 @@ bool IngameMap::verifyBuilding(TILE_TYPE building, int x, int y)
                 case TILE_WALL:
                 case TILE_WALL_PATH:
                     if (building == TILE_TRAP)
+                    {
+                        printf("Can't build\n");
                         return false;
+                    }
                     break;
                 case TILE_PATH:
                     overlapsPath = true;
                     break;
                 default:
+                    printf("Can't build\n");
                     return false;
             }
         }
+    }
+
+    if (!buildingController.hasBuildMana(manaPool, building, 1))
+    {
+        printf("Not enough mana\n");
+        return false;
     }
 
     if ((building != TILE_TRAP) && overlapsPath && pathfinder.checkBlocking(*this, x, y, bw, bh))
@@ -235,6 +248,8 @@ STATUS IngameMap::buildWall(int x1, int y1, int x2, int y2)
     if (y1 > y2)
         std::swap<int>(y1, y2);
 
+    int builtWalls = 0;
+
     for (int x = x1; x <= x2; ++x)
     {
         for (int y = y1; y <= y2; ++y)
@@ -242,10 +257,13 @@ STATUS IngameMap::buildWall(int x1, int y1, int x2, int y2)
             switch (tileOccupied.at(y, x))
             {
                 case TILE_NONE:
+                    ++builtWalls;
+                    break;
                 case TILE_WALL:
                 case TILE_WALL_PATH:
                     break;
                 case TILE_PATH:
+                    ++builtWalls;
                     overlapsPath = true;
                     break;
                 default:
@@ -255,11 +273,19 @@ STATUS IngameMap::buildWall(int x1, int y1, int x2, int y2)
         }
     }
 
+    if (!buildingController.hasBuildMana(manaPool, TILE_WALL, builtWalls))
+    {
+        printf("Not enough mana\n");
+        return STATUS_INVALID_OPERATION;
+    }
+
     if (overlapsPath && pathfinder.checkBlocking(*this, x1, y1, x2 - x1 + 1, y2 - y1 + 1))
     {
         printf("Blocking!\n");
         return STATUS_INVALID_OPERATION;
     }
+
+    buildingController.spendBuildMana(manaPool, TILE_WALL, builtWalls);
 
     for (int x = x1; x <= x2; ++x)
     {
@@ -295,6 +321,7 @@ STATUS IngameMap::buildTower(int x, int y)
     if (!verifyBuilding(TILE_TOWER, x, y))
         return STATUS_INVALID_OPERATION;
 
+    buildingController.spendBuildMana(manaPool, TILE_TOWER, 1);
     status = placeBuilding(TILE_TOWER, x, y);
 
 #ifdef DEBUG
@@ -315,6 +342,7 @@ STATUS IngameMap::buildTrap(int x, int y)
     if (!verifyBuilding(TILE_TRAP, x, y))
         return STATUS_INVALID_OPERATION;
 
+    buildingController.spendBuildMana(manaPool, TILE_TRAP, 1);
     status = placeBuilding(TILE_TRAP, x, y);
 
 #ifdef DEBUG
@@ -335,6 +363,7 @@ STATUS IngameMap::buildAmplifier(int x, int y)
     if (!verifyBuilding(TILE_AMPLIFIER, x, y))
         return STATUS_INVALID_OPERATION;
 
+    buildingController.spendBuildMana(manaPool, TILE_AMPLIFIER, 1);
     status = placeBuilding(TILE_AMPLIFIER, x, y);
 
 #ifdef DEBUG
@@ -368,6 +397,7 @@ STATUS IngameMap::buildShrine(int x, int y, SHRINE_TYPE type)
     if (!verifyBuilding(tile, x, y))
         return STATUS_INVALID_OPERATION;
 
+    buildingController.spendBuildMana(manaPool, tile, 1);
     status = placeBuilding(tile, x, y);
 
 #ifdef DEBUG

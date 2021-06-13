@@ -65,29 +65,12 @@ int main(int argc, char* argv[])
         for (int x = g_game.ingameMapWidth * 3 / 8; x < g_game.ingameMapWidth * 5 / 8; ++x)
             level.tiles.at(y, x) = TILE_PATH;
 
-    level.monsterNests.emplace_back(
-        2, (g_game.ingameMapHeight + g_game.ingameMonsterNestSize) / 2, true);
-    level.monsterNests.emplace_back(
-        2, (g_game.ingameMapHeight - 2 * g_game.ingameMonsterNestSize) / 2, false);
+    level.monsterNests.emplace_back(2, (g_game.ingameMapHeight + g_game.ingameMonsterNestSize) / 2, true);
+    level.monsterNests.emplace_back(2, (g_game.ingameMapHeight - 2 * g_game.ingameMonsterNestSize) / 2, false);
 
     level.tiles.at(level.orbY, level.orbX) = TILE_ORB;
 
     IngameCore core(level);
-
-    switch (g_game.game)
-    {
-        case GC_LABYRINTH:
-            Gem::gemCreateCostCurrent = 77.0;
-            Gem::gemCombineCostCurrent = 77.0;
-            break;
-        case GC_CHASINGSHADOWS:
-            Gem::gemCreateCostCurrent = 60.0;
-            Gem::gemCombineCostCurrent = 120.0;
-            break;
-        default:
-            throw "Game Code Unavailable!";
-            break;
-    }
 
     core.init(pFbg);
 

@@ -10,6 +10,7 @@ struct Button
     {
         handleMouseInput = d.handleMouseInput;
         handleMouseHover = d.handleMouseHover;
+        handleCheckDisable = d.handleCheckDisable;
         memcpy(color, d.colors, sizeof(color));
         state = BUTTON_IDLE;
         forceColor = -1;
@@ -17,6 +18,7 @@ struct Button
 
     buttonHandleMouseInput handleMouseInput;
     buttonHandleMouseHover handleMouseHover;
+    buttonHandleCheckDisable handleCheckDisable;
 
     uint32_t color[10];
     int state;

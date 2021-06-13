@@ -13,7 +13,11 @@
 IngameBuildingController::IngameBuildingController(const IngameLevelDefinition& level)
     : orb(level.orbX, level.orbY)
 {
-    amplifierRecalculateRequired = true;
+    wallCostCurrent = 20.0;
+    towerCostCurrent = 150.0;
+    trapCostCurrent = 150.0;
+    amplifierCostCurrent = 400.0;
+    shrineCostCurrent = 900.0;
 }
 
 #ifdef DEBUG
@@ -101,6 +105,71 @@ void IngameBuildingController::tickBuildings(IngameMap& map, int frames)
 
     for (Trap& t : traps)
         t.tick(map, frames);
+}
+
+bool IngameBuildingController::hasBuildMana(const IngameManaPool& manaPool, TILE_TYPE building, int num) const
+{
+    switch (building)
+    {
+        case TILE_WALL:
+        {
+            double cost = wallCostCurrent;
+            double sumCost = 0.0;
+            for (int i = 0; i < num; ++i)
+            {
+                sumCost += std::max(0.0, cost);
+                cost += 1.0;
+            }
+            return manaPool.getMana() >= sumCost;
+            break;
+        }
+        case TILE_TOWER:
+            return manaPool.getMana() >= towerCostCurrent;
+        case TILE_TRAP:
+            return manaPool.getMana() >= trapCostCurrent;
+        case TILE_AMPLIFIER:
+            return manaPool.getMana() >= amplifierCostCurrent;
+        case TILE_SHRINE_CB:
+        case TILE_SHRINE_LI:
+            return manaPool.getMana() >= shrineCostCurrent;
+        default:
+            return false;
+    }
+}
+
+void IngameBuildingController::spendBuildMana(IngameManaPool& manaPool, TILE_TYPE building, int num)
+{
+    switch (building)
+    {
+        case TILE_WALL:
+        {
+            double sumCost = 0.0;
+            for (int i = 0; i < num; ++i)
+            {
+                sumCost += std::max(0.0, wallCostCurrent);
+                wallCostCurrent += 1.0;
+            }
+            manaPool.addMana(-sumCost, false);
+            break;
+        }
+        case TILE_TOWER:
+            manaPool.addMana(-towerCostCurrent, false);
+            towerCostCurrent += 30.0;
+            break;
+        case TILE_TRAP:
+            manaPool.addMana(-trapCostCurrent, false);
+            trapCostCurrent += 24.0;
+            break;
+        case TILE_AMPLIFIER:
+            manaPool.addMana(-amplifierCostCurrent, false);
+            amplifierCostCurrent += 240.0;
+            break;
+        case TILE_SHRINE_CB:
+        case TILE_SHRINE_LI:
+            manaPool.addMana(-shrineCostCurrent, false);
+            shrineCostCurrent *= 2.35;
+            break;
+    }
 }
 
 Tower& IngameBuildingController::addTower(int x, int y)
@@ -223,15 +292,10 @@ void IngameBuildingController::linkAmplifier(Amplifier* pAmplifier, Amplifiable*
 {
     pAmplifier->amplifying.push_back(pAmplified);
     pAmplified->amplifying.push_back(pAmplifier);
-
-    amplifierRecalculateRequired = true;
 }
 
 void IngameBuildingController::removeBuildingAmplifiers(Building* pBuilding)
 {
-    if (!pBuilding->amplifying.empty())
-        amplifierRecalculateRequired = true;
-
     for (Amplifiable* pAmp : pBuilding->amplifying)
     {
         std::list<Amplifiable*>::iterator it =

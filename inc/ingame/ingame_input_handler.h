@@ -27,14 +27,14 @@ public:
 
     void toggleInputState(INGAME_INPUT_STATE state);
     void setInputState(INGAME_INPUT_STATE state);
-    INGAME_INPUT_STATE getInputState() { return inputState; }
+    INGAME_INPUT_STATE getInputState() const { return inputState; }
     void startCreateGem(GEM_COMPONENT_TYPE gemType);
-    GEM_COMPONENT_TYPE getCreatingGemType() { return creatingGemType; }
+    GEM_COMPONENT_TYPE getCreatingGemType() const { return creatingGemType; }
 
     void togglePause();
     void cycleSpeedMultiplier();
     void setSpeedMultiplier(int speed);
-    int getSpeedMultiplier() { return speedMultiplier; }
+    int getSpeedMultiplier() const { return speedMultiplier; }
 
     void setShouldFrameAdvance() { pendingFrameAdvance = true; }
     bool getShouldFrameAdvance()
