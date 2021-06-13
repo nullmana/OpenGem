@@ -8,23 +8,28 @@
 IngameProjectileController::IngameProjectileController(IngameMap& map_)
     : map(map_) {}
 
-void IngameProjectileController::createTowerShots(const Tower& tower, Targetable* pTarget, int num)
+int IngameProjectileController::createTowerShots(const Tower& tower, Targetable* pTarget, int numShots)
 {
+    int shotsTaken = 0;
     double damage = 0.0;
-    for (int i = 0; i < num; ++i)
+    while (shotsTaken < numShots)
     {
+        ++shotsTaken;
+
         shots.emplace_back(tower, pTarget);
-        damage += pTarget->calculateIncomingDamage(shots.back().damage, shots.back().crit);
+
+        pTarget->incomingDamage += pTarget->calculateIncomingDamage(shots.back().damage, shots.back().crit);
+        if (pTarget->hp <= pTarget->incomingDamage)
+        {
+            pTarget->setKillingShot();
+            shots.back().isKillingShot = true;
+            break;
+        }
     }
 
-    pTarget->incomingShots += num;
-    pTarget->incomingDamage += damage;
+    pTarget->incomingShots += shotsTaken;
 
-    if (pTarget->hp <= pTarget->incomingDamage)
-    {
-        pTarget->setKillingShot();
-        shots.back().isKillingShot = true;
-    }
+    return shotsTaken;
 }
 
 void IngameProjectileController::shotHitsTarget(TowerShot* pShot)
@@ -95,8 +100,7 @@ void IngameProjectileController::warpShotsToTarget(Targetable* pTarget)
     }
 }
 
-void IngameProjectileController::clearShotsFromTarget(
-    const std::unordered_set<Targetable*>& invalidatedTargets)
+void IngameProjectileController::clearShotsFromTarget(const std::unordered_set<Targetable*>& invalidatedTargets)
 {
     for (TowerShot& t : shots)
     {
@@ -139,8 +143,7 @@ void IngameProjectileController::render(struct _fbg* pFbg, const Window& window)
         if ((s.x > 0.0f) && (s.x < g_game.ingameMapWidth) && (s.y > 0.0f) &&
             (s.y < g_game.ingameMapHeight))
         {
-            fbg_pixel(pFbg, scale * s.x + window.x, scale * s.y + window.y, s.RGB >> 16, s.RGB >> 8,
-                s.RGB);
+            fbg_pixel(pFbg, scale * s.x + window.x, scale * s.y + window.y, s.RGB >> 16, s.RGB >> 8, s.RGB);
         }
     }
 }

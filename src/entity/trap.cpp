@@ -7,10 +7,21 @@
 #include <algorithm>
 #include <cmath>
 
+Trap::Trap(int ix_, int iy_)
+    : Building(ix_, iy_)
+{
+    type = TILE_TRAP;
+    shotCharge = 0.0f;
+}
+
 void Trap::tick(IngameMap& map, int frames)
 {
     if ((pGem != NULL) && !pGem->isDragged && (frames > 0))
     {
+        shotCharge += frames * pGem->shotFinal.fireRate;
+        if (shotCharge < 30.0f)
+            return;
+
         std::vector<Targetable*> targetsInRange;
         float rangeSq = 1.0f;
         if (g_game.game == GC_LABYRINTH)
@@ -29,16 +40,26 @@ void Trap::tick(IngameMap& map, int frames)
                 const std::vector<Monster*>& tile = map.enemyController.getMonstersOnTile(j, i);
                 for (Monster* m : tile)
                 {
-                    if ((x - m->x) * (x - m->x) + (y - m->y) * (y - m->y) < rangeSq)
+                    if (!m->isKilled && ((x - m->x) * (x - m->x) + (y - m->y) * (y - m->y) < rangeSq))
                         targetsInRange.push_back(m);
                 }
             }
         }
 
         if (targetsInRange.empty())
+        {
+            shotCharge = 30.0f;
             return;
+        }
 
-        uint64_t shots = frames;
+        uint64_t shots;
+        if (g_game.game == GC_LABYRINTH)
+            shots = std::min<int>(frames, shotCharge / 30.0f);
+        else
+            shots = std::min<int>(frames * 2, shotCharge / 30.0f);
+
+        shotCharge = std::min<float>(30.0f, shotCharge - shots * 30.0f);
+
         uint64_t chain = 1 + pGem->shotFinal.rollChainLength();
         uint64_t targetsLeeched = 0;
 

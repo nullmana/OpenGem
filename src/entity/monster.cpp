@@ -7,7 +7,6 @@
 
 #include <cmath>
 
-#define MONSTER_SPEED_FLOAT_FACTOR (1.0f / 17.0f)
 #define HEALTH_BAR_FADEOUT_TIME 30
 
 Monster::Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget, const MonsterPrototype& mp)
@@ -245,8 +244,10 @@ void Monster::adjustMotionAngle()
 
 void Monster::adjustSpeedAngle()
 {
-    speedCos = speed * cos(motionAngle) * MONSTER_SPEED_FLOAT_FACTOR;
-    speedSin = speed * sin(motionAngle) * MONSTER_SPEED_FLOAT_FACTOR;
+    float speedFloatFactor = (g_game.game == GC_LABYRINTH) ? (1.0f / 33.0f) : (1.0f / 17.0f);
+
+    speedCos = speed * cos(motionAngle) * speedFloatFactor;
+    speedSin = speed * sin(motionAngle) * speedFloatFactor;
 }
 
 bool Monster::tick(IngameMap& map, int frames)

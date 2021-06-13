@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.15] - 2021-06-13
+
+### Added
+
+- Added towers and traps using gem firerate
+- Traps used a slightly different targeting for traps than base, instead of reseting and cutting off fractional part of remaining shots, the fraction is preserved.
+
+### Changed
+
+- Changed monster speed scaling to appropriately scale for GCL's smaller map scale
+
+
 ## [0.2.14.3] - 2021-06-12
 
 ### Fixed

@@ -11,8 +11,10 @@
 #include "interface/window.h"
 
 #include <list>
+#include <unordered_set>
 
 class IngameLevelDefinition;
+class Targetable;
 
 class IngameBuildingController
 {

@@ -42,7 +42,7 @@ v0.3:
 - [x] Gems have stats and can be combined to create higher-grade gems
 - [x] GCL Gem Anvil, hotkey gem duplicate, upgrade, and salvage
 - [x] Speed control buttons, frame advance
-- [ ] Buildings use socketed gems for stats
+- [x] Buildings use socketed gems for stats
 - [x] Amplifiers affect gems in adjacent tiles
 - [x] Shrines can be placed and used, no visual effects required
 - [x] Structures, such as monster nests and beacons which can be placed on the map and targeted by gems

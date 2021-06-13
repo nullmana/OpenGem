@@ -6,9 +6,11 @@ class IngameMap;
 
 class Trap : public Building
 {
+private:
+    float shotCharge;
+
 public:
-    Trap(int ix_, int iy_)
-        : Building(ix_, iy_) { type = TILE_TRAP; }
+    Trap(int ix_, int iy_);
 
     void tick(IngameMap& map, int frames);
 

@@ -19,8 +19,7 @@ IngameBuildingController::IngameBuildingController(const IngameLevelDefinition& 
 #ifdef DEBUG
 #include "ingame/ingame_core.h"
 
-static void debugDrawAmplifierDirections(
-    struct _fbg* pFbg, const Window& window, const Building* pBuilding)
+static void debugDrawAmplifierDirections(struct _fbg* pFbg, const Window& window, const Building* pBuilding)
 {
     struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)pFbg->user_context;
     IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pGlfwContext->window);
@@ -263,8 +262,7 @@ std::vector<Amplifier*> IngameBuildingController::getAdjacentAmplifiers(Amplifia
     return adjacent;
 }
 
-std::vector<Amplifiable*> IngameBuildingController::getAdjacentAmplifiableBuildings(
-    Building* pBuilding)
+std::vector<Amplifiable*> IngameBuildingController::getAdjacentAmplifiableBuildings(Building* pBuilding)
 {
     std::vector<Amplifiable*> adjacent;
 

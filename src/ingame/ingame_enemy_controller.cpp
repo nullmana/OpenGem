@@ -47,6 +47,7 @@ void IngameEnemyController::tickMonsters(IngameMap& map, int frames)
             manaPool.addMana(it->mana, true);
             if (it->incomingShots > 0)
                 invalidatedWithShots.insert(&(*it));
+
             monsters.erase(it++);
         }
         else

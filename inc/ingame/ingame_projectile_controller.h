@@ -23,7 +23,15 @@ private:
 public:
     IngameProjectileController(IngameMap& map_);
 
-    void createTowerShots(const Tower& tower, Targetable* pTarget, int num);
+    /*!
+     * @brief Creates up to `num` shots targeting `pTarget`, or however many are required to
+     *        mark target for death.
+     * @param[in] tower   Tower from which shot originates
+     * @param[in] pTarget Target which is being shot at
+     * @param[in] numShots Maximum number of shots to fire
+     * @return Number of shots created
+     */
+    int createTowerShots(const Tower& tower, Targetable* pTarget, int numShots);
 
     /*!
      * @brief Monsters which reach the orb are immediately hit by all shots heading towards them
