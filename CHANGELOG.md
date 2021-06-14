@@ -4,6 +4,14 @@
 
 ### Added
 
+- Added QoL backports for tab to drop gem to inventory and clicking on empty building to socket first gem
+- Added marker in inventory for gem being used for multiple or template bombing
+
+
+## [0.3.0] - 2021-06-14
+
+### Added
+
 - Added wave controller. Waves are created with near-accurate monster scaling for a fixed number of waves and arbitrary types of monsters.
 - Added calling waves early with hotkey or clicking waves
 

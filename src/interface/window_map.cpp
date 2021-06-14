@@ -46,6 +46,14 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                         pGem->y = ypos;
                         pInputHandler->setInputState(INPUT_DRAGGING_IDLE);
                     }
+                    else
+                    {
+                        pGem = pCore->inventory.getFirstGem();
+                        if (pGem != NULL)
+                        {
+                            pCore->inventory.placeGemIntoBuilding(pGem, pBuilding, false);
+                        }
+                    }
                 }
             }
 #ifdef DEBUG
@@ -255,8 +263,7 @@ void WindowMap::handleKeyInput(GLFWwindow* pWindow, int key, int scancode, int a
         return;
 
     Building* pBuilding = map.getBuilding(iy, ix);
-    if ((pBuilding == NULL) || (pBuilding->pGem == NULL) ||
-        (pCore->inventory.getDraggedGem() != NULL))
+    if ((pBuilding == NULL) || (pBuilding->pGem == NULL) || (pCore->inventory.getDraggedGem() != NULL))
         return;
 
     Gem* pGem = pBuilding->pGem;
@@ -281,6 +288,9 @@ void WindowMap::handleKeyInput(GLFWwindow* pWindow, int key, int scancode, int a
                 break;
             case GLFW_KEY_X:
                 pCore->inventory.salvageGem(pGem);
+                break;
+            case GLFW_KEY_TAB:
+                pCore->inventory.dropGemIntoInventory(pGem);
                 break;
         }
     }

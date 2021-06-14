@@ -30,6 +30,8 @@ public:
 
     STATUS render(struct _fbg* pFbg, const Window& window) const;
 
+    void dropGemIntoInventory(Gem* pGem);
+
     void removeGemFromInventory(Gem* pGem);
     void placeGemIntoInventory(Gem* pGem, int slot, bool forceReplace);
     void removeGemFromBuilding(Building* pBuilding);

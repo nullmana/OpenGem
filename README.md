@@ -54,16 +54,19 @@ v0.4:
 - [x] Chain Hit
 - [ ] Socketing cooldown
 - [x] Monster stats
+- [ ] Wave Enraging
+- [ ] Gem type availability/unlocking
 - [ ] Tombs
 - [ ] Beacons
 - [ ] Mana Shards
+- [ ] Wave Formations
 - [ ] Tower targeting options
 - [ ] Target selection on map
 - [ ] Kill chain counter
 - [ ] Info tooltips
 - [ ] QoL backport: Reduce gem range
-- [ ] QoL backport: Click buildings to place gems
-- [ ] QoL backport: Tab to drop gems to inventory
+- [x] QoL backport: Click buildings to place gems
+- [x] QoL backport: Tab to drop gems to inventory
 - [x] QoL backport: Template bombing
 
 v0.5:
@@ -80,7 +83,6 @@ v0.6:
 - [ ] Apparitions
 - [ ] Shadows
 - [ ] Crafting Pylons
-- [ ] Wave Formations
 
 v0.7:
 - [ ] Overworld map screen

@@ -22,32 +22,48 @@ IngameInventory::IngameInventory(IngameManaPool& mp_, IngameProjectileController
 
 STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
 {
+    struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)pFbg->user_context;
+    const IngameCore* pCore = (const IngameCore*)glfwGetWindowUserPointer(pGlfwContext->window);
+
     float scale = window.width / 3.0f;
+    float gemScale = scale - 4.0f;
+
+    INGAME_INPUT_STATE inputState = pCore->inputHandler.getInputState();
+    bool highlightFirstGem = (inputState == INPUT_BOMB_MULTIPLE) || (inputState == INPUT_BOMB_TEMPLATE);
 
     for (int i = 0; i < inventory.size(); ++i)
     {
         if ((inventory[i] != NULL) && !inventory[i]->isDragged)
         {
-            fbg_rect(pFbg, (i % 3) * scale + window.x, (i / 3) * scale + window.y, scale, scale,
-                (inventory[i]->RGB >> 16) & 0xFF, (inventory[i]->RGB >> 8) & 0xFF,
-                inventory[i]->RGB & 0xFF);
+            int ix = (i % 3) * scale + window.x;
+            int iy = (i / 3) * scale + window.y;
+
+            if (highlightFirstGem)
+            {
+                fbg_hline(pFbg, ix, iy, scale, 0xFF, 0xFF, 0xFF);
+                fbg_hline(pFbg, ix, iy + scale, scale, 0xFF, 0xFF, 0xFF);
+                fbg_vline(pFbg, ix, iy, scale, 0xFF, 0xFF, 0xFF);
+                fbg_vline(pFbg, ix + scale, iy, scale, 0xFF, 0xFF, 0xFF);
+                highlightFirstGem = false;
+            }
+
+            fbg_rect(pFbg, ix + 2, iy + 2, gemScale, gemScale,
+                (inventory[i]->RGB >> 16) & 0xFF, (inventory[i]->RGB >> 8) & 0xFF, inventory[i]->RGB & 0xFF);
         }
     }
 
     if (g_game.game == GC_LABYRINTH)
     {
-        struct _fbg_glfw_context* pGlfwContext = (struct _fbg_glfw_context*)pFbg->user_context;
-        const IngameCore* pCore = (const IngameCore*)glfwGetWindowUserPointer(pGlfwContext->window);
-
-        if (pCore->inputHandler.getInputState() == INPUT_CREATE_GEM)
+        if (inputState == INPUT_CREATE_GEM)
         {
             for (int i = 0; i < inventory.size() / 3; ++i)
             {
                 if (manaPool.getMana() >= Gem::gemCreateCost(i))
                 {
-                    fbg_rect(pFbg, window.x - scale, (11 - i) * scale + window.y, scale, scale, 0xE0, 0xE0, 0xE0);
-                    fbg_rect(pFbg, window.x - scale + 1, (11 - i) * scale + window.y + 1,
-                        scale - 2, scale - 2, 0x10, 0x10, 0x10);
+                    int ix = window.x - 0.925f * scale;
+                    int iy = (11.075f - i) * scale + window.y;
+                    fbg_rect(pFbg, ix, iy, gemScale, gemScale, 0xE0, 0xE0, 0xE0);
+                    fbg_rect(pFbg, ix + 1, iy + 1, gemScale - 2, gemScale - 2, 0x10, 0x10, 0x10);
                 }
                 else
                     break;
@@ -59,7 +75,7 @@ STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
         for (int i = 0; i < inventory.size() / 3; ++i)
         {
             if (manaPool.getMana() >= Gem::gemCreateCost(i))
-                fbg_rect(pFbg, window.x + 3 * scale + 4, (11 - i) * scale + window.y, 4, scale, 0xE0, 0xE0, 0xE0);
+                fbg_rect(pFbg, window.x + 3 * scale + 4, (11 - i) * scale + window.y + 1, 4, scale - 2, 0xE0, 0xE0, 0xE0);
             else
                 break;
         }
@@ -68,10 +84,10 @@ STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
     if (pDraggedGem != NULL)
     {
         const Window* pRootWindow = window.getRootWindow();
-        int ix = pDraggedGem->x - scale;
-        int iy = pDraggedGem->y - scale;
-        int iw = 2 * scale;
-        int ih = 2 * scale;
+        int ix = pDraggedGem->x - gemScale;
+        int iy = pDraggedGem->y - gemScale;
+        int iw = 2 * gemScale;
+        int ih = 2 * gemScale;
 
         if (ix < 0)
         {
@@ -100,6 +116,25 @@ STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
     }
 
     return STATUS_OK;
+}
+
+void IngameInventory::dropGemIntoInventory(Gem* pGem)
+{
+    int slot = -1;
+
+    for (int s = 0; s < inventory.size(); ++s)
+    {
+        if (inventory[s] == NULL)
+        {
+            slot = s;
+            break;
+        }
+    }
+
+    if (slot != -1)
+    {
+        placeGemIntoInventory(pGem, slot, false);
+    }
 }
 
 void IngameInventory::removeGemFromInventory(Gem* pGem)
