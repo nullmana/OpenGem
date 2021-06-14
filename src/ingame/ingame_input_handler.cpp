@@ -185,6 +185,10 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
                     pInputHandler->startCreateGem(gemNumpadMapping_GCCS[4]);
             }
             break;
+        case GLFW_KEY_N:
+            if (action == GLFW_PRESS)
+                pCore->waveController.callWavesEarly(-1);
+            break;
         case GLFW_KEY_LEFT_SHIFT:
         case GLFW_KEY_RIGHT_SHIFT:
             switch (pInputHandler->getInputState())
@@ -266,18 +270,12 @@ STATUS IngameInputHandler::handleKeyboardInput()
             break;
         }
     }
-    if (glfwGetKey(pGlfwContext->window, GLFW_KEY_N) == GLFW_PRESS)
+    if ((glfwGetKey(pGlfwContext->window, GLFW_KEY_N) == GLFW_PRESS) &&
+        (glfwGetKey(pGlfwContext->window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS))
     {
-        if (glfwGetKey(pGlfwContext->window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        {
-            if (core.map.enemyController.getMonsters().size() < BENCHMARK_MONSTERS)
-                core.map.enemyController.spawnMonsters(core.map.pathfinder,
-                    BENCHMARK_MONSTERS - core.map.enemyController.getMonsters().size());
-        }
-        else
-        {
-            core.map.enemyController.spawnMonsters(core.map.pathfinder, 10);
-        }
+        if (core.map.enemyController.getMonsters().size() < BENCHMARK_MONSTERS)
+            core.map.enemyController.spawnMonsters(core.map.pathfinder,
+                BENCHMARK_MONSTERS - core.map.enemyController.getMonsters().size());
     }
     if (glfwGetKey(pGlfwContext->window, GLFW_KEY_M) == GLFW_PRESS)
     {

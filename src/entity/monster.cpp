@@ -10,13 +10,13 @@
 #define HEALTH_BAR_FADEOUT_TIME 30
 
 Monster::Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget, const MonsterPrototype& mp)
-    : Targetable(std::min(mp.hp, 1E300))
+    : Targetable(mp.hp)
 {
     pSourceNode = pStart;
     pTargetNode = pTarget;
 
     color = 0xFFFFFF * (rand() / float(RAND_MAX));
-    speedMax = 0.4f + (rand() / float(RAND_MAX));
+    speedMax = mp.speed;
 
     armor = mp.armor;
     mana = mp.mana;

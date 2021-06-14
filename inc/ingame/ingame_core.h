@@ -9,6 +9,7 @@
 #include "ingame/ingame_mana_pool.h"
 #include "ingame/ingame_map.h"
 #include "ingame/ingame_renderer.h"
+#include "ingame/ingame_wave_controller.h"
 
 class IngameCore
 {
@@ -28,4 +29,5 @@ public:
     IngameManaPool manaPool;
     IngameMap map;
     IngameRenderer renderer;
+    IngameWaveController waveController;
 };

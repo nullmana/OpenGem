@@ -65,8 +65,8 @@ IngameRenderer::IngameRenderer(IngameCore& core)
     : windowMap(core.map),
       windowMana(core.manaPool),
       windowInventory(core.inventory),
-      windowBuildSpells(
-          g_game.game == GC_LABYRINTH ? buildButtonDefs_GCL : buildButtonDefs_GCCS, 3),
+      windowWave(core.waveController),
+      windowBuildSpells(g_game.game == GC_LABYRINTH ? buildButtonDefs_GCL : buildButtonDefs_GCCS, 3),
       windowCreateGems(g_game.game == GC_LABYRINTH ? gemButtonDefs_GCL : gemButtonDefs_GCCS, 3),
       windowSpeed(speedButtonDefs, 4)
 {
@@ -74,6 +74,7 @@ IngameRenderer::IngameRenderer(IngameCore& core)
 
     rootWindow.addChildWindow(&windowMap);
     rootWindow.addChildWindow(&windowMana);
+    rootWindow.addChildWindow(&windowWave);
     rootWindow.addChildWindow(&windowBuildSpells);
     rootWindow.addChildWindow(&windowCreateGems);
     rootWindow.addChildWindow(&windowSpeed);
@@ -125,6 +126,7 @@ void IngameRenderer::resize(int width, int height)
 
     rootWindow.resize(0, 0, width, height);
     windowMap.resize(offsetX, offsetY, realWidth, realHeight);
+    windowWave.resize(4, offsetY, offsetX - 8, realHeight);
 
     if (g_game.game == GC_LABYRINTH)
         windowMana.resize(0.635f * realWidth + offsetX, 4, 0.365f * realWidth, 20);

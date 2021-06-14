@@ -9,6 +9,7 @@
 #include "interface/window_inventory.h"
 #include "interface/window_mana.h"
 #include "interface/window_map.h"
+#include "interface/window_wave.h"
 
 class IngameCore;
 struct _fbg;
@@ -20,6 +21,7 @@ private:
     WindowMap windowMap;
     WindowMana windowMana;
     WindowInventory windowInventory;
+    WindowWave windowWave;
     WindowButton windowBuildSpells;
     WindowButton windowCreateGems;
     WindowButton windowSpeed;

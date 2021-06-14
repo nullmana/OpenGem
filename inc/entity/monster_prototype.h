@@ -4,10 +4,10 @@
 
 struct MonsterPrototype
 {
-public:
     double hp;
     double armor;
     double mana;
     double banishmentCostMultiplier;
+    float speed;
     uint8_t type;
 };

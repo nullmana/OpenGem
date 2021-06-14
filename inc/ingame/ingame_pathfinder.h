@@ -39,6 +39,7 @@ public:
 
     bool checkBlocking(const IngameMap& map, int x, int y, int w, int h);
 
+    const MonsterSpawnNode* pickMonsterSpawnNode() const;
     std::vector<const MonsterSpawnNode*> getMonsterSpawnNodes() const;
     const Orb* getOrbNode() const { return &orbNode; }
 

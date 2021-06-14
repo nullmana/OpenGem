@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0] - 2021-06-14
+
+### Added
+
+- Added wave controller. Waves are created with near-accurate monster scaling for a fixed number of waves and arbitrary types of monsters.
+- Added calling waves early with hotkey or clicking waves
+
+### Fixed
+
+- Fixed bomb mode being reset when pressing any button in inventory, instead of specifically a gem action hotkey, as was intended
+
+
 ## [0.2.16] - 2021-06-13
 
 ### Added

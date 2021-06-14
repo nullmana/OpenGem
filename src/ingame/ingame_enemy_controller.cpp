@@ -11,6 +11,7 @@
 IngameEnemyController::IngameEnemyController(IngameManaPool& mp_)
     : manaPool(mp_), monstersOnTile(g_game.ingameMapHeight, g_game.ingameMapWidth)
 {
+    pendingMonsterClock = 0;
 }
 
 void IngameEnemyController::spawnMonsters(const IngamePathfinder& pathfinder, int num)
@@ -23,13 +24,13 @@ void IngameEnemyController::spawnMonsters(const IngamePathfinder& pathfinder, in
     mp.armor = 2.0;
     mp.mana = 8.0;
     mp.banishmentCostMultiplier = 1.0;
+    mp.speed = 0.4f + (rand() / float(RAND_MAX));
     mp.type = TARGET_REAVER;
 
     for (int i = 0; i < num; ++i)
     {
         // Multiply by large primes to make node order less consistent
-        monsters.emplace_back(
-            nodes[(797 * nodeOffset + 337 * i) % nodes.size()], pathfinder.getOrbNode(), mp);
+        monsters.emplace_back(nodes[(797 * nodeOffset + 337 * i) % nodes.size()], pathfinder.getOrbNode(), mp);
     }
     ++nodeOffset;
 
@@ -58,6 +59,26 @@ void IngameEnemyController::tickMonsters(IngameMap& map, int frames)
 
     map.projectileController.clearShotsFromTarget(invalidatedWithShots);
 
+    if (frames > 0)
+    {
+        // Check if pending monsters should enter
+        pendingMonsterClock += frames;
+        auto it = pendingMonsters.begin();
+
+        while (it != pendingMonsters.end())
+        {
+            if (it->first <= pendingMonsterClock)
+            {
+                monsters.emplace_back(map.pathfinder.pickMonsterSpawnNode(), map.pathfinder.getOrbNode(), it->second);
+                it = pendingMonsters.erase(it);
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
     monstersOnTile.clear();
     for (Monster& m : monsters)
     {
@@ -77,6 +98,14 @@ void IngameEnemyController::tickMonsters(IngameMap& map, int frames)
         if ((ix >= 0) && (ix < g_game.ingameMapWidth) && (iy >= 0) && (iy < g_game.ingameMapHeight))
             monstersOnTile.at(iy, ix).push_back(&m);
     }
+}
+
+void IngameEnemyController::addPendingMonsters(const MonsterPrototype& mp, const std::vector<int>& times)
+{
+    for (size_t i = 0; i < times.size(); ++i)
+        pendingMonsters.emplace(pendingMonsterClock + times[i], mp);
+
+    printf("Pending Monsters: %lu\n", pendingMonsters.size());
 }
 
 void IngameEnemyController::forceRepath(int x, int y, int w, int h)

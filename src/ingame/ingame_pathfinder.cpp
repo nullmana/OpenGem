@@ -43,8 +43,8 @@ IngamePathfinder::IngamePathfinder(
     }
 }
 
-void IngamePathfinder::calculateDistanceToNode(
-    const MonsterNode& node, const vector2d<TILE_TYPE>& map, vector2d<int>& distance)
+void IngamePathfinder::calculateDistanceToNode(const MonsterNode& node,
+    const vector2d<TILE_TYPE>& map, vector2d<int>& distance)
 {
     std::queue<std::tuple<int, int>> queue;
 
@@ -280,6 +280,35 @@ void IngamePathfinder::recalculatePaths(IngameMap& map)
         recalculateNodePaths(map, &node);
     for (MonsterNest& nest : monsterNests)
         recalculateNodePaths(map, &nest);
+}
+
+const MonsterSpawnNode* IngamePathfinder::pickMonsterSpawnNode() const
+{
+    int liveMonsterNests = 0;
+
+    for (const MonsterNest& n : monsterNests)
+        if (!n.isKilled)
+            ++liveMonsterNests;
+
+    if (liveMonsterNests > 0)
+    {
+        if (rand() < RAND_MAX / 20 * 9)
+        {
+            int selectedNest = rand() % liveMonsterNests;
+            for (const MonsterNest& n : monsterNests)
+            {
+                if (!n.isKilled)
+                {
+                    if (selectedNest == 0)
+                        return &n;
+
+                    --selectedNest;
+                }
+            }
+        }
+    }
+
+    return &pathEdges[rand() % pathEdges.size()];
 }
 
 std::vector<const MonsterSpawnNode*> IngamePathfinder::getMonsterSpawnNodes() const

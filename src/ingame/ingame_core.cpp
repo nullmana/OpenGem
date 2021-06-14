@@ -3,7 +3,11 @@
 #include "wrapfbg.h"
 
 IngameCore::IngameCore(IngameLevelDefinition& level)
-    : inputHandler(*this), renderer(*this), map(*this, level), inventory(manaPool, map.projectileController, 36)
+    : inputHandler(*this),
+      renderer(*this),
+      map(*this, level),
+      inventory(manaPool, map.projectileController, 36),
+      waveController(map, manaPool)
 {
     switch (g_game.game)
     {

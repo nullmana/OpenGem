@@ -180,6 +180,9 @@ void WindowInventory::handleKeyInput(
             case GLFW_KEY_X:
                 inventory.salvageGem(pGem);
                 break;
+            default:
+                // Do below only if performing a valid action
+                return;
         }
 
         if ((pCore->inputHandler.getInputState() == INPUT_BOMB_MULTIPLE) ||

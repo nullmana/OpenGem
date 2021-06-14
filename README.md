@@ -47,13 +47,13 @@ v0.3:
 - [x] Shrines can be placed and used, no visual effects required
 - [x] Structures, such as monster nests and beacons which can be placed on the map and targeted by gems
 - [x] Gem bombing
-- [ ] Waves and Monster Types, spawn when called
+- [x] Waves and Monster Types, spawn when called
 
 v0.4:
 - [x] Status effects
 - [x] Chain Hit
 - [ ] Socketing cooldown
-- [ ] Monster stats
+- [x] Monster stats
 - [ ] Tombs
 - [ ] Beacons
 - [ ] Mana Shards
