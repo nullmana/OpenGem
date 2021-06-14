@@ -12,6 +12,7 @@ Trap::Trap(int ix_, int iy_)
 {
     type = TILE_TRAP;
     shotCharge = 0.0f;
+    cooldownTimer = 0;
 }
 
 void Trap::tick(IngameMap& map, int frames)
@@ -189,6 +190,8 @@ void Trap::insertGem(Gem* pGem_)
 {
     Building::insertGem(pGem_);
 
+    cooldownTimer = 10000;
+
     pGem->recalculateShotData();
 
     if (g_game.game == GC_LABYRINTH)
@@ -205,4 +208,18 @@ void Trap::removeGem()
 
     if (g_game.game == GC_LABYRINTH)
         recalculateAdjacentGCLAmplifiers();
+}
+
+void Trap::updateGem()
+{
+    cooldownTimer = 10000;
+}
+
+void Trap::tickCooldown(int frames)
+{
+    cooldownTimer -= frames * 1000 / 15;
+    if (cooldownTimer <= 0)
+    {
+        shotCharge = (g_game.game == GC_LABYRINTH) ? 30.0f : 0.0f;
+    }
 }

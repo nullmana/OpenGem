@@ -49,15 +49,23 @@ static void debugDrawAmplifierDirections(struct _fbg* pFbg, const Window& window
 void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) const
 {
     float scale = window.width / float(g_game.ingameMapWidth);
+    float cooldownScale = 0.92f * scale * g_game.ingameBuildingSize;
     float gemScale = 0.85f * scale * g_game.ingameBuildingSize;
 
     for (const Tower& t : towers)
     {
         if ((t.pGem != NULL) && !t.pGem->isDragged)
         {
-            fbg_rect(pFbg, t.x * scale + window.x - 0.5f * gemScale,
-                t.y * scale + window.y - 0.5f * gemScale, gemScale, gemScale,
-                (t.pGem->RGB >> 16) & 0xFF, (t.pGem->RGB >> 8) & 0xFF, t.pGem->RGB & 0xFF);
+            fbg_rect(pFbg, t.x * scale + window.x - 0.5f * gemScale, t.y * scale + window.y - 0.5f * gemScale,
+                gemScale, gemScale, (t.pGem->RGB >> 16) & 0xFF, (t.pGem->RGB >> 8) & 0xFF, t.pGem->RGB & 0xFF);
+
+            if (t.isCoolingDown())
+            {
+                float cooldown = t.getCooldown();
+                fbg_recta(pFbg, t.x * scale + window.x - 0.5f * cooldownScale,
+                    t.y * scale + window.y + (0.5f - cooldown) * cooldownScale,
+                    cooldownScale, cooldownScale * cooldown, 0x20, 0x20, 0x20, 0x20);
+            }
         }
 #ifdef DEBUG
         debugDrawAmplifierDirections(pFbg, window, &t);
@@ -71,6 +79,14 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
             fbg_rect(pFbg, t.x * scale + window.x - 0.5f * gemScale,
                 t.y * scale + window.y - 0.5f * gemScale, gemScale, gemScale,
                 (t.pGem->RGB >> 16) & 0xFF, (t.pGem->RGB >> 8) & 0xFF, t.pGem->RGB & 0xFF);
+
+            if (t.isCoolingDown())
+            {
+                float cooldown = t.getCooldown();
+                fbg_recta(pFbg, t.x * scale + window.x - 0.5f * cooldownScale,
+                    t.y * scale + window.y + (0.5f - cooldown) * cooldownScale,
+                    cooldownScale, cooldownScale * cooldown, 0x20, 0x20, 0x20, 0x20);
+            }
         }
 #ifdef DEBUG
         debugDrawAmplifierDirections(pFbg, window, &t);
@@ -84,6 +100,14 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
             fbg_rect(pFbg, t.x * scale + window.x - 0.5f * gemScale,
                 t.y * scale + window.y - 0.5f * gemScale, gemScale, gemScale,
                 (t.pGem->RGB >> 16) & 0xFF, (t.pGem->RGB >> 8) & 0xFF, t.pGem->RGB & 0xFF);
+
+            if (t.isCoolingDown())
+            {
+                float cooldown = t.getCooldown();
+                fbg_recta(pFbg, t.x * scale + window.x - 0.5f * cooldownScale,
+                    t.y * scale + window.y + (0.5f - cooldown) * cooldownScale,
+                    cooldownScale, cooldownScale * cooldown, 0x20, 0x20, 0x20, 0x20);
+            }
         }
 #ifdef DEBUG
         debugDrawAmplifierDirections(pFbg, window, &t);
@@ -101,10 +125,26 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
 void IngameBuildingController::tickBuildings(IngameMap& map, int frames)
 {
     for (Tower& t : towers)
-        t.tick(map, frames);
+    {
+        if (t.isCoolingDown())
+            t.tickCooldown(frames);
+        if (!t.isCoolingDown())
+            t.tick(map, frames);
+    }
 
     for (Trap& t : traps)
-        t.tick(map, frames);
+    {
+        if (t.isCoolingDown())
+            t.tickCooldown(frames);
+        if (!t.isCoolingDown())
+            t.tick(map, frames);
+    }
+
+    for (Amplifier& a : amplifiers)
+    {
+        if (a.isCoolingDown())
+            a.tickCooldown(frames);
+    }
 }
 
 bool IngameBuildingController::hasBuildMana(const IngameManaPool& manaPool, TILE_TYPE building, int num) const

@@ -11,6 +11,7 @@ Tower::Tower(int ix_, int iy_)
     type = TILE_TOWER;
     shotCharge = 0.0f;
     cachedTargetsValid = false;
+    cooldownTimer = 0;
 }
 
 void Tower::tick(IngameMap& map, int frames)
@@ -93,6 +94,8 @@ void Tower::insertGem(Gem* pGem_)
 {
     Building::insertGem(pGem_);
 
+    cooldownTimer = 10000;
+
     pGem->recalculateShotData();
 
     if (g_game.game == GC_LABYRINTH)
@@ -109,4 +112,18 @@ void Tower::removeGem()
 
     if (g_game.game == GC_LABYRINTH)
         recalculateAdjacentGCLAmplifiers();
+}
+
+void Tower::updateGem()
+{
+    cooldownTimer = 10000;
+}
+
+void Tower::tickCooldown(int frames)
+{
+    cooldownTimer -= frames * 50;
+    if (cooldownTimer <= 0)
+    {
+        shotCharge = (g_game.game == GC_LABYRINTH) ? 30.0f : 0.0f;
+    }
 }

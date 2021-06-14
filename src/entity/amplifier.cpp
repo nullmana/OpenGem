@@ -3,6 +3,13 @@
 
 #include "constants/game_header.h"
 
+Amplifier::Amplifier(int ix_, int iy_)
+    : Building(ix_, iy_)
+{
+    type = TILE_AMPLIFIER;
+    cooldownTimer = 0;
+}
+
 double Amplifier::getGCLAmplifyPower() const
 {
     if (g_game.game != GC_LABYRINTH)
@@ -24,10 +31,16 @@ void Amplifier::insertGem(Gem* pGem_)
 {
     Building::insertGem(pGem_);
 
+    if (g_game.game != GC_LABYRINTH)
+        cooldownTimer = 10000;
+
     pGem->recalculateShotData();
 
-    for (Amplifiable* a : amplifying)
-        a->recalculateAmplifyEffects();
+    if (!isCoolingDown())
+    {
+        for (Amplifiable* a : amplifying)
+            a->recalculateAmplifyEffects();
+    }
 }
 
 void Amplifier::removeGem()
@@ -44,6 +57,20 @@ void Amplifier::removeGem()
 
 void Amplifier::updateGem()
 {
+    if (g_game.game != GC_LABYRINTH)
+        cooldownTimer = 10000;
+
     for (Amplifiable* a : amplifying)
         a->recalculateAmplifyEffects();
+}
+
+void Amplifier::tickCooldown(int frames)
+{
+    cooldownTimer -= frames * 50;
+
+    if (cooldownTimer <= 0)
+    {
+        for (Amplifiable* a : amplifying)
+            a->recalculateAmplifyEffects();
+    }
 }

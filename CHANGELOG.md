@@ -1,6 +1,13 @@
 # Changelog
 
-## [0.3.0] - 2021-06-14
+## [0.3.1] - 2021-06-14
+
+### Added
+
+- Added socketing cooldown for towers, traps, and for GCCS amplifiers
+
+
+## [0.3.0.1] - 2021-06-14
 
 ### Added
 

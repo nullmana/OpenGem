@@ -31,7 +31,7 @@ ShotData Building::transformShotDataAmplify(const ShotData& sd)
         // For any building that isn't an Amplifier, a is an Amplifier
         const Amplifier* pAmplifier = reinterpret_cast<const Amplifier*>(a);
 
-        if ((pAmplifier->pGem == NULL) || pAmplifier->pGem->isDragged)
+        if ((pAmplifier->pGem == NULL) || pAmplifier->pGem->isDragged || pAmplifier->isCoolingDown())
             continue;
 
         double damageMultiplier;
