@@ -55,7 +55,7 @@ v0.4:
 - [x] Socketing cooldown
 - [x] Monster stats
 - [ ] Wave Enraging
-- [ ] Shrine recharge affected by rushing waves
+- [x] Shrine recharge affected by rushing waves
 - [ ] Early wave mana bonus
 - [ ] Gem type availability/unlocking
 - [ ] Tombs

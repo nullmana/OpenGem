@@ -48,9 +48,10 @@ static void debugDrawAmplifierDirections(struct _fbg* pFbg, const Window& window
 
 void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) const
 {
-    float scale = window.width / float(g_game.ingameMapWidth);
-    float cooldownScale = 0.92f * scale * g_game.ingameBuildingSize;
-    float gemScale = 0.85f * scale * g_game.ingameBuildingSize;
+    const float scale = window.width / float(g_game.ingameMapWidth);
+    const float buildingScale = scale * g_game.ingameBuildingSize;
+    const float cooldownScale = 0.92f * buildingScale;
+    const float gemScale = 0.85f * buildingScale;
 
     for (const Tower& t : towers)
     {
@@ -114,6 +115,48 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
 #endif
     }
 
+    for (const ShrineChargedBolts& s : shrinesCB)
+    {
+        int ix = (s.x - 0.5f * g_game.ingameBuildingSize) * scale + window.x;
+        int iy = (s.y - 0.5f * g_game.ingameBuildingSize) * scale + window.y;
+
+        if (s.isFullyCharged())
+        {
+            fbg_hline(pFbg, ix, iy, buildingScale, 0xFF, 0xFF, 0x20);
+            fbg_hline(pFbg, ix, iy + buildingScale, buildingScale, 0xFF, 0xFF, 0x20);
+            fbg_vline(pFbg, ix, iy, buildingScale, 0xFF, 0xFF, 0x20);
+            fbg_vline(pFbg, ix + buildingScale, iy, buildingScale, 0xFF, 0xFF, 0x20);
+        }
+        else
+        {
+            float charge = s.getCharge();
+            fbg_recta(pFbg, s.x * scale + window.x - 0.5f * cooldownScale,
+                s.y * scale + window.y + (0.5f - charge) * cooldownScale,
+                cooldownScale, cooldownScale * charge, 0x20, 0x20, 0x20, 0x80);
+        }
+    }
+
+    for (const ShrineLightning& s : shrinesLI)
+    {
+        int ix = (s.x - 0.5f * g_game.ingameBuildingSize) * scale + window.x;
+        int iy = (s.y - 0.5f * g_game.ingameBuildingSize) * scale + window.y;
+
+        if (s.isFullyCharged())
+        {
+            fbg_hline(pFbg, ix, iy, buildingScale, 0xFF, 0xFF, 0x20);
+            fbg_hline(pFbg, ix, iy + buildingScale, buildingScale, 0xFF, 0xFF, 0x20);
+            fbg_vline(pFbg, ix, iy, buildingScale, 0xFF, 0xFF, 0x20);
+            fbg_vline(pFbg, ix + buildingScale, iy, buildingScale, 0xFF, 0xFF, 0x20);
+        }
+        else
+        {
+            float charge = s.getCharge();
+            fbg_recta(pFbg, s.x * scale + window.x - 0.5f * cooldownScale,
+                s.y * scale + window.y + (0.5f - charge) * cooldownScale,
+                cooldownScale, cooldownScale * charge, 0x20, 0x20, 0x20, 0x80);
+        }
+    }
+
     if (orb.isBroken())
     {
         fbg_rect(pFbg, (orb.nodeX - 0.5f * g_game.ingameBuildingSize) * scale + window.x,
@@ -122,7 +165,7 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
     }
 }
 
-void IngameBuildingController::tickBuildings(IngameMap& map, int frames)
+void IngameBuildingController::tickBuildings(IngameMap& map, int frames, int framesWaveSpeed)
 {
     for (Tower& t : towers)
     {
@@ -144,6 +187,17 @@ void IngameBuildingController::tickBuildings(IngameMap& map, int frames)
     {
         if (a.isCoolingDown())
             a.tickCooldown(frames);
+    }
+
+    for (ShrineChargedBolts& s : shrinesCB)
+    {
+        if (!s.isFullyCharged())
+            s.tickCharge(frames * framesWaveSpeed);
+    }
+    for (ShrineLightning& s : shrinesLI)
+    {
+        if (!s.isFullyCharged())
+            s.tickCharge(frames * framesWaveSpeed);
     }
 }
 

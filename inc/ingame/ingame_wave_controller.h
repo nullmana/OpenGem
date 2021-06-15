@@ -43,4 +43,6 @@ public:
     void tick(int frames);
 
     void callWavesEarly(int waveNum);
+
+    int getWaveStoneSpeed() const { return waveStoneSpeed; }
 };

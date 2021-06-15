@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1.1] - 2021-06-15
+
+### Added
+
+- Added shrine charge, accelerates with calling waves early
+
+
 ## [0.3.1] - 2021-06-14
 
 ### Added

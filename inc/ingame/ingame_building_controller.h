@@ -12,6 +12,7 @@
 
 #include <list>
 #include <unordered_set>
+#include <vector>
 
 class IngameLevelDefinition;
 class IngameManaPool;
@@ -26,8 +27,8 @@ private:
     Orb orb;
 
     // Shrines : GCL
-    std::list<ShrineChargedBolts> shrinesCB;
-    std::list<ShrineLightning> shrinesLI;
+    std::vector<ShrineChargedBolts> shrinesCB;
+    std::vector<ShrineLightning> shrinesLI;
     // Shrines : GCCS
 
     double wallCostCurrent;
@@ -50,7 +51,7 @@ public:
 
     void render(struct _fbg* pFbg, const Window& window) const;
 
-    void tickBuildings(IngameMap& map, int frames);
+    void tickBuildings(IngameMap& map, int frames, int framesWaveSpeed);
 
     bool hasBuildMana(const IngameManaPool& manaPool, TILE_TYPE building, int num) const;
     void spendBuildMana(IngameManaPool& manaPool, TILE_TYPE building, int num);

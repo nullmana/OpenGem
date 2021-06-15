@@ -10,10 +10,15 @@ ShrineLightning::ShrineLightning(IngameMap& map_, int ix_, int iy_)
 {
     type = TILE_SHRINE_LI;
     shrineType = SHRINE_LIGHTNING;
+    charge = 0;
+    chargeMax = 4200;
 }
 
 bool ShrineLightning::canActivate()
 {
+    if (charge < chargeMax)
+        return false;
+
     for (int j = std::max(0, iy - 1); j <= std::min(g_game.ingameMapHeight - 1, iy + 1); ++j)
     {
         for (int i = 0; i < g_game.ingameMapWidth; ++i)
@@ -69,6 +74,8 @@ void ShrineLightning::activate(Gem* pGem)
     {
         cachedTargets[i]->receiveShotDamage(pGem->shotFinal, 1, pGem->shotFinal.rollDamage(), 0.0, pGem, false);
     }
+
+    charge = 0;
 }
 
 std::vector<Targetable*> ShrineLightning::getTargets()

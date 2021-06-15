@@ -10,10 +10,15 @@ ShrineChargedBolts::ShrineChargedBolts(IngameMap& map_, int ix_, int iy_)
 {
     type = TILE_SHRINE_CB;
     shrineType = SHRINE_CHARGED_BOLTS;
+    charge = 0;
+    chargeMax = 4200;
 }
 
 bool ShrineChargedBolts::canActivate()
 {
+    if (charge < chargeMax)
+        return false;
+
     return map.enemyController.hasShrineTargetsWithinRangeSq(y, x, 4.9f * 4.9f);
 }
 
@@ -36,6 +41,8 @@ void ShrineChargedBolts::activate(Gem* pGem)
     {
         cachedTargets[i]->receiveShotDamage(pGem->shotFinal, 1, pGem->shotFinal.rollDamage(), 0.0, pGem, false);
     }
+
+    charge = 0;
 }
 
 std::vector<Targetable*> ShrineChargedBolts::getTargets()

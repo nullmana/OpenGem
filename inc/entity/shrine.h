@@ -16,6 +16,9 @@ protected:
     SHRINE_TYPE shrineType;
     IngameMap& map;
 
+    uint16_t charge;
+    uint16_t chargeMax;
+
     virtual std::vector<Targetable*> getTargets() = 0;
 
 public:
@@ -27,4 +30,12 @@ public:
 
     virtual bool canActivate() = 0;
     virtual void activate(Gem* pGem) = 0;
+
+    void tickCharge(int frames)
+    {
+        if ((charge += frames) > chargeMax)
+            charge = chargeMax;
+    }
+    bool isFullyCharged() const { return charge >= chargeMax; }
+    float getCharge() const { return float(charge) / float(chargeMax); }
 };

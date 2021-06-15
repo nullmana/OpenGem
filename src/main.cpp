@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
                 lastGameFrame = curTime;
         }
 
-        core.map.buildingController.tickBuildings(core.map, gameFrames);
+        core.map.buildingController.tickBuildings(core.map, gameFrames, core.waveController.getWaveStoneSpeed());
         core.map.projectileController.tickProjectiles(gameFrames);
         core.manaPool.checkMaximumMana();
         core.map.enemyController.tickMonsters(core.map, gameFrames);
