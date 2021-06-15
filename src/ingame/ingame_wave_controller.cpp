@@ -15,6 +15,10 @@ IngameWaveController::IngameWaveController(IngameMap& map_, IngameManaPool& mana
     timeUntilNextWave = 5;
     waveStoneSpeed = 1;
 
+    lastWaveTime = 0;
+    waveClock = 0;
+    fullRushBonus = false;
+
     buildWaves();
 }
 
@@ -214,7 +218,6 @@ void IngameWaveController::buildWaves()
                 WaveStone& spark = waves[++i];
                 spark.type = WAVE_SPARK;
                 spark.timeOffset = 208;
-                printf("Spark\n");
 
                 waves.emplace_back();
                 ++totalStones;
@@ -230,6 +233,7 @@ void IngameWaveController::activateNextWave()
 
     timeUntilNextWave = wave.timeOffset;
     waveStoneSpeed = 1;
+    fullRushBonus = (rushWaveNum > currentWaveStone);
 
     if (wave.isWave())
     {
@@ -339,6 +343,7 @@ void IngameWaveController::tick(int frames)
 {
     for (int f = 0; (f < frames) && (currentWaveStone < int(waves.size() - 1)); ++f)
     {
+        ++waveClock;
         if (rushWaveNum > currentWaveStone)
             waveStoneSpeed += 3;
 
@@ -348,10 +353,18 @@ void IngameWaveController::tick(int frames)
         {
             if ((waveStoneSpeed > 1) && (currentWaveStone > -1) && waves[currentWaveStone + 1].isWave())
             {
-                // TODO proportional early wave bonus
-                double manaBonus = 10.0 * (round(pow(0.54 * currentWaveStone + 1.6, 1.214) * 10.0) / 10.0);
-                manaPool.addMana(manaBonus, true);
+                double manaBonus = round(pow(0.54 * currentWaveStone + 1.6, 1.214) * 10.0);
+                double bonusProportion = 1.0;
+                if (!fullRushBonus)
+                {
+                    bonusProportion = std::min(1.0, std::max(0.01,
+                                                        round((waveClock - lastWaveTime - 1000.0) / -9.75) / 100.0));
+                }
+
+                manaPool.addMana(manaBonus * bonusProportion, true);
             }
+
+            lastWaveTime = waveClock;
 
             activateNextWave();
         }

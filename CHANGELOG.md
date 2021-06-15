@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1.2] - 2021-06-15
+
+### Added
+
+- Added early wave mana bonus relative to how early wave is called
+
+
 ## [0.3.1.1] - 2021-06-15
 
 ### Added

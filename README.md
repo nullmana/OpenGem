@@ -56,7 +56,7 @@ v0.4:
 - [x] Monster stats
 - [ ] Wave Enraging
 - [x] Shrine recharge affected by rushing waves
-- [ ] Early wave mana bonus
+- [x] Early wave mana bonus
 - [ ] Gem type availability/unlocking
 - [ ] Tombs
 - [ ] Beacons

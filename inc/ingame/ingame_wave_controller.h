@@ -25,6 +25,10 @@ private:
     int timeUntilNextWave;
     int waveStoneSpeed;
 
+    uint64_t lastWaveTime;
+    uint64_t waveClock;
+    bool fullRushBonus;
+
     double getWaveHpGrowthGCL(int numWaves);
 
     void buildWaves();
