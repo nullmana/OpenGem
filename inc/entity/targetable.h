@@ -25,6 +25,7 @@ public:
     virtual uint32_t receiveShotDamage(ShotData& shot, uint32_t numShots, double damage, double crit,
         Gem* pSourceGem, bool isKillingShot) = 0;
     virtual void receiveShrineDamage(double damage) = 0;
+    virtual void receiveBombDamage(const ShotData& shot, double damage) = 0;
     virtual double calculateIncomingDamage(double damage, double crit) { return damage; }
     virtual float getShotVariance() { return 0.0f; }
     virtual bool canBeTargeted() { return true; }

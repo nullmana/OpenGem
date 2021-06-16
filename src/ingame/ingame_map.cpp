@@ -9,6 +9,7 @@
 IngameMap::IngameMap(IngameCore& core, IngameLevelDefinition& level)
     : tileOccupied(g_game.ingameMapHeight, g_game.ingameMapWidth),
       tileBuilding(g_game.ingameMapHeight, g_game.ingameMapWidth),
+      tileStructure(g_game.ingameMapHeight, g_game.ingameMapWidth),
       manaPool(core.manaPool),
       buildingController(level),
       structureController(level),
@@ -36,10 +37,11 @@ IngameMap::IngameMap(IngameCore& core, IngameLevelDefinition& level)
         }
     }
 
-    for (const std::tuple<int, int, bool>& n : level.monsterNests)
+    std::vector<MonsterNest>& monsterNests = structureController.getMonsterNests();
+    for (int i = 0; i < level.monsterNests.size(); ++i)
     {
-        int nx = std::get<0>(n);
-        int ny = std::get<1>(n);
+        int nx = std::get<0>(level.monsterNests[i]);
+        int ny = std::get<1>(level.monsterNests[i]);
         for (int y = ny; y < ny + g_game.ingameMonsterNestSize; ++y)
         {
             for (int x = nx; x < nx + g_game.ingameMonsterNestSize; ++x)
@@ -49,6 +51,8 @@ IngameMap::IngameMap(IngameCore& core, IngameLevelDefinition& level)
                     tileOccupied.at(y, x) = TILE_MONSTER_NEST_PATH;
                 else
                     tileOccupied.at(y, x) = TILE_MONSTER_NEST;
+
+                tileStructure.at(y, x) = &monsterNests[i];
             }
         }
     }
@@ -515,7 +519,36 @@ STATUS IngameMap::demolishBuilding(int x, int y)
     return STATUS_OK;
 }
 
-void IngameMap::dropGemBomb(Gem* pGem, float x, float y) {}
+void IngameMap::dropGemBomb(Gem* pGem, float x, float y)
+{
+    float bombRange = pGem->getBombRange();
+
+    std::vector<Targetable*> targets = enemyController.getShrineTargetsWithinRangeSq(y, x, bombRange * bombRange);
+    if (targets.empty())
+        return;
+
+    if (g_game.game == GC_LABYRINTH)
+    {
+        int numHits = 0.85f * pGem->grade + 2.0f;
+        double damage = pGem->getBombDamage();
+        damage *= 1.0 + pGem->shotFinal.rollCritMultiplier();
+
+        for (int i = 0; (i < numHits) && (i < targets.size()); ++i)
+        {
+            targets[i]->receiveBombDamage(pGem->shotFinal, damage);
+        }
+    }
+    else
+    {
+        double damage = pGem->getBombDamage() / targets.size();
+        damage *= 1.0 + pGem->shotFinal.rollCritMultiplier();
+
+        for (size_t i = 0; i < targets.size(); ++i)
+        {
+            targets[i]->receiveBombDamage(pGem->shotFinal, damage);
+        }
+    }
+}
 
 void IngameMap::monsterReachesTarget(Monster& monster)
 {

@@ -1,6 +1,7 @@
 #include "entity/structure.h"
 #include "entity/gem.h"
 
+#include "constants/game_header.h"
 #include "constants/target_type.h"
 
 #include <algorithm>
@@ -35,7 +36,7 @@ uint32_t Structure::receiveShotDamage(ShotData& shot, uint32_t numShots, double 
         double modifiedDamage = std::max<double>(1, damage * (1.0 + crit) - armor);
         while (shotsTaken < numShots)
         {
-            hp -= damage;
+            hp -= modifiedDamage;
             ++shotsTaken;
 
             if ((shot.component[COMPONENT_ARMOR] > 0.0) && (armor > 0.0))
@@ -58,6 +59,21 @@ uint32_t Structure::receiveShotDamage(ShotData& shot, uint32_t numShots, double 
     }
 
     return 0;
+}
+
+void Structure::receiveBombDamage(const ShotData& shot, double damage)
+{
+    if (isIndestructible || isKilled)
+        return;
+
+    double modifiedDamage = std::max<double>(1, damage - armor);
+    if (g_game.game == GC_LABYRINTH)
+        modifiedDamage *= 2;
+
+    if ((hp -= modifiedDamage) < 1.0)
+    {
+        isKilled = true;
+    }
 }
 
 double Structure::calculateIncomingDamage(double damage, double crit)

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1.3] - 2021-06-15
+
+### Added
+
+- Added gem bomb damage to monsters and structures
+
+
 ## [0.3.1.2] - 2021-06-15
 
 ### Added

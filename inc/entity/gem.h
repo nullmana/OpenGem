@@ -53,6 +53,9 @@ public:
 
     void recalculateShotData();
 
+    float getBombRange() const;
+    double getBombDamage() const;
+
     static double gemCreateCost(int grade);
 
 #ifdef DEBUG

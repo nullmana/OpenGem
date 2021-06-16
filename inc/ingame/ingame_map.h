@@ -17,7 +17,6 @@
 #include "interface/window.h"
 
 class IngameManaPool;
-class Building;
 struct _fbg;
 
 class IngameMap
@@ -26,6 +25,7 @@ private:
     IngameManaPool& manaPool;
     vector2d<TILE_TYPE> tileOccupied;
     vector2d<Building*> tileBuilding;
+    vector2d<Structure*> tileStructure;
 
     bool verifyBuilding(TILE_TYPE building, int x, int y);
     STATUS placeBuilding(TILE_TYPE building, int x, int y);
@@ -47,6 +47,7 @@ public:
     void dropGemBomb(Gem* pGem, float x, float y);
 
     Building* getBuilding(int y, int x) const { return tileBuilding.at(y, x); }
+    Structure* getStructure(int y, int x) const { return tileStructure.at(y, x); }
 
     const vector2d<TILE_TYPE>& getTileOccupiedMap() const { return tileOccupied; }
 

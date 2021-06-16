@@ -206,7 +206,12 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                     if (pDraggedGem->pBuilding != NULL)
                         pCore->inventory.removeGemFromBuilding(pDraggedGem->pBuilding);
                     map.demolishBuilding(ix, iy);
-                    map.dropGemBomb(pDraggedGem, xpos - x, ypos - y);
+
+                    Structure* pStructure = map.getStructure(iy, ix);
+                    if (pStructure != NULL)
+                        pStructure->receiveBombDamage(pDraggedGem->shotFinal, pDraggedGem->getBombDamage());
+
+                    map.dropGemBomb(pDraggedGem, (xpos - x) / scale, (ypos - y) / scale);
 
                     pCore->inventory.deleteGem(pDraggedGem);
                 }
@@ -226,7 +231,12 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                         (pCore->manaPool.getMana() >= pBombGem->manaCost))
                     {
                         map.demolishBuilding(ix, iy);
-                        map.dropGemBomb(pBombGem, xpos - x, ypos - y);
+
+                        Structure* pStructure = map.getStructure(iy, ix);
+                        if (pStructure != NULL)
+                            pStructure->receiveBombDamage(pBombGem->shotFinal, pBombGem->getBombDamage());
+
+                        map.dropGemBomb(pBombGem, (xpos - x) / scale, (ypos - y) / scale);
 
                         if (state == INPUT_BOMB_TEMPLATE)
                         {

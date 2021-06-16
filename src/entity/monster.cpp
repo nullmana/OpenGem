@@ -198,6 +198,15 @@ void Monster::receiveShrineDamage(double damage)
         healthBarTimer = HEALTH_BAR_FADEOUT_TIME;
 }
 
+void Monster::receiveBombDamage(const ShotData& shot, double damage)
+{
+    ShotData sd = shot;
+    if (g_game.game == GC_LABYRINTH)
+        sd.component[COMPONENT_SHOCK] = 0.1;
+
+    receiveShotDamage(sd, 1, damage, 0.0, NULL, false);
+}
+
 double Monster::calculateIncomingDamage(double damage, double crit)
 {
     return std::max<double>(1, damage * (1.0 + crit) - armor);

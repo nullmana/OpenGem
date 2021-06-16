@@ -274,7 +274,7 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
             shotRaw.component[COMPONENT_SUPPRESS] = 13.3;
             break;
         default:
-            throw "Invalid Gem Type!\n";
+            throw "Invalid Gem Type!";
             break;
     }
     if (g_game.game == GC_LABYRINTH)
@@ -674,6 +674,40 @@ int Gem::numComponents() const
         ++count;
     }
     return count;
+}
+
+float Gem::getBombRange() const
+{
+    if (g_game.game == GC_LABYRINTH)
+        return 18.0f / 33.0f * grade + 55.0f / 33.0f;
+    else if (g_game.game == GC_CHASINGSHADOWS)
+        return 2.6f / 17.0f * grade + 47.0f / 17.0f;
+    else
+        throw "Game Code Unavailable!";
+
+    return 1.0f;
+}
+
+double Gem::getBombDamage() const
+{
+    if (g_game.game == GC_LABYRINTH)
+    {
+        double damageMin = shotFinal.damageMin * (2.8 * grade + 2.2);
+        double damageMax = shotFinal.damageMax * (4.2 * grade + 4.4);
+        double bloodbound = 0.0;
+        if (shotFinal.component[COMPONENT_BLOODBOUND] > 0.0)
+            bloodbound = shotFinal.component[COMPONENT_BLOODBOUND] * kills;
+
+        return std::round((damageMax - damageMin) * (rand() / double(RAND_MAX)) + damageMin + bloodbound);
+    }
+    else if (g_game.game == GC_CHASINGSHADOWS)
+    {
+        return shotFinal.damageMax * (2.9 * grade + 3.4);
+    }
+    else
+        throw "Game Code Unavailable!";
+
+    return 1.0;
 }
 
 #ifdef DEBUG

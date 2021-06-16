@@ -58,6 +58,7 @@ v0.4:
 - [x] Shrine recharge affected by rushing waves
 - [x] Early wave mana bonus
 - [ ] Gem type availability/unlocking
+- [x] Gem bombing does damage
 - [ ] Tombs
 - [ ] Beacons
 - [ ] Mana Shards
