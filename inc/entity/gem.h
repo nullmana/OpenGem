@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/bitmask.h"
 #include "constants/gem_component_type.h"
 
 #include "entity/shot_data.h"
@@ -40,7 +41,7 @@ public:
     uint16_t componentMask;
     GEM_COMPONENT_TYPE displayComponents[3];
 
-    int numComponents() const;
+    int numComponents() const { return bitmapCountOnes(componentMask); }
 
     // Recalculate own ShotData based on combining pOther into this gem
     void combineWith(const Gem* pOther);
@@ -57,6 +58,7 @@ public:
     double getBombDamage() const;
 
     static double gemCreateCost(int grade);
+    static double gemUnlockCostGCL(int available);
 
 #ifdef DEBUG
     void debugPrint() const;

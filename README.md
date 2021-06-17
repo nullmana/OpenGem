@@ -57,7 +57,7 @@ v0.4:
 - [ ] Wave Enraging
 - [x] Shrine recharge affected by rushing waves
 - [x] Early wave mana bonus
-- [ ] Gem type availability/unlocking
+- [x] Gem type availability/unlocking
 - [x] Gem bombing does damage
 - [ ] Tombs
 - [ ] Beacons

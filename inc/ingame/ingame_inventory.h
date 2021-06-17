@@ -21,6 +21,8 @@ private:
     std::list<Gem> gems;
     Gem* pDraggedGem;
 
+    uint16_t unlockedGemTypeMask;
+
     void checkAdjacentAmplifiers(Gem* pGem);
 
     Gem* createGem(GEM_COMPONENT_TYPE gemType, int grade);
@@ -67,4 +69,8 @@ public:
 
     bool createGemInSlot(GEM_COMPONENT_TYPE gemType, int slot);
     bool createAllGemsInSlot(GEM_COMPONENT_TYPE gemType, int slot);
+
+    int getNumUnlockedGemTypes() const { return bitmapCountOnes(unlockedGemTypeMask); }
+    bool isGemTypeAvailable(GEM_COMPONENT_TYPE type) const { return !!((unlockedGemTypeMask >> type) & 0x1); }
+    void unlockGemType(GEM_COMPONENT_TYPE type);
 };

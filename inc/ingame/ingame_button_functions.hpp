@@ -27,7 +27,7 @@ static void buttonBuildBomb_handleMouseInput(Button& thisb, GLFWwindow* pWindow,
     {
         IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
         Gem* pFirstGem = pCore->inventory.getFirstGem();
-        if ((mods & GLFW_MOD_SHIFT) && (pFirstGem != NULL))
+        if (!!(mods & GLFW_MOD_SHIFT) && (pFirstGem != NULL))
             pCore->inputHandler.toggleInputState(INPUT_BOMB_MULTIPLE);
         else
             pCore->inputHandler.toggleInputState(INPUT_BOMB_GEM);
@@ -53,7 +53,7 @@ static void buttonBuildMana_handleMouseInput(Button& thisb, GLFWwindow* pWindow,
     if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
     {
         IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
-        if (mods & GLFW_MOD_SHIFT)
+        if (!!(mods & GLFW_MOD_SHIFT))
         {
             if (pCore->manaPool.toggleAutopool())
                 thisb.state |= BUTTON_ACTIVE;
@@ -110,14 +110,26 @@ static void buttonBuildMana_checkDisable(Button& thisb, GLFWwindow* pWindow)
 #define DEFFN_BUTTON_GEM_INPUT(fnname, gemType)                                              \
     static void fnname(Button& thisb, GLFWwindow* pWindow, int button, int action, int mods) \
     {                                                                                        \
+        IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);                  \
         if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))                    \
         {                                                                                    \
-            IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);              \
-            pCore->inputHandler.startCreateGem(gemType);                                     \
-            if (pCore->inputHandler.getCreatingGemType() == -1)                              \
-                thisb.state &= ~BUTTON_ACTIVE;                                               \
-            else                                                                             \
-                thisb.state |= BUTTON_ACTIVE;                                                \
+            if (pCore->inventory.isGemTypeAvailable(gemType))                                \
+            {                                                                                \
+                {                                                                            \
+                    pCore->inputHandler.startCreateGem(gemType);                             \
+                    if (pCore->inputHandler.getCreatingGemType() == -1)                      \
+                        thisb.state &= ~BUTTON_ACTIVE;                                       \
+                    else                                                                     \
+                        thisb.state |= BUTTON_ACTIVE;                                        \
+                }                                                                            \
+            }                                                                                \
+            else if (g_game.game == GC_LABYRINTH)                                            \
+            {                                                                                \
+                if (!!(mods & GLFW_MOD_SHIFT))                                               \
+                {                                                                            \
+                    pCore->inventory.unlockGemType(gemType);                                 \
+                }                                                                            \
+            }                                                                                \
         }                                                                                    \
     }
 
@@ -178,6 +190,28 @@ static void buttonGemAnvil_handleMouseInput(Button& thisb, GLFWwindow* pWindow, 
             pCore->inputHandler.setInputState(INPUT_IDLE);
     }
 }
+
+#define DEFFN_BUTTON_GEM_DISABLE(fnname, gemType)                           \
+    static void fnname(Button& thisb, GLFWwindow* pWindow)                  \
+    {                                                                       \
+        IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow); \
+        if (pCore->inventory.isGemTypeAvailable(gemType))                   \
+            thisb.state &= ~BUTTON_DISABLED;                                \
+        else                                                                \
+            thisb.state |= BUTTON_DISABLED;                                 \
+    }
+
+DEFFN_BUTTON_GEM_DISABLE(buttonGemSL_checkDisable, GEM_SLOW);
+DEFFN_BUTTON_GEM_DISABLE(buttonGemCH_checkDisable, GEM_CHAIN);
+DEFFN_BUTTON_GEM_DISABLE(buttonGemPO_checkDisable, GEM_POISON);
+DEFFN_BUTTON_GEM_DISABLE(buttonGemAT_checkDisable, GEM_ARMOR);
+DEFFN_BUTTON_GEM_DISABLE(buttonGemSH_checkDisable, GEM_SHOCK);
+DEFFN_BUTTON_GEM_DISABLE(buttonGemBB_checkDisable, GEM_BLOODBOUND);
+DEFFN_BUTTON_GEM_DISABLE(buttonGemCR_checkDisable, GEM_CRITICAL);
+DEFFN_BUTTON_GEM_DISABLE(buttonGemML_checkDisable, GEM_LEECH);
+DEFFN_BUTTON_GEM_DISABLE(buttonGemPB_checkDisable, GEM_POOLBOUND);
+DEFFN_BUTTON_GEM_DISABLE(buttonGemSP_checkDisable, GEM_SUPPRESSING);
+#undef DEFFN_BUTTON_GEM_DISABLE
 
 #define DEFFN_BUTTON_SPEED_INPUT(fnname, targetSpeed, elseSpeed)                             \
     static void fnname(Button& thisb, GLFWwindow* pWindow, int button, int action, int mods) \

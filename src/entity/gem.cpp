@@ -664,16 +664,11 @@ double Gem::gemCreateCost(int grade)
     return floor(gemCreateCostCurrent * numCreates + gemCombineCostCurrent * (numCreates - 1.0));
 }
 
-int Gem::numComponents() const
+double Gem::gemUnlockCostGCL(int available)
 {
-    int count = 0;
-    int mask = componentMask;
-    while (mask != 0)
-    {
-        mask &= (mask - 1);
-        ++count;
-    }
-    return count;
+    static const double baseUnlockCost[8] = {0.0, 0.0, 500.0, 1100.0, 1800.0, 2600.0, 3500.0, 4500.0};
+
+    return baseUnlockCost[available];
 }
 
 float Gem::getBombRange() const

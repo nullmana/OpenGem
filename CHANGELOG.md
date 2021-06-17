@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1.4] - 2021-06-16
+
+### Added
+
+- Added available gem type restrictions, unlocking in GCL
+
+
 ## [0.3.1.3] - 2021-06-15
 
 ### Added

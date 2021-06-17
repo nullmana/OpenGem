@@ -172,17 +172,22 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
         case GLFW_KEY_KP_9:
             if (action == GLFW_PRESS)
             {
+                GEM_COMPONENT_TYPE type;
                 if (g_game.game == GC_LABYRINTH)
-                    pInputHandler->startCreateGem(gemNumpadMapping_GCL[key - GLFW_KEY_KP_1]);
+                    type = gemNumpadMapping_GCL[key - GLFW_KEY_KP_1];
                 else if (g_game.game == GC_CHASINGSHADOWS)
-                    pInputHandler->startCreateGem(gemNumpadMapping_GCCS[key - GLFW_KEY_KP_1]);
+                    type = gemNumpadMapping_GCCS[key - GLFW_KEY_KP_1];
+
+                if (pCore->inventory.isGemTypeAvailable(type))
+                    pInputHandler->startCreateGem(type);
             }
             break;
         case GLFW_KEY_KP_5:
-            if (g_game.game != GC_LABYRINTH)
+            if ((g_game.game != GC_LABYRINTH) && (action == GLFW_PRESS))
             {
-                if (action == GLFW_PRESS)
-                    pInputHandler->startCreateGem(gemNumpadMapping_GCCS[4]);
+                GEM_COMPONENT_TYPE type = gemNumpadMapping_GCCS[4];
+                if (pCore->inventory.isGemTypeAvailable(type))
+                    pInputHandler->startCreateGem(type);
             }
             break;
         case GLFW_KEY_N:

@@ -18,6 +18,7 @@ IngameInventory::IngameInventory(IngameManaPool& mp_, IngameProjectileController
     : manaPool(mp_), projectileController(pc_), inventory(slots_)
 {
     pDraggedGem = NULL;
+    unlockedGemTypeMask = (1 << GEM_POISON) | (1 << GEM_CRITICAL);
 }
 
 STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const
@@ -423,4 +424,14 @@ bool IngameInventory::createAllGemsInSlot(GEM_COMPONENT_TYPE gemType, int slot)
     }
 
     return createdGems;
+}
+
+void IngameInventory::unlockGemType(GEM_COMPONENT_TYPE type)
+{
+    double unlockCost = Gem::gemUnlockCostGCL(getNumUnlockedGemTypes());
+    if (manaPool.getMana() >= unlockCost)
+    {
+        unlockedGemTypeMask |= (1 << type);
+        manaPool.addMana(-unlockCost, false);
+    }
 }
