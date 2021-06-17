@@ -14,6 +14,7 @@ struct WaveStone
     // union everything below this for waves
     struct MonsterPrototype mp;
 
+    WAVE_FORMATION formation;
     int waveNum;
     int numMonsters;
     int numMonstersUnenraged;

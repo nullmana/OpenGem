@@ -16,6 +16,8 @@ private:
     void adjustMotionAngle();
     void adjustSpeedAngle();
 
+    int motionCycle;
+
 public:
     Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget, const MonsterPrototype& mp);
 

@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.1.5] - 2021-06-17
+
+### Added
+
+- Added wave formations, GCL monster hopping and crawling movement
+
+### Fixed
+
+- Fixed uint underflow in wave creation forcing monsters to maximum speed
+
+
 ## [0.3.1.4] - 2021-06-16
 
 ### Added

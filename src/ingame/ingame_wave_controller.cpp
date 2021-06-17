@@ -83,6 +83,8 @@ void IngameWaveController::buildWaves()
         WaveStone& wave = waves[i];
         MonsterPrototype& mp = wave.mp;
 
+        wave.formation = (iw < 3) ? FORMATION_NORMAL : WAVE_FORMATION(randWave() % 10);
+
         wave.waveNum = iw;
         wave.type = WAVE_REAVER;
         if (iw > 3)
@@ -110,9 +112,14 @@ void IngameWaveController::buildWaves()
             case WAVE_GIANT:
                 mp.type = TARGET_GIANT;
                 if (g_game.game == GC_LABYRINTH)
+                {
                     numMonstersRaw = rand01f(randWave) * 3.99 + 1.0f;
+                }
                 else
+                {
                     numMonstersRaw = rand01f(randWave) * 2.99 + 2.0f;
+                    wave.formation = FORMATION_LOOSE;
+                }
                 break;
             case WAVE_ARMORED:
                 mp.type = TARGET_ARMORED;
@@ -123,6 +130,7 @@ void IngameWaveController::buildWaves()
                 numMonstersRaw = rand01f(randWave) * 8.99f + 8.0f;
                 break;
         }
+
         if (g_game.game == GC_CHASINGSHADOWS)
         {
             if (randWave() < randWave.max() / 5 * 2)
@@ -139,7 +147,7 @@ void IngameWaveController::buildWaves()
             mp.armor = std::max(0.0, round(armorIncrement * (iw - 3) * (1 + rand01(randWave))));
             mp.mana = 12.0 * (0.64 * iw + 10.0) / wave.numMonsters;
             mp.banishmentCostMultiplier = 1.0;
-            mp.speed = 0.65f * (2.8f + 0.08f * ((randWave() % 20) - 10));
+            mp.speed = 0.65f * (2.8f + 0.08f * (int(randWave() % 20) - 10));
 
             switch (wave.type)
             {
@@ -249,9 +257,76 @@ void IngameWaveController::activateWave()
 {
     WaveStone& wave = waves[currentWaveStone];
     std::vector<int> times(wave.numMonsters);
+    int timescale;
+    float delta;
 
-    for (int i = 0; i < times.size(); ++i)
-        times[i] = i * 5;
+    if (g_game.game == GC_LABYRINTH)
+    {
+        delta = 2.0f;
+        timescale = 1;
+    }
+    else
+    {
+        delta = 7.0f;
+        timescale = 7;
+    }
+
+    switch (wave.formation)
+    {
+        case FORMATION_NORMAL:
+            for (int i = 0; i < times.size(); ++i)
+                times[i] = timescale * 5 * i;
+            break;
+        case FORMATION_2:
+            for (int i = 0; i < times.size(); ++i)
+                times[i] = timescale * (6 * (i - i % 2) + (i % 2) * 2);
+            break;
+        case FORMATION_3:
+            for (int i = 0; i < times.size(); ++i)
+                times[i] = timescale * (9 * (i - i % 3) + (i % 3) * 2);
+            break;
+        case FORMATION_6:
+            for (int i = 0; i < times.size(); ++i)
+                times[i] = timescale * (18 * (i - i % 6) + (i % 6) * 2);
+            break;
+        case FORMATION_TIGHT_LOOSE:
+            times[0] = 0;
+            for (int i = 1; i < times.size(); ++i)
+            {
+                times[i] = round(times[i - 1] + delta);
+                delta += 0.3f * timescale;
+            }
+            break;
+        case FORMATION_LOOSE_TIGHT:
+            delta += wave.numMonsters * 0.3f * timescale;
+            times[0] = 0;
+            for (int i = 1; i < times.size(); ++i)
+            {
+                times[i] = round(times[i - 1] + delta);
+                delta -= 0.3f * timescale;
+            }
+            break;
+        case FORMATION_RANDOM_LOOSE:
+            for (int i = 0; i < times.size(); ++i)
+                times[i] = timescale * (8 * i + ((rand() % 3) - 4));
+            break;
+        case FORMATION_RANDOM_TIGHT:
+            for (int i = 0; i < times.size(); ++i)
+                times[i] = timescale * (5 * i + ((rand() % 2) - 2));
+            break;
+        case FORMATION_RANDOM:
+            for (int i = 0; i < times.size(); ++i)
+                times[i] = timescale * (8 * i + ((rand() % 7) - 3));
+            break;
+        case FORMATION_TIGHT:
+            for (int i = 0; i < times.size(); ++i)
+                times[i] = timescale * 2 * i;
+            break;
+        case FORMATION_LOOSE:
+            for (int i = 0; i < times.size(); ++i)
+                times[i] = timescale * i * 23;
+            break;
+    }
 
     int timeLimit;
     if (g_game.game == GC_LABYRINTH)

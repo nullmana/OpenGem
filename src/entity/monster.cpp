@@ -31,6 +31,8 @@ Monster::Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget, con
     killingShotTimer = 0;
     shockTimer = 0;
 
+    motionCycle = rand() % 10;
+
     spawn();
 }
 
@@ -299,9 +301,32 @@ bool Monster::tick(IngameMap& map, int frames)
         {
             for (int f = 0; f < frames; ++f)
             {
-                x += speedCos;
-                y += speedSin;
-                distanceToOrb -= 100 * speed;
+                float speedFactor = 1.0f;
+
+                if (g_game.game == GC_LABYRINTH)
+                {
+                    if (!!(type & (TARGET_RUNNER | TARGET_REAVER)))
+                    {
+                        if (motionCycle == 0)
+                            speedFactor = 0.0f;
+                        else
+                            speedFactor = std::max(0.0f, (12 - motionCycle) / 17.0f) * 1.65f;
+
+                        if (++motionCycle > 18)
+                            motionCycle = rand() % 3 - 2;
+                    }
+                    else if (!!(type & (TARGET_ARMORED | TARGET_GIANT)))
+                    {
+                        speedFactor = pow(sin(motionCycle * (M_PI / 50.0f)), 2.0f);
+
+                        if (++motionCycle > 50)
+                            motionCycle = 0;
+                    }
+                }
+
+                x += speedCos * speedFactor;
+                y += speedSin * speedFactor;
+                distanceToOrb -= 100 * speed * speedFactor;
 
                 int ix = (int)x;
                 int iy = (int)y;

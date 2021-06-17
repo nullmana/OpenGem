@@ -62,7 +62,7 @@ v0.4:
 - [ ] Tombs
 - [ ] Beacons
 - [ ] Mana Shards
-- [ ] Wave Formations
+- [x] Wave Formations
 - [ ] Tower targeting options
 - [ ] Target selection on map
 - [ ] Kill chain counter
