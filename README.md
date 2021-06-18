@@ -63,7 +63,7 @@ v0.4:
 - [ ] Beacons
 - [ ] Mana Shards
 - [x] Wave Formations
-- [ ] Tower targeting options
+- [x] Tower targeting options
 - [ ] Target selection on map
 - [ ] Kill chain counter
 - [ ] Info tooltips
