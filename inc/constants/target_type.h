@@ -23,3 +23,30 @@
 #define TARGET_ENEMY (TARGET_MONSTER | TARGET_SPECIAL)
 
 #define TARGET_ALL (TARGET_ENEMY | TARGET_STRUCTURE)
+
+enum TARGET_PRIORITY_TYPE
+{
+    PRIORITY_NEAREST = 0,
+    PRIORITY_SWARMLINGS = 1,
+    PRIORITY_GIANTS = 2,
+    PRIORITY_RANDOM = 3,
+    PRIORITY_STRUCTURE = 4,
+    PRIORITY_SPECIAL = 5,
+    PRIORITY_ARMOR = 6,
+    PRIORITY_LEASTHP = 7,
+
+    TARGET_PRIORITY_TYPE_COUNT
+};
+
+#ifdef DEBUG
+static const char* TARGET_PRIORITY_TYPE_NAME[TARGET_PRIORITY_TYPE_COUNT] = {
+    "Nearest to Orb",
+    "Swarmlings",
+    "Giants",
+    "Random",
+    "Structures",
+    "Special",
+    "Shielded/Armor",
+    "Least HP",
+};
+#endif

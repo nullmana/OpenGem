@@ -72,13 +72,14 @@ IngameRenderer::IngameRenderer(IngameCore& core)
 {
     int width = 1280, height = 720;
 
-    rootWindow.addChildWindow(&windowMap);
-    rootWindow.addChildWindow(&windowMana);
-    rootWindow.addChildWindow(&windowWave);
-    rootWindow.addChildWindow(&windowBuildSpells);
-    rootWindow.addChildWindow(&windowCreateGems);
-    rootWindow.addChildWindow(&windowSpeed);
-    rootWindow.addChildWindow(&windowInventory);
+    windowRoot.addChildWindow(&windowTarget, 10);
+    windowRoot.addChildWindow(&windowMap, 0);
+    windowRoot.addChildWindow(&windowMana, 1);
+    windowRoot.addChildWindow(&windowWave, 2);
+    windowRoot.addChildWindow(&windowBuildSpells, 3);
+    windowRoot.addChildWindow(&windowCreateGems, 4);
+    windowRoot.addChildWindow(&windowSpeed, 5);
+    windowRoot.addChildWindow(&windowInventory, 6);
 
     resize(width, height);
 }
@@ -124,7 +125,12 @@ void IngameRenderer::resize(int width, int height)
     int mapW = std::max<int>(realWidth, g_game.ingameMapWidth);
     int mapH = std::max<int>(realHeight, g_game.ingameMapHeight);
 
-    rootWindow.resize(0, 0, width, height);
+    windowRoot.resize(0, 0, width, height);
+    if (windowTarget.width != 0.0f)
+        windowTarget.resize(0, 0, width, height);
+    else
+        windowTarget.resize(0, 0, 0, 0);
+
     windowMap.resize(offsetX, offsetY, realWidth, realHeight);
     windowWave.resize(4, offsetY, offsetX - 8, realHeight);
 
@@ -156,7 +162,7 @@ STATUS IngameRenderer::render(IngameCore& core)
 {
     struct _fbg* pFbg = core.fbg();
 
-    rootWindow.render(pFbg);
+    windowRoot.render(pFbg);
 
     return STATUS_OK;
 }

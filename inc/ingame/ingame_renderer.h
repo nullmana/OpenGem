@@ -9,6 +9,7 @@
 #include "interface/window_inventory.h"
 #include "interface/window_mana.h"
 #include "interface/window_map.h"
+#include "interface/window_target_select.h"
 #include "interface/window_wave.h"
 
 class IngameCore;
@@ -17,7 +18,8 @@ struct _fbg;
 class IngameRenderer
 {
 private:
-    Window rootWindow;
+    Window windowRoot;
+    WindowTargetSelect windowTarget;
     WindowMap windowMap;
     WindowMana windowMana;
     WindowInventory windowInventory;
@@ -35,24 +37,14 @@ public:
 
     void resize(int width, int height);
 
-    Window* getRootWindow() { return &rootWindow; }
+    Window* getRootWindow() { return &windowRoot; }
 
-    void setBuildButtonActive(int button, bool active)
-    {
-        windowBuildSpells.setButtonActive(button, active);
-    }
-    void setBuildButtonForceColor(int button, int color)
-    {
-        windowBuildSpells.setButtonForceColor(button, color);
-    }
-    void setGemButtonActive(int button, bool active)
-    {
-        windowCreateGems.setButtonActive(button, active);
-    }
-    void setSpeedButtonActive(int button, bool active)
-    {
-        windowSpeed.setButtonActive(button, active);
-    }
+    void setBuildButtonActive(int button, bool active) { windowBuildSpells.setButtonActive(button, active); }
+    void setBuildButtonForceColor(int button, int color) { windowBuildSpells.setButtonForceColor(button, color); }
+    void setGemButtonActive(int button, bool active) { windowCreateGems.setButtonActive(button, active); }
+    void setSpeedButtonActive(int button, bool active) { windowSpeed.setButtonActive(button, active); }
+
+    void openTargetSelect(Gem* pGem) { windowTarget.openTargetSelect(pGem); }
 
 #ifdef DEBUG
     WindowMap* getMapWindow()

@@ -30,7 +30,7 @@ void WindowInventory::handleMouseInput(GLFWwindow* pWindow, int button, int acti
 
     int slot = getInventorySlot(xpos, ypos);
 
-    if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
+    if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_RIGHT))
     {
         switch (pInputHandler->getInputState())
         {
@@ -42,10 +42,41 @@ void WindowInventory::handleMouseInput(GLFWwindow* pWindow, int button, int acti
                 Gem* pGem = inventory.getGemInSlot(slot);
                 if (pGem != NULL)
                 {
-                    inventory.startDragGem(pGem);
-                    pGem->x = xpos;
-                    pGem->y = ypos;
-                    pInputHandler->setInputState(INPUT_DRAGGING_IDLE);
+                    pGem->x = (slot % 3 + 0.5f) * width / 3.0f + x;
+                    pGem->y = (slot / 3 + 0.5f) * width / 3.0f + y;
+                    pCore->renderer.openTargetSelect(pGem);
+                    pInputHandler->setInputState(INPUT_IDLE);
+                }
+                break;
+            }
+        }
+    }
+    else if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
+    {
+        switch (pInputHandler->getInputState())
+        {
+            case INPUT_IDLE:
+            case INPUT_BUILD_WALL:
+            case INPUT_BUILD_TOWER:
+            case INPUT_BUILD_TRAP:
+            {
+                Gem* pGem = inventory.getGemInSlot(slot);
+                if (pGem != NULL)
+                {
+                    if (!!(mods & GLFW_MOD_SHIFT))
+                    {
+                        pGem->x = (slot % 3 + 0.5f) * width / 3.0f + x;
+                        pGem->y = (slot / 3 + 0.5f) * width / 3.0f + y;
+                        pCore->renderer.openTargetSelect(pGem);
+                        pInputHandler->setInputState(INPUT_IDLE);
+                    }
+                    else
+                    {
+                        inventory.startDragGem(pGem);
+                        pGem->x = xpos;
+                        pGem->y = ypos;
+                        pInputHandler->setInputState(INPUT_DRAGGING_IDLE);
+                    }
                 }
                 break;
             }
@@ -145,8 +176,7 @@ void WindowInventory::handleMouseInput(GLFWwindow* pWindow, int button, int acti
 #endif
 }
 
-void WindowInventory::handleKeyInput(
-    GLFWwindow* pWindow, int key, int scancode, int action, int mods)
+void WindowInventory::handleKeyInput(GLFWwindow* pWindow, int key, int scancode, int action, int mods)
 {
     IngameCore* pCore = (IngameCore*)glfwGetWindowUserPointer(pWindow);
     double xpos, ypos;

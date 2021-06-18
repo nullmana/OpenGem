@@ -141,6 +141,7 @@ Gem::Gem(int grade_, GEM_COMPONENT_TYPE type)
     x = 0.0f;
     y = 0.0f;
     isDragged = false;
+    targetPriority = PRIORITY_NEAREST;
 
     float rangeScale = (g_game.game == GC_LABYRINTH) ? (1.0f / 33.0f) : (1.0f / 17.0f);
 
@@ -304,6 +305,7 @@ Gem::Gem(Gem* pSourceGem) // Duplicate Gem Constructor, not Copy
     x = 0.0f;
     y = 0.0f;
     isDragged = false;
+    targetPriority = pSourceGem->targetPriority;
 
     HSV = pSourceGem->HSV;
     RGB = pSourceGem->RGB;
@@ -729,6 +731,7 @@ void Gem::debugPrint() const
             printf("-%s", color[displayComponents[i]]);
     printf("\n\t%d Color Components (0x%x)\n", numComponents(), componentMask);
     printf("\tHits: %lu | Kills: %lu | Total Kills: %lu\n", hits, killsNonCombined, kills);
+    printf("\tTarget Priority: %s\n", TARGET_PRIORITY_TYPE_NAME[targetPriority]);
     printf("Raw:\n");
     shotRaw.debugPrint();
     printf("Amp:\n");

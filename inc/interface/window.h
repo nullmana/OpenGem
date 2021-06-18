@@ -2,6 +2,7 @@
 
 #include "constants/status.h"
 
+#include <map>
 #include <vector>
 
 struct _fbg;
@@ -9,8 +10,9 @@ struct GLFWwindow;
 
 class Window
 {
-private:
+protected:
     std::vector<Window*> children;
+    std::map<int, Window*> childRenderOrder;
     Window* pParent;
 
 public:
@@ -21,9 +23,10 @@ public:
     float width;
     float height;
 
-    void addChildWindow(Window* pWindow)
+    void addChildWindow(Window* pWindow, int renderOrder)
     {
         children.push_back(pWindow);
+        childRenderOrder[renderOrder] = pWindow;
         pWindow->setParent(this);
     }
     void setParent(Window* pWindow) { pParent = pWindow; }

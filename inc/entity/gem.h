@@ -2,6 +2,7 @@
 
 #include "common/bitmask.h"
 #include "constants/gem_component_type.h"
+#include "constants/target_type.h"
 
 #include "entity/shot_data.h"
 
@@ -23,6 +24,7 @@ public:
     float x;
     float y;
     bool isDragged;
+    TARGET_PRIORITY_TYPE targetPriority;
 
     uint32_t HSV;
     uint32_t RGB;

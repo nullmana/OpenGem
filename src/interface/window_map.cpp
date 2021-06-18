@@ -33,20 +33,34 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
     switch (pInputHandler->getInputState())
     {
         case INPUT_IDLE:
-            if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))
+            if (action == GLFW_PRESS)
             {
+                bool left = (button == GLFW_MOUSE_BUTTON_LEFT);
+                bool right = (button == GLFW_MOUSE_BUTTON_RIGHT);
+                if (!left && !right)
+                    break;
+
                 Building* pBuilding = map.getBuilding(iy, ix);
                 if (pBuilding != NULL)
                 {
                     Gem* pGem = pBuilding->pGem;
                     if (pGem != NULL)
                     {
-                        pCore->inventory.startDragGem(pGem);
-                        pGem->x = xpos;
-                        pGem->y = ypos;
-                        pInputHandler->setInputState(INPUT_DRAGGING_IDLE);
+                        if (right || !!(mods & GLFW_MOD_SHIFT))
+                        {
+                            pGem->x = (ix + 0.5f) * scale + x;
+                            pGem->y = (iy + 0.5f) * scale + y;
+                            pCore->renderer.openTargetSelect(pGem);
+                        }
+                        else if (left)
+                        {
+                            pCore->inventory.startDragGem(pGem);
+                            pGem->x = xpos;
+                            pGem->y = ypos;
+                            pInputHandler->setInputState(INPUT_DRAGGING_IDLE);
+                        }
                     }
-                    else
+                    else if (left)
                     {
                         pGem = pCore->inventory.getFirstGem();
                         if (pGem != NULL)

@@ -14,9 +14,9 @@ Window::Window()
 STATUS Window::render(struct _fbg* pFbg)
 {
     STATUS status = STATUS_OK;
-    for (Window* w : children)
+    for (std::pair<int, Window*> it : childRenderOrder)
     {
-        status = w->render(pFbg);
+        status = std::get<1>(it)->render(pFbg);
         if (status != STATUS_OK)
             return status;
     }
