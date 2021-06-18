@@ -26,5 +26,6 @@ public:
 
     std::vector<MonsterNest>& getMonsterNests() { return monsterNests; }
 
-    std::vector<Targetable*> getTargetableStructuresWithinRangeSq(float y, float x, float rangeSq);
+    std::vector<Targetable*>& getTargetableStructuresWithinRangeSq(std::vector<Targetable*>& targets,
+        float y, float x, float rangeSq);
 };

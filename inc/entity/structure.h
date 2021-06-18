@@ -12,8 +12,6 @@ public:
     int width;
     int height;
 
-    double armor;
-
     bool isIndestructible;
 
     virtual uint32_t receiveShotDamage(ShotData& shot, uint32_t numShots, double damage, double crit,

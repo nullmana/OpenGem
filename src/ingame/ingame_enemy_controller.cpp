@@ -168,9 +168,9 @@ void IngameEnemyController::render(struct _fbg* pFbg, const Window& window) cons
     }
 }
 
-std::vector<Targetable*> IngameEnemyController::getTargetsWithinRangeSq(float y, float x, float rangeSq, uint32_t typeMask, bool ignoreKillingShot)
+std::vector<Targetable*>& IngameEnemyController::getTargetsWithinRangeSq(std::vector<Targetable*>& targets,
+    float y, float x, float rangeSq, uint32_t typeMask, bool ignoreKillingShot)
 {
-    std::vector<Targetable*> targets;
     const double fullMapRangeSq = g_game.ingameMapWidth * g_game.ingameMapWidth +
                                   g_game.ingameMapHeight + g_game.ingameMapHeight;
 

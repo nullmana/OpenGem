@@ -20,6 +20,8 @@ public:
         isKillingShotOnTheWay = false;
         isKilled = false;
         hp = hpMax = hp_;
+        armor = 0.0;
+        sortBanishmentCost = 0.0;
     }
 
     virtual uint32_t receiveShotDamage(ShotData& shot, uint32_t numShots, double damage, double crit,
@@ -45,4 +47,6 @@ public:
 
     double hp;
     double hpMax;
+    double armor;
+    double sortBanishmentCost;
 };

@@ -40,11 +40,8 @@ void IngameStructureController::render(struct _fbg* pFbg, const Window& window) 
     }
 }
 
-std::vector<Targetable*> IngameStructureController::getTargetableStructuresWithinRangeSq(
-    float y, float x, float rangeSq)
+std::vector<Targetable*>& IngameStructureController::getTargetableStructuresWithinRangeSq(std::vector<Targetable*>& targets, float y, float x, float rangeSq)
 {
-    std::vector<Targetable*> targets;
-
     for (MonsterNest& m : monsterNests)
     {
         if (!m.isKilled && !m.isKillingShotOnTheWay && m.canBeTargeted() &&

@@ -44,18 +44,20 @@ public:
     const std::vector<Monster*>& getMonstersOnTile(int y, int x) const { return monstersOnTile.at(y, x); }
     const std::vector<Monster*>& getMonstersOnTile(int y, int x) { return monstersOnTile.at(y, x); }
 
-    std::vector<Targetable*> getTargetsWithinRangeSq(float y, float x,
+    std::vector<Targetable*>& getTargetsWithinRangeSq(std::vector<Targetable*>& targets, float y, float x,
         float rangeSq, uint32_t typeMask, bool ignoreKillingShot);
     bool hasTargetsWithinRangeSq(float y, float x,
         float rangeSq, uint32_t typeMask, bool ignoreKillingShot) const;
 
-    std::vector<Targetable*> getTowerTargetsWithinRangeSq(float y, float x, float rangeSq, uint32_t typeMask)
+    std::vector<Targetable*>& getTowerTargetsWithinRangeSq(std::vector<Targetable*>& targets,
+        float y, float x, float rangeSq, uint32_t typeMask)
     {
-        return getTargetsWithinRangeSq(y, x, rangeSq, typeMask, false);
+        return getTargetsWithinRangeSq(targets, y, x, rangeSq, typeMask, false);
     }
     std::vector<Targetable*> getShrineTargetsWithinRangeSq(float y, float x, float rangeSq)
     {
-        return getTargetsWithinRangeSq(y, x, rangeSq, TARGET_ENEMY, true);
+        std::vector<Targetable*> targets;
+        return getTargetsWithinRangeSq(targets, y, x, rangeSq, TARGET_ENEMY, true);
     }
     bool hasShrineTargetsWithinRangeSq(float y, float x, float rangeSq) const
     {

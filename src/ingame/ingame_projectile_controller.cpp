@@ -59,8 +59,8 @@ void IngameProjectileController::shotHitsTarget(TowerShot* pShot)
                                        ? ((50.0f / 33.0f) * (50.0f / 33.0f))
                                        : ((70.0f / 17.0f) * (70.0f / 17.0f));
 
-        std::vector<Targetable*> chainTargets =
-            map.enemyController.getTargetsWithinRangeSq(pShot->y, pShot->x, chainRangeSq, TARGET_MONSTER, true);
+        std::vector<Targetable*> chainTargets;
+        map.enemyController.getTargetsWithinRangeSq(chainTargets, pShot->y, pShot->x, chainRangeSq, TARGET_MONSTER, true);
 
         if (chain > chainTargets.size())
             chain = chainTargets.size();

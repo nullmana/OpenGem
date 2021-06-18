@@ -38,7 +38,21 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                 bool left = (button == GLFW_MOUSE_BUTTON_LEFT);
                 bool right = (button == GLFW_MOUSE_BUTTON_RIGHT);
                 if (!left && !right)
+                {
+#ifdef DEBUG
+                    if (button == GLFW_MOUSE_BUTTON_MIDDLE)
+                    {
+                        Building* pBuilding = map.getBuilding(iy, ix);
+                        if (pBuilding != NULL)
+                        {
+                            Gem* pGem = pBuilding->pGem;
+                            if (pGem != NULL)
+                                pGem->debugPrint();
+                        }
+                    }
+#endif
                     break;
+                }
 
                 Building* pBuilding = map.getBuilding(iy, ix);
                 if (pBuilding != NULL)
@@ -48,8 +62,8 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                     {
                         if (right || !!(mods & GLFW_MOD_SHIFT))
                         {
-                            pGem->x = (ix + 0.5f) * scale + x;
-                            pGem->y = (iy + 0.5f) * scale + y;
+                            pGem->x = scale * pBuilding->x + x;
+                            pGem->y = scale * pBuilding->y + y;
                             pCore->renderer.openTargetSelect(pGem);
                         }
                         else if (left)
@@ -70,18 +84,6 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                     }
                 }
             }
-#ifdef DEBUG
-            else if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_MIDDLE))
-            {
-                Building* pBuilding = map.getBuilding(iy, ix);
-                if (pBuilding != NULL)
-                {
-                    Gem* pGem = pBuilding->pGem;
-                    if (pGem != NULL)
-                        pGem->debugPrint();
-                }
-            }
-#endif
             break;
         case INPUT_COMBINE_GEM:
             if ((action == GLFW_PRESS) && (button == GLFW_MOUSE_BUTTON_LEFT))

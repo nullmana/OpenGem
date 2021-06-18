@@ -61,13 +61,69 @@ Targetable* Tower::pickTarget(IngameMap& map)
 
     if (!cachedTargetsValid)
     {
-        cachedTargets = map.enemyController.getTowerTargetsWithinRangeSq(y, x, rangeSq, TARGET_ENEMY);
+        cachedTargets.clear();
+        switch (pGem->targetPriority)
+        {
+            case PRIORITY_NEAREST:
+                map.enemyController.getTowerTargetsWithinRangeSq(cachedTargets, y, x, rangeSq, TARGET_ENEMY);
+
+                std::sort(cachedTargets.begin(), cachedTargets.end(),
+                    [](const Targetable* a, const Targetable* b) { return a->distanceToOrb < b->distanceToOrb; });
+
+                map.structureController.getTargetableStructuresWithinRangeSq(cachedTargets, y, x, rangeSq);
+                break;
+            case PRIORITY_SWARMLINGS:
+                map.enemyController.getTowerTargetsWithinRangeSq(cachedTargets, y, x, rangeSq,
+                    TARGET_SWARMLING | TARGET_SPAWNLING);
+                map.enemyController.getTowerTargetsWithinRangeSq(cachedTargets, y, x, rangeSq,
+                    TARGET_ENEMY & ~(TARGET_SWARMLING | TARGET_SPAWNLING));
+                map.structureController.getTargetableStructuresWithinRangeSq(cachedTargets, y, x, rangeSq);
+                break;
+            case PRIORITY_GIANTS:
+                map.enemyController.getTowerTargetsWithinRangeSq(cachedTargets, y, x, rangeSq, TARGET_GIANT);
+                map.enemyController.getTowerTargetsWithinRangeSq(cachedTargets, y, x, rangeSq,
+                    TARGET_ENEMY & ~TARGET_GIANT);
+                map.structureController.getTargetableStructuresWithinRangeSq(cachedTargets, y, x, rangeSq);
+                break;
+            case PRIORITY_RANDOM:
+                map.enemyController.getTowerTargetsWithinRangeSq(cachedTargets, y, x, rangeSq, TARGET_ENEMY);
+                map.structureController.getTargetableStructuresWithinRangeSq(cachedTargets, y, x, rangeSq);
+                break;
+            case PRIORITY_STRUCTURE:
+                map.structureController.getTargetableStructuresWithinRangeSq(cachedTargets, y, x, rangeSq);
+                map.enemyController.getTowerTargetsWithinRangeSq(cachedTargets, y, x, rangeSq, TARGET_ENEMY);
+                break;
+            case PRIORITY_SPECIAL:
+                map.enemyController.getTowerTargetsWithinRangeSq(cachedTargets, y, x, rangeSq, TARGET_ENEMY);
+
+                std::sort(cachedTargets.begin(), cachedTargets.end(),
+                    [](const Targetable* a, const Targetable* b) { return a->sortBanishmentCost < b->sortBanishmentCost; });
+
+                map.structureController.getTargetableStructuresWithinRangeSq(cachedTargets, y, x, rangeSq);
+                break;
+            case PRIORITY_ARMOR:
+                map.enemyController.getTowerTargetsWithinRangeSq(cachedTargets, y, x, rangeSq, TARGET_ENEMY);
+
+                std::sort(cachedTargets.begin(), cachedTargets.end(),
+                    [](const Targetable* a, const Targetable* b) { return a->armor < b->armor; });
+
+                map.structureController.getTargetableStructuresWithinRangeSq(cachedTargets, y, x, rangeSq);
+                break;
+            case PRIORITY_LEASTHP:
+                map.enemyController.getTowerTargetsWithinRangeSq(cachedTargets, y, x, rangeSq, TARGET_ENEMY);
+
+                std::sort(cachedTargets.begin(), cachedTargets.end(),
+                    [](const Targetable* a, const Targetable* b) { return a->hp < b->hp; });
+
+                map.structureController.getTargetableStructuresWithinRangeSq(cachedTargets, y, x, rangeSq);
+                break;
+        }
+        map.enemyController.getTowerTargetsWithinRangeSq(cachedTargets, y, x, rangeSq, TARGET_ENEMY);
 
         std::sort(cachedTargets.begin(), cachedTargets.end(),
             [](const Targetable* a, const Targetable* b) { return a->distanceToOrb < b->distanceToOrb; });
 
-        if (cachedTargets.empty())
-            cachedTargets = map.structureController.getTargetableStructuresWithinRangeSq(y, x, rangeSq);
+        map.structureController.getTargetableStructuresWithinRangeSq(cachedTargets, y, x, rangeSq);
 
         cachedTargetsValid = true;
     }
@@ -80,12 +136,6 @@ Targetable* Tower::pickTarget(IngameMap& map)
         if (!t->isKillingShotOnTheWay)
             return t;
     }
-
-    // If still no target, all cached targets have been killed, try structure targets here as well
-    cachedTargets = map.structureController.getTargetableStructuresWithinRangeSq(y, x, rangeSq);
-
-    if (!cachedTargets.empty())
-        return cachedTargets[0];
 
     return NULL;
 }

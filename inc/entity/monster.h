@@ -18,6 +18,10 @@ private:
 
     int motionCycle;
 
+    double banishmentCostMultiplier;
+
+    double getBanishmentCost() const { return mana * 2.0 * banishmentCostMultiplier; }
+
 public:
     Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget, const MonsterPrototype& mp);
 
@@ -38,7 +42,8 @@ public:
 
     void pickNextTarget();
 
-    double getBanishmentCost() const { return mana * 2.0 * banishmentCostMultiplier; }
+    void multiplyBanishmentCost(double mult);
+
     virtual void setKillingShot()
     {
         isKillingShotOnTheWay = true;
@@ -52,9 +57,7 @@ public:
     float shockX;
     float shockY;
 
-    double armor;
     double mana;
-    double banishmentCostMultiplier;
     double shockImmunity;
     double poisonDamage;
 

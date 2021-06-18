@@ -7,6 +7,7 @@
 - Added library extension fbgx for fixing bugs and adding features to fbg
 - Added fgbx\_tri triangle rasterization
 - Added gem target priority selection with shift+click or right click
+- Added functional standard 8 gem target priorities
 
 ### Changed
 

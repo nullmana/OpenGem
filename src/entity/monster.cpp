@@ -21,6 +21,8 @@ Monster::Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget, con
     armor = mp.armor;
     mana = mp.mana;
     banishmentCostMultiplier = mp.banishmentCostMultiplier;
+    sortBanishmentCost = getBanishmentCost();
+
     type = mp.type;
     shockImmunity = 0.0;
     poisonDamage = 0.0;
@@ -233,6 +235,12 @@ void Monster::pickNextTarget()
         iy += PathWeight::dy[nextDirection];
     }
     setNextTarget(ix, iy);
+}
+
+void Monster::multiplyBanishmentCost(double mult)
+{
+    banishmentCostMultiplier *= mult;
+    sortBanishmentCost = getBanishmentCost();
 }
 
 void Monster::setNextTarget(int nx, int ny)

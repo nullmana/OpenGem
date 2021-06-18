@@ -575,9 +575,9 @@ void IngameMap::monsterReachesTarget(Monster& monster)
         }
         if (!monster.isKilled)
         {
-            double banishmentCost = monster.getBanishmentCost() *
+            double banishmentCost = monster.sortBanishmentCost *
                                     buildingController.getOrb().getBanishmentCostMultiplierFinal();
-            monster.banishmentCostMultiplier *= 1.68;
+            monster.multiplyBanishmentCost(1.68);
 
             manaPool.addMana(-banishmentCost, false);
             if (manaPool.getMana() < 0)
