@@ -34,7 +34,7 @@ void IngameStructureController::render(struct _fbg* pFbg, const Window& window) 
             alpha = 0x20;
         }
 
-        fbg_recta(pFbg, (n.ix + 0.5f) * scale + window.x, (n.iy + 0.5f) * scale + window.y,
+        fbgx_recta(pFbg, (n.ix + 0.5f) * scale + window.x, (n.iy + 0.5f) * scale + window.y,
             scale * (n.width - 1.0f), scale * (n.height - 1.0f), (color >> 16) & 0xFF,
             (color >> 8) & 0xFF, color & 0xFF, alpha);
     }

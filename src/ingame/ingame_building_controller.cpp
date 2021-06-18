@@ -63,7 +63,7 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
             if (t.isCoolingDown())
             {
                 float cooldown = t.getCooldown();
-                fbg_recta(pFbg, t.x * scale + window.x - 0.5f * cooldownScale,
+                fbgx_recta(pFbg, t.x * scale + window.x - 0.5f * cooldownScale,
                     t.y * scale + window.y + (0.5f - cooldown) * cooldownScale,
                     cooldownScale, cooldownScale * cooldown, 0x20, 0x20, 0x20, 0x20);
             }
@@ -84,7 +84,7 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
             if (t.isCoolingDown())
             {
                 float cooldown = t.getCooldown();
-                fbg_recta(pFbg, t.x * scale + window.x - 0.5f * cooldownScale,
+                fbgx_recta(pFbg, t.x * scale + window.x - 0.5f * cooldownScale,
                     t.y * scale + window.y + (0.5f - cooldown) * cooldownScale,
                     cooldownScale, cooldownScale * cooldown, 0x20, 0x20, 0x20, 0x20);
             }
@@ -105,7 +105,7 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
             if (t.isCoolingDown())
             {
                 float cooldown = t.getCooldown();
-                fbg_recta(pFbg, t.x * scale + window.x - 0.5f * cooldownScale,
+                fbgx_recta(pFbg, t.x * scale + window.x - 0.5f * cooldownScale,
                     t.y * scale + window.y + (0.5f - cooldown) * cooldownScale,
                     cooldownScale, cooldownScale * cooldown, 0x20, 0x20, 0x20, 0x20);
             }
@@ -129,8 +129,8 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
         }
         else
         {
-            float charge = s.getCharge();
-            fbg_recta(pFbg, s.x * scale + window.x - 0.5f * cooldownScale,
+            float charge = 1.0f - s.getCharge();
+            fbgx_recta(pFbg, s.x * scale + window.x - 0.5f * cooldownScale,
                 s.y * scale + window.y + (0.5f - charge) * cooldownScale,
                 cooldownScale, cooldownScale * charge, 0x20, 0x20, 0x20, 0x80);
         }
@@ -150,8 +150,8 @@ void IngameBuildingController::render(struct _fbg* pFbg, const Window& window) c
         }
         else
         {
-            float charge = s.getCharge();
-            fbg_recta(pFbg, s.x * scale + window.x - 0.5f * cooldownScale,
+            float charge = 1.0f - s.getCharge();
+            fbgx_recta(pFbg, s.x * scale + window.x - 0.5f * cooldownScale,
                 s.y * scale + window.y + (0.5f - charge) * cooldownScale,
                 cooldownScale, cooldownScale * charge, 0x20, 0x20, 0x20, 0x80);
         }

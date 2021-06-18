@@ -26,9 +26,9 @@ EXTRA_SOURCE_FILES :=
 INCLUDES := inc
 
 # Equivalent to the above, but files found through here will not be formatted
-NOFORMAT_SOURCES := lib/fbg/src
+NOFORMAT_SOURCES := lib/fbg/src lib/fbgx
 NOFORMAT_EXTRA_SOURCE_FILES := lib/fbg/custom_backend/glfw/fbg_glfw.c lib/fbg/custom_backend/glfw/glew/glew.c
-NOFORMAT_INCLUDES := lib/fbg/custom_backend lib/fbg/src
+NOFORMAT_INCLUDES := lib/fbg/custom_backend lib/fbg/src lib
 
 BUILD_RELEASE := build_release
 BUILD_DEBUG := build

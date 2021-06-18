@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.3.2] - 2021-06-17
+
+### Added
+
+- Added library extension fbgx for fixing bugs and adding features to fbg
+- Added fgbx\_tri triangle rasterization
+
+### Changed
+
+- Shrine charge fills up instead of decreasing charge bar
+
+### Fixed
+
+- Fixed fbg\_recta uint8\_t overflow multiplication with fbgx\_recta
+
+
 ## [0.3.1.5] - 2021-06-17
 
 ### Added
