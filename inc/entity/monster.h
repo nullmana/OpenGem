@@ -16,6 +16,9 @@ private:
     void adjustMotionAngle();
     void adjustSpeedAngle();
 
+    float speedCos;
+    float speedSin;
+
     int motionCycle;
 
     double banishmentCostMultiplier;
@@ -61,10 +64,10 @@ public:
     double shockImmunity;
     double poisonDamage;
 
+    float scale;
+
     float speed;
     float speedMax;
-    float speedCos;
-    float speedSin;
     float motionAngle;
 
     const MonsterSpawnNode* pSourceNode;

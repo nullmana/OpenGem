@@ -140,10 +140,17 @@ void IngameProjectileController::render(struct _fbg* pFbg, const Window& window)
 
     for (const TowerShot& s : shots)
     {
-        if ((s.x > 0.0f) && (s.x < g_game.ingameMapWidth) && (s.y > 0.0f) &&
-            (s.y < g_game.ingameMapHeight))
+        if ((s.x > 0.0f) && (s.x < g_game.ingameMapWidth) &&
+            (s.y > 0.0f) && (s.y < g_game.ingameMapHeight))
         {
-            fbg_pixel(pFbg, scale * s.x + window.x, scale * s.y + window.y, s.RGB >> 16, s.RGB >> 8, s.RGB);
+            const float ss = scale * s.scale * 0.10f;
+            float vx = cos(s.angle + M_PI) * ss;
+            float vy = sin(s.angle + M_PI) * ss;
+
+            fbgx_tri(pFbg, scale * s.x + vx + window.x, scale * s.y + vy + window.y,
+                scale * s.x - vx + vy * 0.25f + window.x, scale * s.y - vy - vx * 0.25f + window.y,
+                scale * s.x - vx - vy * 0.25f + window.x, scale * s.y - vy + vx * 0.25f + window.y,
+                s.RGB >> 16, s.RGB >> 8, s.RGB);
         }
     }
 }

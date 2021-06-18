@@ -37,6 +37,10 @@ TowerShot::TowerShot(const Tower& tower, Targetable* pTarget_)
     x = tower.x;
     y = tower.y;
 
+    scaleBonus = std::min(0.8f, 0.08f * pSourceGem->grade);
+    scale = 1.0f;
+    angle = 0.0f;
+
     RGB = tower.pGem->RGB;
 
     if (g_game.game == GC_LABYRINTH)
@@ -63,6 +67,8 @@ TowerShot::TowerShot(const Tower& tower, Targetable* pTarget_)
 
 bool TowerShot::tick(int frames)
 {
+    float lastX = x;
+    float lastY = y;
     // Update every frame in case pTarget is lost
     if (pTarget != NULL)
     {
@@ -83,14 +89,20 @@ bool TowerShot::tick(int frames)
 
             x += (1.0f - z / 50.0f) * (lastTargetX - x);
             y += (1.0f - z / 50.0f) * (lastTargetY - y);
+
+            if ((z < 20.0f) && (fabs(lastTargetX - x) + fabs(lastTargetY - y) < (4.0f / 33.0f)))
+            {
+                // Set position to target so chain hit based on shot position is most accurate
+                x = lastTargetX;
+                y = lastTargetY;
+                return true;
+            }
         }
 
-        if ((z < 20.0f) && (fabs(lastTargetX - x) + fabs(lastTargetY - y) < (4.0f / 33.0f)))
+        if (frames > 0)
         {
-            // Set position to target so chain hit based on shot position is most accurate
-            x = lastTargetX;
-            y = lastTargetY;
-            return true;
+            scale = z * 0.03f + 0.8f;
+            angle = atan2(lastY - y, lastX - x);
         }
     }
     else if (g_game.game == GC_CHASINGSHADOWS)
@@ -109,13 +121,19 @@ bool TowerShot::tick(int frames)
                                    ((40.0f / 17.0f) - fabs(lastTargetY - y)) / (80.0f / 17.0f)));
             x += proximity * (1.0f - z / 60.0f) * (lastTargetX - x);
             y += proximity * (1.0f - z / 60.0f) * (lastTargetY - y);
+
+            if (fabs(lastTargetX - x) + fabs(lastTargetY - y) < (9.0f / 17.0f))
+            {
+                x = lastTargetX;
+                y = lastTargetY;
+                return true;
+            }
         }
 
-        if (fabs(lastTargetX - x) + fabs(lastTargetY - y) < (9.0f / 17.0f))
+        if (frames > 0)
         {
-            x = lastTargetX;
-            y = lastTargetY;
-            return true;
+            scale = z * 0.035f + scaleBonus + 0.7f;
+            angle = atan2(lastY - y, lastX - x);
         }
     }
     else

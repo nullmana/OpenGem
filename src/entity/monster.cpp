@@ -35,6 +35,22 @@ Monster::Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget, con
 
     motionCycle = rand() % 10;
 
+    switch (type)
+    {
+        case TARGET_REAVER:
+        case TARGET_ARMORED:
+        case TARGET_RUNNER:
+            scale = 1.0f;
+            break;
+        case TARGET_SWARMLING:
+        case TARGET_SPAWNLING:
+            scale = 0.5f;
+            break;
+        case TARGET_GIANT:
+            scale = 1.8f;
+            break;
+    }
+
     spawn();
 }
 

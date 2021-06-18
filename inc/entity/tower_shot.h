@@ -10,6 +10,19 @@ class Gem;
 
 class TowerShot
 {
+private:
+    float lastTargetX;
+    float lastTargetY;
+
+    float scatterX;
+    float scatterY;
+
+    float velZ;
+
+    float z; // altitude
+
+    float scaleBonus;
+
 public:
     TowerShot(const Tower& tower, Targetable* pTarget_);
 
@@ -22,18 +35,15 @@ public:
 
     Gem* pSourceGem;
     Targetable* pTarget;
-    float lastTargetX;
-    float lastTargetY;
-    float scatterX;
-    float scatterY;
 
     float x;
     float y;
-    float z; // altitude
 
     float velX;
     float velY;
-    float velZ;
+
+    float scale;
+    float angle;
 
     uint32_t RGB;
 };

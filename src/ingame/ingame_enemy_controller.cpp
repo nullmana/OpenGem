@@ -132,8 +132,14 @@ void IngameEnemyController::render(struct _fbg* pFbg, const Window& window) cons
         }
         if ((x > 0.0f) && (x < g_game.ingameMapWidth) && (y > 0.0f) && (y < g_game.ingameMapHeight))
         {
-            fbg_pixel(pFbg, scale * x + window.x, scale * y + window.y, (m.color >> 16) & 0xFF,
-                (m.color >> 8) & 0xFF, m.color & 0xFF);
+            const float ss = scale * m.scale * 0.40f * g_game.ingameBuildingSize;
+            float vx = cos(m.motionAngle) * ss;
+            float vy = sin(m.motionAngle) * ss;
+
+            fbgx_tri(pFbg, scale * m.x + vx + window.x, scale * m.y + vy + window.y,
+                scale * m.x - vx + vy * 0.4f + window.x, scale * m.y - vy - vx * 0.4f + window.y,
+                scale * m.x - vx - vy * 0.4f + window.x, scale * m.y - vy + vx * 0.4f + window.y,
+                m.color >> 16, m.color >> 8, m.color);
         }
     }
 
