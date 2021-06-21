@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.3] - 2021-06-21
+
+### Added
+
+- Added selecting structures and monsters as target
+- Added cycling through selected monsters with up/down arrow keys
+- Added debug print with middle click for structures and monsters
+
+### Fixed
+
+- Fixed monster triangle position ignoring shock position effect
+
+
 ## [0.3.2.2] - 2021-06-21
 
 ### Added

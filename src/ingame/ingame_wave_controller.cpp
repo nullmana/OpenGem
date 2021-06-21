@@ -71,7 +71,7 @@ void IngameWaveController::buildWaves()
     int numWaves = 8;
     double hpFirstWave = 8.0;
     double armorFirstWave = 1.0;
-    double hpMultiplier = 0.010;
+    double hpMultiplier = 1.010;
     double armorIncrement = 0.4;
 
     waves.resize(numWaves);

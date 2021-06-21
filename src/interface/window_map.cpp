@@ -24,8 +24,11 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
 
     glfwGetCursorPos(pWindow, &xpos, &ypos);
 
-    int ix = std::floor((xpos - x) / scale);
-    int iy = std::floor((ypos - y) / scale);
+    const float xrel = (xpos - x) / scale;
+    const float yrel = (ypos - y) / scale;
+
+    int ix = std::floor(xrel);
+    int iy = std::floor(yrel);
 
     if ((ix < 0) || (ix >= g_game.ingameMapWidth) || (iy < 0) || (iy >= g_game.ingameMapHeight))
         return;
@@ -37,50 +40,87 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
             {
                 bool left = (button == GLFW_MOUSE_BUTTON_LEFT);
                 bool right = (button == GLFW_MOUSE_BUTTON_RIGHT);
-                if (!left && !right)
+                bool shouldCheckTarget = true;
+
+                Building* pBuilding = map.getBuilding(iy, ix);
+                Structure* pStructure = map.getStructure(iy, ix);
+
+                if (!(mods & GLFW_MOD_CONTROL))
                 {
 #ifdef DEBUG
                     if (button == GLFW_MOUSE_BUTTON_MIDDLE)
                     {
-                        Building* pBuilding = map.getBuilding(iy, ix);
                         if (pBuilding != NULL)
                         {
                             Gem* pGem = pBuilding->pGem;
                             if (pGem != NULL)
                                 pGem->debugPrint();
+                            break;
+                        }
+                        else if (pStructure != NULL)
+                        {
+                            pStructure->debugPrint();
+                            break;
                         }
                     }
+                    else
 #endif
-                    break;
-                }
-
-                Building* pBuilding = map.getBuilding(iy, ix);
-                if (pBuilding != NULL)
-                {
-                    Gem* pGem = pBuilding->pGem;
-                    if (pGem != NULL)
+                        if (pBuilding != NULL)
                     {
-                        if (right || !!(mods & GLFW_MOD_SHIFT))
+                        Gem* pGem = pBuilding->pGem;
+                        if (pGem != NULL)
                         {
-                            pGem->x = scale * pBuilding->x + x;
-                            pGem->y = scale * pBuilding->y + y;
-                            pCore->renderer.openTargetSelect(pGem);
+                            if (right || !!(mods & GLFW_MOD_SHIFT))
+                            {
+                                pGem->x = scale * pBuilding->x + x;
+                                pGem->y = scale * pBuilding->y + y;
+                                pCore->renderer.openTargetSelect(pGem);
+                            }
+                            else if (left)
+                            {
+                                pCore->inventory.startDragGem(pGem);
+                                pGem->x = xpos;
+                                pGem->y = ypos;
+                                pInputHandler->setInputState(INPUT_DRAGGING_IDLE);
+                            }
+                            shouldCheckTarget = false;
                         }
                         else if (left)
                         {
-                            pCore->inventory.startDragGem(pGem);
-                            pGem->x = xpos;
-                            pGem->y = ypos;
-                            pInputHandler->setInputState(INPUT_DRAGGING_IDLE);
+                            pGem = pCore->inventory.getFirstGem();
+                            if (pGem != NULL)
+                            {
+                                pCore->inventory.placeGemIntoBuilding(pGem, pBuilding, false);
+                                shouldCheckTarget = false;
+                            }
                         }
                     }
-                    else if (left)
+                    else if ((pStructure != NULL) && (!pStructure->isIndestructible))
                     {
-                        pGem = pCore->inventory.getFirstGem();
-                        if (pGem != NULL)
+                        map.setSelectedTarget(pStructure);
+                        shouldCheckTarget = false;
+                    }
+                }
+
+                if (shouldCheckTarget)
+                {
+                    Targetable* pTarget = map.enemyController.getTargetAtPosition(yrel, xrel);
+                    if (pTarget != NULL)
+                    {
+                        if (!left)
                         {
-                            pCore->inventory.placeGemIntoBuilding(pGem, pBuilding, false);
+#ifdef DEBUG
+                            if (button == GLFW_MOUSE_BUTTON_MIDDLE)
+                                pTarget->debugPrint();
+#endif
+                            break;
                         }
+
+                        map.setSelectedTarget(pTarget);
+                    }
+                    else
+                    {
+                        map.setSelectedTarget(NULL);
                     }
                 }
             }
@@ -227,7 +267,7 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                     if (pStructure != NULL)
                         pStructure->receiveBombDamage(pDraggedGem->shotFinal, pDraggedGem->getBombDamage());
 
-                    map.dropGemBomb(pDraggedGem, (xpos - x) / scale, (ypos - y) / scale);
+                    map.dropGemBomb(pDraggedGem, xrel, yrel);
 
                     pCore->inventory.deleteGem(pDraggedGem);
                 }
@@ -252,7 +292,7 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                         if (pStructure != NULL)
                             pStructure->receiveBombDamage(pBombGem->shotFinal, pBombGem->getBombDamage());
 
-                        map.dropGemBomb(pBombGem, (xpos - x) / scale, (ypos - y) / scale);
+                        map.dropGemBomb(pBombGem, xrel, yrel);
 
                         if (state == INPUT_BOMB_TEMPLATE)
                         {
@@ -288,36 +328,50 @@ void WindowMap::handleKeyInput(GLFWwindow* pWindow, int key, int scancode, int a
     if ((ix < 0) || (ix >= g_game.ingameMapWidth) || (iy < 0) || (iy >= g_game.ingameMapHeight))
         return;
 
-    Building* pBuilding = map.getBuilding(iy, ix);
-    if ((pBuilding == NULL) || (pBuilding->pGem == NULL) || (pCore->inventory.getDraggedGem() != NULL))
+    if (pCore->inventory.getDraggedGem() != NULL)
         return;
 
-    Gem* pGem = pBuilding->pGem;
+    Building* pBuilding = map.getBuilding(iy, ix);
+    Gem* pGem = NULL;
+    if (pBuilding != NULL)
+        pGem = pBuilding->pGem;
 
     if (action == GLFW_PRESS)
     {
         switch (key)
         {
             case GLFW_KEY_D:
-                if (pCore->manaPool.getMana() >= pGem->manaCost)
+                if ((pGem != NULL) && (pCore->manaPool.getMana() >= pGem->manaCost))
                 {
                     if (NULL != pCore->inventory.duplicateGemIntoSlot(pGem, -1))
                         pCore->manaPool.addMana(-pGem->manaCost, false);
                 }
                 break;
             case GLFW_KEY_U:
-                if (pCore->manaPool.getMana() >= (pGem->manaCost + Gem::gemCombineCostCurrent))
+                if ((pGem != NULL) && (pCore->manaPool.getMana() >= (pGem->manaCost + Gem::gemCombineCostCurrent)))
                 {
                     pCore->manaPool.addMana(-(pGem->manaCost + Gem::gemCombineCostCurrent), false);
                     pCore->inventory.combineGems(pGem, pGem);
                 }
                 break;
             case GLFW_KEY_X:
-                pCore->inventory.salvageGem(pGem);
+                if (pGem != NULL)
+                    pCore->inventory.salvageGem(pGem);
                 break;
             case GLFW_KEY_TAB:
-                pCore->inventory.dropGemIntoInventory(pGem);
+                if (pGem != NULL)
+                    pCore->inventory.dropGemIntoInventory(pGem);
                 break;
+            case GLFW_KEY_UP:
+            case GLFW_KEY_DOWN:
+            {
+                Targetable* pSelectedTarget = map.getSelectedTarget();
+                if ((pSelectedTarget != NULL) && !!(pSelectedTarget->type & TARGET_MONSTER))
+                {
+                    int delta = (key == GLFW_KEY_UP) ? 1 : -1;
+                    map.setSelectedTarget(map.enemyController.getNextTarget(pSelectedTarget, delta));
+                }
+            }
         }
     }
 }

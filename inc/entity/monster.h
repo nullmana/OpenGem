@@ -80,4 +80,8 @@ public:
     int8_t shockTimer;
 
     uint32_t color;
+
+#ifdef DEBUG
+    virtual void debugPrint() const;
+#endif
 };

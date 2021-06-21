@@ -19,6 +19,8 @@ IngameMap::IngameMap(IngameCore& core, IngameLevelDefinition& level)
 {
     tileOccupied = level.tiles;
 
+    pSelectedTarget = NULL;
+
     for (int y = 0; y < g_game.ingameMapHeight; ++y)
     {
         for (int x = 0; x < g_game.ingameMapWidth; ++x)
@@ -79,6 +81,19 @@ STATUS IngameMap::render(struct _fbg* pFbg, const Window& window) const
     enemyController.render(pFbg, window);
     structureController.render(pFbg, window);
     projectileController.render(pFbg, window);
+
+    if (pSelectedTarget != NULL)
+    {
+        int ix = pSelectedTarget->x * scale + window.x;
+        int iy = pSelectedTarget->y * scale + window.y;
+        int vertices[8] =
+            {
+                ix, iy - 8,
+                ix + 8, iy,
+                ix, iy + 8,
+                ix - 8, iy};
+        fbg_polygon(pFbg, 4, vertices, 0x10, 0x10, 0x10);
+    }
 
     return STATUS_OK;
 }
@@ -598,4 +613,15 @@ void IngameMap::monsterReachesTarget(Monster& monster)
             }
         }
     }
+}
+
+void IngameMap::setSelectedTarget(Targetable* pTarget)
+{
+    if (pSelectedTarget != NULL)
+        pSelectedTarget->isSelectedTarget = false;
+
+    pSelectedTarget = pTarget;
+
+    if (pTarget != NULL)
+        pTarget->isSelectedTarget = true;
 }

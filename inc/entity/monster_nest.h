@@ -9,4 +9,8 @@ public:
     MonsterNest(int ix_, int iy_);
 
     virtual float getShotVariance() { return 0.3f * width; }
+
+#ifdef DEBUG
+    virtual void debugPrint() const;
+#endif
 };

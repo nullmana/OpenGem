@@ -91,7 +91,7 @@ v0.4:
 - [ ] Mana Shards
 - [x] Wave Formations
 - [x] Tower targeting options
-- [ ] Target selection on map
+- [x] Target selection on map
 - [ ] Kill chain counter
 - [ ] Info tooltips
 - [ ] QoL backport: Reduce gem range

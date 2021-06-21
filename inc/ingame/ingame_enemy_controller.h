@@ -49,6 +49,9 @@ public:
     bool hasTargetsWithinRangeSq(float y, float x,
         float rangeSq, uint32_t typeMask, bool ignoreKillingShot) const;
 
+    Targetable* getTargetAtPosition(float y, float x);
+    Targetable* getNextTarget(Targetable* pTarget, int increment);
+
     std::vector<Targetable*>& getTowerTargetsWithinRangeSq(std::vector<Targetable*>& targets,
         float y, float x, float rangeSq, uint32_t typeMask)
     {
@@ -62,6 +65,11 @@ public:
     bool hasShrineTargetsWithinRangeSq(float y, float x, float rangeSq) const
     {
         return hasTargetsWithinRangeSq(y, x, rangeSq, TARGET_ENEMY, true);
+    }
+
+    static inline bool isTargetWithinRangeSq(const Targetable* t, float y, float x, float rangeSq)
+    {
+        return (t->y - y) * (t->y - y) + (t->x - x) * (t->x - x) <= rangeSq;
     }
 
 #ifdef DEBUG

@@ -59,6 +59,13 @@ Targetable* Tower::pickTarget(IngameMap& map)
 {
     const float rangeSq = pGem->shotFinal.rangeSq();
 
+    Targetable* pSelectedTarget = map.getSelectedTarget();
+    if (pSelectedTarget != NULL)
+    {
+        if (IngameEnemyController::isTargetWithinRangeSq(pSelectedTarget, y, x, rangeSq))
+            return pSelectedTarget;
+    }
+
     if (!cachedTargetsValid)
     {
         cachedTargets.clear();

@@ -19,6 +19,7 @@ public:
         incomingDamage = 0.0;
         isKillingShotOnTheWay = false;
         isKilled = false;
+        isSelectedTarget = false;
         hp = hpMax = hp_;
         armor = 0.0;
         sortBanishmentCost = 0.0;
@@ -44,9 +45,16 @@ public:
     double incomingDamage;
     bool isKillingShotOnTheWay;
     bool isKilled;
+    bool isSelectedTarget;
 
     double hp;
     double hpMax;
     double armor;
     double sortBanishmentCost;
+
+#ifdef DEBUG
+    virtual void debugPrint() const
+    {
+    }
+#endif
 };

@@ -5,8 +5,12 @@
 
 #include "wrapfbg.h"
 
-#include <cstdio>
+#include <algorithm>
 #include <unordered_set>
+
+#ifdef DEBUG
+#include <cstdio>
+#endif
 
 IngameEnemyController::IngameEnemyController(IngameManaPool& mp_)
     : manaPool(mp_), monstersOnTile(g_game.ingameMapHeight, g_game.ingameMapWidth)
@@ -34,7 +38,9 @@ void IngameEnemyController::spawnMonsters(const IngamePathfinder& pathfinder, in
     }
     ++nodeOffset;
 
+#ifdef DEBUG
     printf("Monsters: %lu\n", monsters.size());
+#endif
 }
 
 void IngameEnemyController::tickMonsters(IngameMap& map, int frames)
@@ -48,6 +54,9 @@ void IngameEnemyController::tickMonsters(IngameMap& map, int frames)
             manaPool.addMana(it->mana, true);
             if (it->incomingShots > 0)
                 invalidatedWithShots.insert(&(*it));
+
+            if (it->isSelectedTarget)
+                map.setSelectedTarget(NULL);
 
             monsters.erase(it++);
         }
@@ -105,7 +114,9 @@ void IngameEnemyController::addPendingMonsters(const MonsterPrototype& mp, const
     for (size_t i = 0; i < times.size(); ++i)
         pendingMonsters.emplace(pendingMonsterClock + times[i], mp);
 
+#ifdef DEBUG
     printf("Pending Monsters: %lu\n", pendingMonsters.size());
+#endif
 }
 
 void IngameEnemyController::forceRepath(int x, int y, int w, int h)
@@ -132,13 +143,13 @@ void IngameEnemyController::render(struct _fbg* pFbg, const Window& window) cons
         }
         if ((x > 0.0f) && (x < g_game.ingameMapWidth) && (y > 0.0f) && (y < g_game.ingameMapHeight))
         {
-            const float ss = scale * m.scale * 0.40f * g_game.ingameBuildingSize;
+            const float ss = scale * m.scale;
             float vx = cos(m.motionAngle) * ss;
             float vy = sin(m.motionAngle) * ss;
 
-            fbgx_tri(pFbg, scale * m.x + vx + window.x, scale * m.y + vy + window.y,
-                scale * m.x - vx + vy * 0.4f + window.x, scale * m.y - vy - vx * 0.4f + window.y,
-                scale * m.x - vx - vy * 0.4f + window.x, scale * m.y - vy + vx * 0.4f + window.y,
+            fbgx_tri(pFbg, scale * x + vx + window.x, scale * y + vy + window.y,
+                scale * x - vx + vy * 0.4f + window.x, scale * y - vy - vx * 0.4f + window.y,
+                scale * x - vx - vy * 0.4f + window.x, scale * y - vy + vx * 0.4f + window.y,
                 m.color >> 16, m.color >> 8, m.color);
         }
     }
@@ -188,9 +199,9 @@ std::vector<Targetable*>& IngameEnemyController::getTargetsWithinRangeSq(std::ve
             int ix = x;
             int iy = y;
 
-            for (int j = std::max(0, iy - range); j < std::min(g_game.ingameMapHeight - 1, iy + range); ++j)
+            for (int j = std::max(0, iy - range); j <= std::min(g_game.ingameMapHeight - 1, iy + range); ++j)
             {
-                for (int i = std::max(0, ix - range); i < std::min(g_game.ingameMapWidth - 1, ix + range); ++i)
+                for (int i = std::max(0, ix - range); i <= std::min(g_game.ingameMapWidth - 1, ix + range); ++i)
                 {
                     // Add some tolerance to avoid leaking to rounding errors, shouldn't be common or noticable
                     if (((j - iy) * (j - iy) + (i - ix) * (i - ix)) < rangeSq + 2)
@@ -200,7 +211,7 @@ std::vector<Targetable*>& IngameEnemyController::getTargetsWithinRangeSq(std::ve
                         {
                             if (!m->isKilled && (ignoreKillingShot || !m->isKillingShotOnTheWay) &&
                                 (typeMask & m->type) &&
-                                (((m->y - y) * (m->y - y) + (m->x - x) * (m->x - x)) <= rangeSq))
+                                isTargetWithinRangeSq(m, y, x, rangeSq))
                             {
                                 targets.push_back(m);
                             }
@@ -225,7 +236,7 @@ std::vector<Targetable*>& IngameEnemyController::getTargetsWithinRangeSq(std::ve
             {
                 if (!m.isKilled && (ignoreKillingShot || !m.isKillingShotOnTheWay) &&
                     (typeMask & m.type) &&
-                    (((m.y - y) * (m.y - y) + (m.x - x) * (m.x - x)) <= rangeSq))
+                    isTargetWithinRangeSq(&m, y, x, rangeSq))
                 {
                     targets.push_back(&m);
                 }
@@ -243,11 +254,74 @@ bool IngameEnemyController::hasTargetsWithinRangeSq(float y, float x, float rang
         for (const Monster& m : monsters)
         {
             if (!m.isKilled && (ignoreKillingShot || !m.isKillingShotOnTheWay) && (typeMask & m.type) &&
-                ((m.y - y) * (m.y - y) + (m.x - x) * (m.x - x) <= rangeSq))
+                isTargetWithinRangeSq(&m, y, x, rangeSq))
             {
                 return true;
             }
         }
     }
     return false;
+}
+
+Targetable* IngameEnemyController::getTargetAtPosition(float y, float x)
+{
+    int ix = x;
+    int iy = y;
+    Monster* pNearest = NULL;
+    float minDistanceSq = 1000.0f;
+
+    for (int j = std::max(0, iy - 1); j <= std::min(g_game.ingameMapHeight - 1, iy + 1); ++j)
+    {
+        for (int i = std::max(0, ix - 1); i <= std::min(g_game.ingameMapWidth - 1, ix + 1); ++i)
+        {
+            std::vector<Monster*>& mt = monstersOnTile.at(j, i);
+            for (Monster* m : mt)
+            {
+                float distanceSq = (m->y - y) * (m->y - y) + (m->x - x) * (m->x - x);
+                if ((distanceSq <= (m->scale * m->scale)) && (distanceSq <= minDistanceSq))
+                {
+                    pNearest = m;
+                    minDistanceSq = distanceSq;
+                }
+            }
+        }
+    }
+
+    return pNearest;
+}
+
+Targetable* IngameEnemyController::getNextTarget(Targetable* pTarget, int increment)
+{
+    std::vector<Targetable*> targets;
+
+    for (Monster& m : monsters)
+        targets.push_back(&m);
+
+    if (targets.empty())
+        return NULL;
+    else if ((targets.size() == 1) || (increment == 0))
+        return pTarget;
+
+    std::sort(targets.begin(), targets.end(),
+        [](const Targetable* a, const Targetable* b) { return a->y > b->y; });
+
+    std::vector<Targetable*>::iterator it = std::find(targets.begin(), targets.end(), pTarget);
+    if (it != targets.end())
+    {
+        if (increment > 0)
+        {
+            if (it + 1 == targets.end())
+                return targets.front();
+            else
+                return *(it + 1);
+        }
+        else
+        {
+            if (it == targets.begin())
+                return targets.back();
+            else
+                return *(it - 1);
+        }
+    }
+    return NULL;
 }

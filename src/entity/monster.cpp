@@ -6,6 +6,9 @@
 #include "ingame/ingame_map.h"
 
 #include <cmath>
+#ifdef DEBUG
+#include <cstdio>
+#endif
 
 #define HEALTH_BAR_FADEOUT_TIME 30
 
@@ -40,14 +43,14 @@ Monster::Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget, con
         case TARGET_REAVER:
         case TARGET_ARMORED:
         case TARGET_RUNNER:
-            scale = 1.0f;
+            scale = 0.4f * g_game.ingameBuildingSize;
             break;
         case TARGET_SWARMLING:
         case TARGET_SPAWNLING:
-            scale = 0.5f;
+            scale = 0.2f * g_game.ingameBuildingSize;
             break;
         case TARGET_GIANT:
-            scale = 1.8f;
+            scale = 0.72f * g_game.ingameBuildingSize;
             break;
     }
 
@@ -375,3 +378,37 @@ bool Monster::tick(IngameMap& map, int frames)
 
     return isKilled;
 }
+
+#ifdef DEBUG
+void Monster::debugPrint() const
+{
+    printf("Monster ");
+    switch (type)
+    {
+        case TARGET_REAVER:
+            printf("(Reaver):\n");
+            break;
+        case TARGET_SWARMLING:
+            printf("(Swarmling):\n");
+            break;
+        case TARGET_SPAWNLING:
+            printf("(Spawnling):\n");
+            break;
+        case TARGET_GIANT:
+            printf("(Giant):\n");
+            break;
+        case TARGET_ARMORED:
+            printf("(Armored):\n");
+            break;
+        case TARGET_RUNNER:
+            printf("(Runner):\n");
+            break;
+        default:
+            printf("(Invalid Type %x):\n", type);
+            break;
+    }
+    printf("\tHP: %lf/%lf | Armor: %lf\n", hp, hpMax, armor);
+}
+#endif
+
+#undef HEALTH_BAR_FADEOUT_TIME

@@ -27,6 +27,8 @@ private:
     vector2d<Building*> tileBuilding;
     vector2d<Structure*> tileStructure;
 
+    Targetable* pSelectedTarget;
+
     bool verifyBuilding(TILE_TYPE building, int x, int y);
     STATUS placeBuilding(TILE_TYPE building, int x, int y);
     void destroyBuilding(Building* pBuilding);
@@ -52,6 +54,9 @@ public:
     const vector2d<TILE_TYPE>& getTileOccupiedMap() const { return tileOccupied; }
 
     void monsterReachesTarget(Monster& monster);
+
+    Targetable* getSelectedTarget() const { return pSelectedTarget; }
+    void setSelectedTarget(Targetable* pTarget);
 
     IngameBuildingController buildingController;
     IngameStructureController structureController;

@@ -23,7 +23,10 @@ int IngameProjectileController::createTowerShots(const Tower& tower, Targetable*
         {
             pTarget->setKillingShot();
             shots.back().isKillingShot = true;
-            break;
+
+            // Always fire all shots at selected target, ignore killing shot entirely
+            if (!pTarget->isSelectedTarget)
+                break;
         }
     }
 
@@ -42,6 +45,9 @@ void IngameProjectileController::shotHitsTarget(TowerShot* pShot)
         --pTarget->incomingShots;
         pTarget->incomingDamage -= pTarget->calculateIncomingDamage(pShot->damage, pShot->crit);
         pTarget->receiveShotDamage(pShot->shot, 1, pShot->damage, pShot->crit, pShot->pSourceGem, pShot->isKillingShot);
+
+        if (pTarget->isKilled && pTarget->isSelectedTarget)
+            map.setSelectedTarget(NULL);
 
         if (pTarget->canLeech())
             ++targetsLeeched;
@@ -73,6 +79,9 @@ void IngameProjectileController::shotHitsTarget(TowerShot* pShot)
             chainTargets[i]->receiveShotDamage(pShot->shot, 1, pShot->damage, pShot->crit, pShot->pSourceGem, false);
             if (chainTargets[i]->canLeech())
                 ++targetsLeeched;
+
+            if (chainTargets[i]->isKilled && chainTargets[i]->isSelectedTarget)
+                map.setSelectedTarget(NULL);
         }
     }
 
