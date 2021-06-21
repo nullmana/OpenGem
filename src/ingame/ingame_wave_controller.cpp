@@ -22,9 +22,6 @@ IngameWaveController::IngameWaveController(IngameMap& map_, IngameManaPool& mana
     buildWaves();
 }
 
-#define rand01(gen) ((gen)() / double((gen).max()))
-#define rand01f(gen) ((gen)() / float((gen).max()))
-
 double IngameWaveController::getWaveHpGrowthGCL(int numWaves)
 {
     if (numWaves == 1337)
@@ -62,6 +59,9 @@ double IngameWaveController::getWaveHpGrowthGCL(int numWaves)
     else
         return 1.051;
 }
+
+#define rand01(gen) ((gen)() / double((gen).max()))
+#define rand01f(gen) ((gen)() / float((gen).max()))
 
 void IngameWaveController::buildWaves()
 {
@@ -234,6 +234,9 @@ void IngameWaveController::buildWaves()
     }
 }
 
+#undef rand01
+#undef rand01f
+
 void IngameWaveController::activateNextWave()
 {
     ++currentWaveStone;
@@ -376,6 +379,8 @@ STATUS IngameWaveController::render(struct _fbg* pFbg, const Window& window) con
     {
         const WaveStone& wave = waves[i];
         uint32_t color = WAVE_TYPE_COLOR[wave.type];
+        if (wave.numMonsters != wave.numMonstersUnenraged)
+            color /= 2;
 
         int height = wave.timeOffset * vscale;
 
@@ -454,5 +459,53 @@ void IngameWaveController::callWavesEarly(int waveNum)
     rushWaveNum = waveNum;
 }
 
-#undef rand01
-#undef rand01f
+void IngameWaveController::enrageWave(int waveNum, int grade, int count)
+{
+    WaveStone& wave = waves[waveNum];
+
+    if (wave.isWave())
+    {
+        for (int i = 0; i < count; ++i)
+        {
+            if (g_game.game == GC_LABYRINTH)
+            {
+                int numSummoned = round(pow(grade, 1.2f) * 4) + 4;
+
+                wave.numMonsters += numSummoned;
+                wave.mp.hp += ceil((grade * 0.03 + 0.1) * wave.mp.hp);
+                wave.mp.armor += std::max(2.0, ceil(0.24 * wave.mp.armor));
+            }
+            else
+            {
+                int numSummoned = round(pow(grade, 1.2f) * 4) + 4;
+                switch (wave.type)
+                {
+                    case WAVE_REAVER:
+                        numSummoned = std::min(numSummoned, 999 - wave.numMonsters);
+                        break;
+                    case WAVE_SWARMLING:
+                        numSummoned = std::min(int(numSummoned * 1.5f + 0.5f), 999 - wave.numMonsters);
+                        break;
+                    case WAVE_GIANT:
+                        numSummoned = std::min(int(numSummoned * 0.2f + 0.5f), 999 - wave.numMonsters);
+                        break;
+                }
+                wave.numMonsters += numSummoned;
+                wave.mp.hp = std::min(1E300, wave.mp.hp + ceil((grade * 0.03 + 0.1) * wave.mp.hp));
+                wave.mp.armor = std::min(1E300, wave.mp.armor + std::max(2.0, ceil(0.24 * wave.mp.armor)));
+            }
+        }
+    }
+}
+
+void IngameWaveController::clearEnrageWave(int waveNum)
+{
+    WaveStone& wave = waves[waveNum];
+
+    if (wave.isWave())
+    {
+        wave.numMonsters = wave.numMonstersUnenraged;
+        wave.mp.hp = wave.hpUnenraged;
+        wave.mp.armor = wave.armorUnenranged;
+    }
+}

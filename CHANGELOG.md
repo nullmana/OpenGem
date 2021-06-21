@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2.1] - 2021-06-21
+
+### Added
+
+- Added wave enraging with all gem bomb types, delete to clear
+
+
 ## [0.3.2] - 2021-06-18
 
 ### Added

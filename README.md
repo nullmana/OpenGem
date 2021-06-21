@@ -54,7 +54,7 @@ v0.4:
 - [x] Chain Hit
 - [x] Socketing cooldown
 - [x] Monster stats
-- [ ] Wave Enraging
+- [x] Wave Enraging
 - [x] Shrine recharge affected by rushing waves
 - [x] Early wave mana bonus
 - [x] Gem type availability/unlocking

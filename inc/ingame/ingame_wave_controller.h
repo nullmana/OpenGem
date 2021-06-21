@@ -48,5 +48,8 @@ public:
 
     void callWavesEarly(int waveNum);
 
+    void enrageWave(int waveNum, int grade, int count);
+    void clearEnrageWave(int waveNum);
+
     int getWaveStoneSpeed() const { return waveStoneSpeed; }
 };
