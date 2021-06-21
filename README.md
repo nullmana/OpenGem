@@ -10,6 +10,33 @@ This is an UNOFFICIAL project whose development is in NO WAY associated with "Ga
 No code from the original Gemcraft games is copied into this project.
 No assets, visual or sound, are included in the project.
 
+## Installation
+Suggested installation instructions for different systems are provided below. These may not work on all systems, use at your own risk.
+
+### Debian Derivatives
+```
+sudo apt install git build-essential libglew-dev libglfw3-dev
+git clone --recurse-submodules https://github.com/nullmana/OpenGem
+cd OpenGem
+make -j2
+```
+
+### Arch Derivatives
+```
+sudo pacman -S git glew glfw
+git clone --recurse-submodules https://github.com/nullmana/OpenGem
+cd OpenGem
+make -j2
+```
+
+### Windows (MINGW64)
+```
+sudo pacman -S git mingw-w64-x86_64-glew mingw-w64-x86_64-glfw
+git clone --recurse-submodules https://github.com/nullmana/OpenGem
+cd OpenGem
+make -j2
+```
+
 ## Supported Games
 The engine will be designed to import assets from an official, purchased copy of one of the gemcraft games to play.
 The engine will support:
