@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2.2] - 2021-06-21
+
+### Added
+
+- Added mass combining with Ctrl+Click. Shift+Click has been changed to stay in combine mode, to better match other uses of shift key
+
+
 ## [0.3.2.1] - 2021-06-21
 
 ### Added

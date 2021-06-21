@@ -85,10 +85,20 @@ void WindowInventory::handleMouseInput(GLFWwindow* pWindow, int button, int acti
                 Gem* pGem = inventory.getGemInSlot(slot);
                 if (pGem != NULL)
                 {
-                    inventory.startDragGem(pGem);
-                    pGem->x = xpos;
-                    pGem->y = ypos;
-                    pInputHandler->setInputState(INPUT_DRAGGING_COMBINE);
+                    if (!!(mods & GLFW_MOD_CONTROL))
+                    {
+                        inventory.massCombineGems(pGem->grade);
+
+                        if (!(mods & GLFW_MOD_SHIFT))
+                            pInputHandler->setInputState(INPUT_IDLE);
+                    }
+                    else
+                    {
+                        inventory.startDragGem(pGem);
+                        pGem->x = xpos;
+                        pGem->y = ypos;
+                        pInputHandler->setInputState(INPUT_DRAGGING_COMBINE);
+                    }
                 }
                 break;
             }
@@ -158,7 +168,10 @@ void WindowInventory::handleMouseInput(GLFWwindow* pWindow, int button, int acti
                         }
                     }
                 }
-                pInputHandler->setInputState(INPUT_IDLE);
+                if (!!(mods & GLFW_MOD_SHIFT))
+                    pInputHandler->setInputState(INPUT_COMBINE_GEM);
+                else
+                    pInputHandler->setInputState(INPUT_IDLE);
                 break;
             }
         }

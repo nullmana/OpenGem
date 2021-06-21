@@ -426,6 +426,32 @@ bool IngameInventory::createAllGemsInSlot(GEM_COMPONENT_TYPE gemType, int slot)
     return createdGems;
 }
 
+int IngameInventory::massCombineGems(int grade)
+{
+    std::vector<Gem*> combinePairs;
+
+    for (int i = 0; i < inventory.size(); ++i)
+    {
+        if ((inventory[i] != NULL) && (inventory[i]->grade == grade))
+            combinePairs.push_back(inventory[i]);
+    }
+
+    int numCombined = 0;
+    for (int i = (combinePairs.size() % 2); i < combinePairs.size(); i += 2)
+    {
+        if (manaPool.getMana() >= Gem::gemCombineCostCurrent)
+        {
+            manaPool.addMana(-Gem::gemCombineCostCurrent, false);
+            combineGems(combinePairs[i + 1], combinePairs[i]);
+            ++numCombined;
+        }
+        else
+            break;
+    }
+
+    return numCombined;
+}
+
 void IngameInventory::unlockGemType(GEM_COMPONENT_TYPE type)
 {
     double unlockCost = Gem::gemUnlockCostGCL(getNumUnlockedGemTypes());
