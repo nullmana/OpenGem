@@ -1,7 +1,11 @@
 #include "ingame/ingame_structure_controller.h"
 #include "ingame/ingame_level_definition.h"
+#include "ingame/ingame_map.h"
 
 #include "wrapfbg.h"
+
+#include <algorithm>
+#include <unordered_set>
 
 IngameStructureController::IngameStructureController(const IngameLevelDefinition& level)
 {
@@ -40,6 +44,84 @@ void IngameStructureController::render(struct _fbg* pFbg, const Window& window) 
     }
 }
 
+void IngameStructureController::tickStructures(IngameMap& map, int frames)
+{
+    std::unordered_set<Targetable*> invalidatedWithShots;
+
+    for (std::list<Beacon>::iterator it = beacons.begin(); it != beacons.end();)
+    {
+        Beacon* pBeacon = &(*it);
+        if (pBeacon->tick(map, frames))
+        {
+            if (pBeacon->incomingShots > 0)
+                invalidatedWithShots.insert(pBeacon);
+
+            if (pBeacon->isSelectedTarget)
+                map.setSelectedTarget(NULL);
+
+            map.destroyBeacon(pBeacon);
+            destroyBeacon(pBeacon);
+            beacons.erase(it++);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    map.projectileController.clearShotsFromTarget(invalidatedWithShots);
+}
+
+void IngameStructureController::fillProtecting(Beacon* pBeacon)
+{
+    int ix = pBeacon->ix;
+    int iy = pBeacon->iy;
+
+    // TODO maybe optimize this.
+    for (Beacon& b : beacons)
+    {
+        if ((b.isProtector() != pBeacon->isProtector()) &&
+            (abs(b.ix - pBeacon->ix) <= g_game.ingameBuildingSize) &&
+            (abs(b.iy - pBeacon->iy) <= g_game.ingameBuildingSize))
+        {
+            pBeacon->protecting.push_back(&b);
+            b.protecting.push_back(pBeacon);
+        }
+    }
+}
+
+Beacon& IngameStructureController::addBeacon(int x, int y)
+{
+    BEACON_TYPE type;
+    if (g_game.game == GC_LABYRINTH)
+        type = BEACON_TYPE(rand() % BEACON_TYPE_COUNT_GCL);
+    else
+        type = BEACON_TYPE(rand() % BEACON_TYPE_COUNT_GCCS);
+
+    beacons.emplace_back(x, y, type);
+
+    Beacon* pBeacon = &beacons.back();
+
+    if (g_game.game != GC_LABYRINTH)
+        fillProtecting(pBeacon);
+
+    return beacons.back();
+}
+
+void IngameStructureController::destroyBeacon(Beacon* pBeacon)
+{
+    if (g_game.game != GC_LABYRINTH)
+    {
+        for (Beacon* pOther : pBeacon->protecting)
+        {
+            std::list<Beacon*>::iterator it = std::find(pOther->protecting.begin(), pOther->protecting.end(), pBeacon);
+
+            if (it != pOther->protecting.end())
+                pOther->protecting.erase(it);
+        }
+    }
+}
+
 std::vector<Targetable*>& IngameStructureController::getTargetableStructuresWithinRangeSq(std::vector<Targetable*>& targets, float y, float x, float rangeSq)
 {
     for (MonsterNest& m : monsterNests)
@@ -48,6 +130,15 @@ std::vector<Targetable*>& IngameStructureController::getTargetableStructuresWith
             ((m.y - y) * (m.y - y) + (m.x - x) * (m.x - x) <= rangeSq))
         {
             targets.push_back(&m);
+        }
+    }
+
+    for (Beacon& b : beacons)
+    {
+        if (!b.isKilled && !b.isKillingShotOnTheWay && b.canBeTargeted() &&
+            ((b.y - y) * (b.y - y) + (b.x - x) * (b.x - x) <= rangeSq))
+        {
+            targets.push_back(&b);
         }
     }
 

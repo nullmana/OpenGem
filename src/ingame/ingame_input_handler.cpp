@@ -216,6 +216,12 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
                     break;
             }
             break;
+#ifdef DEBUG
+        case GLFW_KEY_S:
+            if (action == GLFW_PRESS)
+                pCore->map.spawnBeacons(1);
+            break;
+#endif
     }
 }
 

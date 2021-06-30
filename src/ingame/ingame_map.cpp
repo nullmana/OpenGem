@@ -534,6 +534,88 @@ STATUS IngameMap::demolishBuilding(int x, int y)
     return STATUS_OK;
 }
 
+void IngameMap::placeBeacon(int x, int y)
+{
+    Beacon& beacon = structureController.addBeacon(x, y);
+
+    for (int j = y; j < y + g_game.ingameBuildingSize; ++j)
+    {
+        for (int i = x; i < x + g_game.ingameBuildingSize; ++i)
+        {
+            tileOccupied.at(j, i) = TILE_BEACON;
+            tileStructure.at(j, i) = &beacon;
+        }
+    }
+}
+
+void IngameMap::spawnBeacons(int numBeacons)
+{
+    // Can't hash a pair, so use a u16|u16 instead.
+    std::unordered_set<uint32_t> spawnLocations;
+
+    // TODO Optimize this - this set can be cached and only updated when something is placed on the map
+    // Also, share it with GCCS shrine spawning
+    for (uint16_t y = 0; y <= g_game.ingameMapHeight - g_game.ingameBuildingSize; ++y)
+    {
+        for (uint16_t x = 0; x <= g_game.ingameMapWidth - g_game.ingameBuildingSize; ++x)
+        {
+            bool canPlace = true;
+            for (uint16_t j = y; j < y + g_game.ingameBuildingSize; ++j)
+            {
+                for (uint16_t i = x; i < x + g_game.ingameBuildingSize; ++i)
+                {
+                    if (tileOccupied.at(j, i) != TILE_NONE)
+                    {
+                        canPlace = false;
+                        break;
+                    }
+                }
+                if (!canPlace)
+                    break;
+            }
+
+            if (canPlace)
+                spawnLocations.emplace((uint32_t(x) << 16) | uint32_t(y));
+        }
+    }
+
+    for (int i = 0; (i < numBeacons) && !spawnLocations.empty(); ++i)
+    {
+        // Hackey - first element of hashmap is essentially random, so use it instead of actual random.
+        // Maybe go it++ rand times instead for actual random, don't think this is guaranteed.
+        std::unordered_set<uint32_t>::iterator it = spawnLocations.begin();
+        uint16_t x = (*it >> 16) & 0xFFFF;
+        uint16_t y = (*it) & 0xFFFF;
+
+        placeBeacon(x, y);
+
+        spawnLocations.erase(it);
+        for (uint16_t j = y; j < y + g_game.ingameBuildingSize; ++j)
+        {
+            for (uint16_t i = x; i < x + g_game.ingameBuildingSize; ++i)
+            {
+                it = spawnLocations.find((uint32_t(i) << 16) | uint32_t(j));
+                if (it != spawnLocations.end())
+                    spawnLocations.erase(it);
+            }
+        }
+    }
+}
+
+void IngameMap::destroyBeacon(Beacon* pBeacon)
+{
+    const int x = pBeacon->ix;
+    const int y = pBeacon->iy;
+    for (int j = y; j < y + g_game.ingameBuildingSize; ++j)
+    {
+        for (int i = x; i < x + g_game.ingameBuildingSize; ++i)
+        {
+            tileOccupied.at(j, i) = TILE_NONE;
+            tileStructure.at(j, i) = NULL;
+        }
+    }
+}
+
 void IngameMap::dropGemBomb(Gem* pGem, float x, float y)
 {
     float bombRange = pGem->getBombRange();

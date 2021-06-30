@@ -392,8 +392,7 @@ void IngameBuildingController::removeBuildingAmplifiers(Building* pBuilding)
 {
     for (Amplifiable* pAmp : pBuilding->amplifying)
     {
-        std::list<Amplifiable*>::iterator it =
-            std::find(pAmp->amplifying.begin(), pAmp->amplifying.end(), pBuilding);
+        std::list<Amplifiable*>::iterator it = std::find(pAmp->amplifying.begin(), pAmp->amplifying.end(), pBuilding);
 
         if (it != pAmp->amplifying.end())
             pAmp->amplifying.erase(it);

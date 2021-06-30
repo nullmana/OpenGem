@@ -1,0 +1,28 @@
+#pragma once
+
+enum BEACON_TYPE
+{
+    // Common
+    BEACON_HEAL = 0,
+    BEACON_SPEED = 1,
+    BEACON_CLEANSE = 2,
+
+    // GCL
+    BEACON_INVULNERABILITY = 3,
+    BEACON_MANA_BIND = 4,
+
+    BEACON_TYPE_COUNT_GCL,
+
+    // GCCS
+    BEACON_SHIELD = 3,
+    BEACON_DISCHARGE = 4,
+    BEACON_PROTECTOR = 5,
+    BEACON_STATIC = 6,
+
+    BEACON_TYPE_COUNT_GCCS,
+
+    // GCFW
+    BEACON_OMNI = 7,
+
+    BEACON_TYPE_COUNT_GCFW
+};

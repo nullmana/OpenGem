@@ -33,6 +33,7 @@ private:
     STATUS placeBuilding(TILE_TYPE building, int x, int y);
     void destroyBuilding(Building* pBuilding);
     void destroyWalls(int x, int y);
+    void placeBeacon(int x, int y);
 
 public:
     IngameMap(IngameCore& core, IngameLevelDefinition& level);
@@ -45,6 +46,9 @@ public:
     STATUS buildAmplifier(int x, int y);
     STATUS buildShrine(int x, int y, SHRINE_TYPE type);
     STATUS demolishBuilding(int x, int y);
+
+    void spawnBeacons(int numBeacons);
+    void destroyBeacon(Beacon* pBeacon);
 
     void dropGemBomb(Gem* pGem, float x, float y);
 

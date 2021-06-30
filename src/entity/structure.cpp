@@ -26,39 +26,33 @@ Structure::Structure(int ix_, int iy_, int width_, int height_)
 
 uint32_t Structure::receiveShotDamage(ShotData& shot, uint32_t numShots, double damage, double crit, Gem* pSourceGem, bool isKillingShot)
 {
-    if (!isIndestructible)
+    if (isIndestructible || isKilled)
+        return 0;
+
+    uint32_t shotsTaken = 0;
+    double modifiedDamage = std::max<double>(1, damage * (1.0 + crit) - armor);
+    while (shotsTaken < numShots)
     {
-        uint32_t shotsTaken = 0;
+        hp -= modifiedDamage;
+        ++shotsTaken;
 
-        if (isKilled)
-            return 0;
-
-        double modifiedDamage = std::max<double>(1, damage * (1.0 + crit) - armor);
-        while (shotsTaken < numShots)
+        if ((shot.component[COMPONENT_ARMOR] > 0.0) && (armor > 0.0))
         {
-            hp -= modifiedDamage;
-            ++shotsTaken;
-
-            if ((shot.component[COMPONENT_ARMOR] > 0.0) && (armor > 0.0))
-            {
-                armor = std::max(0.0, armor - shot.component[COMPONENT_ARMOR]);
-                modifiedDamage = std::max<double>(1, damage * (1.0 + crit) - armor);
-            }
-
-            if (hp < 1.0)
-            {
-                isKilled = true;
-                break;
-            }
+            armor = std::max(0.0, armor - shot.component[COMPONENT_ARMOR]);
+            modifiedDamage = std::max<double>(1, damage * (1.0 + crit) - armor);
         }
 
-        if (pSourceGem != NULL)
-            pSourceGem->hits += shotsTaken;
-
-        return shotsTaken;
+        if (hp < 1.0)
+        {
+            isKilled = true;
+            break;
+        }
     }
 
-    return 0;
+    if (pSourceGem != NULL)
+        pSourceGem->hits += shotsTaken;
+
+    return shotsTaken;
 }
 
 void Structure::receiveBombDamage(const ShotData& shot, double damage)

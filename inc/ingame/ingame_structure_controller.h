@@ -1,5 +1,6 @@
 #pragma once
 
+#include "entity/beacon.h"
 #include "entity/monster_nest.h"
 
 #include "interface/window.h"
@@ -14,6 +15,11 @@ class IngameStructureController
 {
 private:
     std::vector<MonsterNest> monsterNests;
+    std::list<Beacon> beacons;
+
+    void fillProtecting(Beacon* pBeacon);
+
+    void destroyBeacon(Beacon* pBeacon);
 
 public:
     IngameStructureController(const IngameLevelDefinition& level);
@@ -22,7 +28,7 @@ public:
 
     void tickStructures(IngameMap& map, int frames);
 
-    void destroyStructure(Structure* pStructure);
+    Beacon& addBeacon(int x, int y);
 
     std::vector<MonsterNest>& getMonsterNests() { return monsterNests; }
 
