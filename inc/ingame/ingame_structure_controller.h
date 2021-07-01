@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/vector2d.h"
+
 #include "entity/beacon.h"
 #include "entity/monster_nest.h"
 
@@ -16,8 +18,10 @@ class IngameStructureController
 private:
     std::vector<MonsterNest> monsterNests;
     std::list<Beacon> beacons;
+    vector2d<int> tileStatic;
 
     void fillProtecting(Beacon* pBeacon);
+    void applyStaticBeacon(Beacon* pBeacon, int delta);
 
     void destroyBeacon(Beacon* pBeacon);
 
@@ -29,6 +33,8 @@ public:
     void tickStructures(IngameMap& map, int frames);
 
     Beacon& addBeacon(int x, int y);
+
+    bool checkStaticBeacons(int x, int y, int width, int height);
 
     std::vector<MonsterNest>& getMonsterNests() { return monsterNests; }
 

@@ -8,6 +8,7 @@
 #include <unordered_set>
 
 IngameStructureController::IngameStructureController(const IngameLevelDefinition& level)
+    : tileStatic(g_game.ingameMapHeight, g_game.ingameMapWidth)
 {
     for (const std::tuple<int, int, bool>& n : level.monsterNests)
     {
@@ -191,20 +192,32 @@ void IngameStructureController::fillProtecting(Beacon* pBeacon)
     }
 }
 
+void IngameStructureController::applyStaticBeacon(Beacon* pBeacon, int delta)
+{
+    for (int y = std::max(0, pBeacon->iy - 3); y < std::min(g_game.ingameMapHeight, pBeacon->iy + 5); ++y)
+        for (int x = std::max(0, pBeacon->ix - 3); x < std::min(g_game.ingameMapWidth, pBeacon->ix + 5); ++x)
+            tileStatic.at(y, x) += delta;
+}
+
 Beacon& IngameStructureController::addBeacon(int x, int y)
 {
-    BEACON_TYPE type;
+    BEACON_TYPE beaconType;
     if (g_game.game == GC_LABYRINTH)
-        type = BEACON_TYPE(rand() % BEACON_TYPE_COUNT_GCL);
+        beaconType = BEACON_TYPE(rand() % BEACON_TYPE_COUNT_GCL);
     else
-        type = BEACON_TYPE(rand() % BEACON_TYPE_COUNT_GCCS);
+        beaconType = BEACON_TYPE(rand() % BEACON_TYPE_COUNT_GCCS);
 
-    beacons.emplace_back(x, y, type);
+    beacons.emplace_back(x, y, beaconType);
 
     Beacon* pBeacon = &beacons.back();
 
     if (g_game.game != GC_LABYRINTH)
+    {
         fillProtecting(pBeacon);
+
+        if (beaconType == BEACON_STATIC)
+            applyStaticBeacon(pBeacon, 1);
+    }
 
     return beacons.back();
 }
@@ -220,7 +233,19 @@ void IngameStructureController::destroyBeacon(Beacon* pBeacon)
             if (it != pOther->protecting.end())
                 pOther->protecting.erase(it);
         }
+
+        if (pBeacon->beaconType == BEACON_STATIC)
+            applyStaticBeacon(pBeacon, -1);
     }
+}
+
+bool IngameStructureController::checkStaticBeacons(int x, int y, int width, int height)
+{
+    for (int j = y; j < y + height; ++j)
+        for (int i = x; i < x + width; ++i)
+            if (tileStatic.at(j, i) > 0)
+                return false;
+    return true;
 }
 
 std::vector<Targetable*>& IngameStructureController::getTargetableStructuresWithinRangeSq(std::vector<Targetable*>& targets, float y, float x, float rangeSq)

@@ -26,6 +26,8 @@ Monster::Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget, con
     banishmentCostMultiplier = mp.banishmentCostMultiplier;
     sortBanishmentCost = getBanishmentCost();
 
+    shield = 0;
+
     type = mp.type;
     shockImmunity = 0.0;
     poisonDamage = 0.0;
@@ -61,11 +63,14 @@ void Monster::spawn()
 {
     isKillingShotOnTheWay = false;
     incomingShots = 0;
+    incomingShotsOnShield = 0;
     incomingDamage = 0.0;
 
     slowTimer = 0;
-    speed = speedMax;
+    manaBindTimer = 0;
+    invulnerabilityTimer = 0;
     shockTimer = 0;
+    speed = speedMax;
 
     x = pSourceNode->spawnX;
     y = pSourceNode->spawnY;
@@ -102,8 +107,25 @@ uint32_t Monster::receiveShotDamage(ShotData& shot, uint32_t numShots, double da
 {
     uint32_t shotsTaken = 0;
 
-    if (isKilled)
+    if (isKilled || (invulnerabilityTimer > 0))
         return 0;
+
+    if (shield > 0)
+    {
+        if (numShots <= shield)
+        {
+            shield -= numShots;
+            return numShots;
+        }
+        else
+        {
+            shotsTaken = shield;
+            if (pSourceGem != NULL)
+                pSourceGem->hits += shotsTaken;
+            shield = 0;
+            return shotsTaken + receiveShotDamage(shot, numShots - shotsTaken, damage, crit, pSourceGem, isKillingShot);
+        }
+    }
 
     double modifiedDamage = std::max<double>(1.0, damage * (1.0 + crit) - armor);
     if (isKillingShotOnTheWay && isKillingShot)
@@ -212,7 +234,7 @@ uint32_t Monster::receiveShotDamage(ShotData& shot, uint32_t numShots, double da
 
 void Monster::receiveShrineDamage(double damage)
 {
-    if (isKilled)
+    if (isKilled || (invulnerabilityTimer > 0))
         return;
 
     hp -= damage;
@@ -232,7 +254,98 @@ void Monster::receiveBombDamage(const ShotData& shot, double damage)
 
 double Monster::calculateIncomingDamage(double damage, double crit)
 {
+    if (invulnerabilityTimer > 0)
+        return 0.0;
+    if (shield > incomingShotsOnShield)
+        return 0.0;
     return std::max<double>(1, damage * (1.0 + crit) - armor);
+}
+
+void Monster::addIncomingDamage(double damage)
+{
+    ++incomingShots;
+    if (invulnerabilityTimer <= 0)
+    {
+        if (shield > incomingShotsOnShield)
+            ++incomingShotsOnShield;
+        else
+            incomingDamage += damage;
+    }
+}
+
+void Monster::removeIncomingDamage(double damage)
+{
+    if (--incomingShots == 0)
+    {
+        incomingShotsOnShield = 0;
+        incomingDamage = 0;
+    }
+    else
+    {
+        if (invulnerabilityTimer <= 0)
+        {
+            if (shield > 0)
+                --incomingShotsOnShield;
+            else
+                incomingDamage = std::max(0.0, incomingDamage - damage);
+        }
+    }
+}
+
+void Monster::receiveBeaconHeal(double heal)
+{
+    hp = std::min<double>(hpMax, hp + heal);
+    if (hp == hpMax)
+        healthBarTimer = 0;
+}
+
+void Monster::receiveBeaconHaste()
+{
+    float speedBoost;
+    float speedCap;
+    if (g_game.game == GC_LABYRINTH)
+    {
+        speedBoost = 1.2f;
+        if (isHoppingGCL())
+            speedCap = 5.0f;
+        else if (isCrawlingGCL())
+            speedCap = 4.0f;
+        else
+            speedCap = 6.0f;
+    }
+    else
+    {
+        speedBoost = 1.1f;
+        speedCap = 5.0f;
+    }
+
+    speed = std::min(speedCap, speed * speedBoost);
+    speedMax = std::min(speedCap, speedMax * speedBoost);
+
+    adjustSpeedAngle();
+}
+
+void Monster::receiveBeaconCleanse()
+{
+    slowTimer = 0;
+    poisonTimer = 0;
+    shockTimer = 0;
+}
+
+void Monster::receiveBeaconInvulnerability()
+{
+    invulnerabilityTimer = rand() % 200 + 200;
+    incomingDamage = 0.0;
+}
+
+void Monster::receiveBeaconShield()
+{
+    ++shield;
+}
+
+void Monster::receiveBeaconManaBind()
+{
+    manaBindTimer = rand() % 200 + 200;
 }
 
 void Monster::pickNextTarget()
@@ -301,6 +414,10 @@ bool Monster::tick(IngameMap& map, int frames)
             isKillingShotOnTheWay = false;
         if (shockTimer > 0)
             shockTimer -= frames;
+        if (manaBindTimer > 0)
+            manaBindTimer -= frames;
+        if (invulnerabilityTimer > 0)
+            invulnerabilityTimer -= frames;
         if ((slowTimer > 0) && (slowTimer -= frames) <= 0)
         {
             speed = speedMax;
@@ -332,7 +449,7 @@ bool Monster::tick(IngameMap& map, int frames)
 
                 if (g_game.game == GC_LABYRINTH)
                 {
-                    if (!!(type & (TARGET_RUNNER | TARGET_REAVER)))
+                    if (isHoppingGCL())
                     {
                         if (motionCycle == 0)
                             speedFactor = 0.0f;
@@ -342,7 +459,7 @@ bool Monster::tick(IngameMap& map, int frames)
                         if (++motionCycle > 18)
                             motionCycle = rand() % 3 - 2;
                     }
-                    else if (!!(type & (TARGET_ARMORED | TARGET_GIANT)))
+                    else if (isCrawlingGCL())
                     {
                         speedFactor = pow(sin(motionCycle * (M_PI / 50.0f)), 2.0f);
 
@@ -408,6 +525,18 @@ void Monster::debugPrint() const
             break;
     }
     printf("\tHP: %lf/%lf | Armor: %lf\n", hp, hpMax, armor);
+    if (shield > 0)
+        printf("\tShield: %i\n", shield);
+    if (slowTimer > 0)
+        printf("\tSlowed: %i\n", slowTimer);
+    if (poisonTimer > 0)
+        printf("\tPoisoned: %i@%f\n", poisonTimer, poisonDamage);
+    if (manaBindTimer > 0)
+        printf("\tMana Bind: %i\n", manaBindTimer);
+    if (invulnerabilityTimer > 0)
+        printf("\tInvulnerable: %i\n", invulnerabilityTimer);
+    if (shockTimer > 0)
+        printf("\tShocked: %i\n", shockTimer);
 }
 #endif
 

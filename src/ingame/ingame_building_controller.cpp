@@ -456,3 +456,37 @@ std::vector<Amplifiable*> IngameBuildingController::getAdjacentAmplifiableBuildi
 
     return adjacent;
 }
+
+int IngameBuildingController::dischargeGems(float x, float y, float rangeSq)
+{
+    int affected = 0;
+
+    for (Tower& t : towers)
+    {
+        if ((t.pGem != NULL) && ((t.y - y) * (t.y - y) + (t.x - x) * (t.x - x) < rangeSq))
+        {
+            t.setCooldown(10000);
+            ++affected;
+        }
+    }
+
+    for (Trap& t : traps)
+    {
+        if ((t.pGem != NULL) && ((t.y - y) * (t.y - y) + (t.x - x) * (t.x - x) < rangeSq))
+        {
+            t.setCooldown(10000);
+            ++affected;
+        }
+    }
+
+    for (Amplifier& t : amplifiers)
+    {
+        if ((t.pGem != NULL) && ((t.y - y) * (t.y - y) + (t.x - x) * (t.x - x) < rangeSq))
+        {
+            t.setCooldown(10000);
+            ++affected;
+        }
+    }
+
+    return affected;
+}

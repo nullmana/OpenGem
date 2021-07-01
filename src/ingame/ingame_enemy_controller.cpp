@@ -51,7 +51,9 @@ void IngameEnemyController::tickMonsters(IngameMap& map, int frames)
     {
         if (it->tick(map, frames))
         {
-            manaPool.addMana(it->mana, true);
+            if (it->manaBindTimer <= 0)
+                manaPool.addMana(it->mana, true);
+
             if (it->incomingShots > 0)
                 invalidatedWithShots.insert(&(*it));
 
@@ -160,8 +162,9 @@ void IngameEnemyController::render(struct _fbg* pFbg, const Window& window) cons
         float x1 = m.x - 0.6f;
         float x2 = m.x + 0.6f;
 
-        if ((m.healthBarTimer > 0) && (m.x > 0.0f) && (m.x < g_game.ingameMapWidth) && (y > 0.0f) &&
-            (m.y < g_game.ingameMapHeight))
+        if ((m.healthBarTimer > 0) &&
+            (m.x > 0.0f) && (m.x < g_game.ingameMapWidth) &&
+            (y > 0.0f) && (m.y < g_game.ingameMapHeight))
         {
             float x3 = (x2 - x1) * (m.hp / m.hpMax) + x1;
             if (x1 < 0.0f)
@@ -209,7 +212,7 @@ std::vector<Targetable*>& IngameEnemyController::getTargetsWithinRangeSq(std::ve
                         std::vector<Monster*>& mt = monstersOnTile.at(j, i);
                         for (Monster* m : mt)
                         {
-                            if (!m->isKilled && (ignoreKillingShot || !m->isKillingShotOnTheWay) &&
+                            if (m->canBeTargeted() && (ignoreKillingShot || !m->isKillingShotOnTheWay) &&
                                 (typeMask & m->type) &&
                                 isTargetWithinRangeSq(m, y, x, rangeSq))
                             {
@@ -224,7 +227,7 @@ std::vector<Targetable*>& IngameEnemyController::getTargetsWithinRangeSq(std::ve
         {
             for (Monster& m : monsters)
             {
-                if (!m.isKilled && (ignoreKillingShot || !m.isKillingShotOnTheWay) && (typeMask & m.type))
+                if (m.canBeTargeted() && (ignoreKillingShot || !m.isKillingShotOnTheWay) && (typeMask & m.type))
                 {
                     targets.push_back(&m);
                 }
@@ -234,7 +237,7 @@ std::vector<Targetable*>& IngameEnemyController::getTargetsWithinRangeSq(std::ve
         {
             for (Monster& m : monsters)
             {
-                if (!m.isKilled && (ignoreKillingShot || !m.isKillingShotOnTheWay) &&
+                if (m.canBeTargeted() && (ignoreKillingShot || !m.isKillingShotOnTheWay) &&
                     (typeMask & m.type) &&
                     isTargetWithinRangeSq(&m, y, x, rangeSq))
                 {
@@ -253,7 +256,7 @@ bool IngameEnemyController::hasTargetsWithinRangeSq(float y, float x, float rang
     {
         for (const Monster& m : monsters)
         {
-            if (!m.isKilled && (ignoreKillingShot || !m.isKillingShotOnTheWay) && (typeMask & m.type) &&
+            if (m.canBeTargeted() && (ignoreKillingShot || !m.isKillingShotOnTheWay) && (typeMask & m.type) &&
                 isTargetWithinRangeSq(&m, y, x, rangeSq))
             {
                 return true;

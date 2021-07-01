@@ -20,4 +20,5 @@ public:
     void tickCooldown(int frames);
     bool isCoolingDown() const { return cooldownTimer > 0; }
     float getCooldown() const { return cooldownTimer * 0.0001f; }
+    void setCooldown(int value) { cooldownTimer = value; }
 };

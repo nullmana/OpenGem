@@ -122,6 +122,12 @@ bool IngameMap::verifyBuilding(TILE_TYPE building, int x, int y)
         return false;
     }
 
+    if (!structureController.checkStaticBeacons(x, y, bw, bh))
+    {
+        printf("Can't build\n");
+        return false;
+    }
+
     for (int j = y; j < y + bh; ++j)
     {
         for (int i = x; i < x + bw; ++i)
@@ -266,6 +272,12 @@ STATUS IngameMap::buildWall(int x1, int y1, int x2, int y2)
         std::swap<int>(x1, x2);
     if (y1 > y2)
         std::swap<int>(y1, y2);
+
+    if (!structureController.checkStaticBeacons(x1, y1, x2 - x1 + 1, y2 - y1 + 1))
+    {
+        printf("Can't Build\n");
+        return STATUS_INVALID_OPERATION;
+    }
 
     int builtWalls = 0;
 

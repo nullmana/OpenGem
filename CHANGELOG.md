@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.4] - 2021-06-30
+
+### Added
+
+- Added functional beacons for all three GC games
+- Added monster shield and GCL invulnerability, with handling for both with regard to incoming damage
+
+### Fixed
+
+- Reset incoming damage to zero when incoming shots are cleared, in case of miscalculation
+
+
 ## [0.3.3] - 2021-06-21
 
 ### Added

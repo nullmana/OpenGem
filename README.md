@@ -87,7 +87,7 @@ v0.4:
 - [x] Gem type availability/unlocking
 - [x] Gem bombing does damage
 - [ ] Tombs
-- [ ] Beacons
+- [x] Beacons
 - [ ] Mana Shards
 - [x] Wave Formations
 - [x] Tower targeting options

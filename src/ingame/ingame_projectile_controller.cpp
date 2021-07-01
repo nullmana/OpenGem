@@ -18,7 +18,7 @@ int IngameProjectileController::createTowerShots(const Tower& tower, Targetable*
 
         shots.emplace_back(tower, pTarget);
 
-        pTarget->incomingDamage += pTarget->calculateIncomingDamage(shots.back().damage, shots.back().crit);
+        pTarget->addIncomingDamage(pTarget->calculateIncomingDamage(shots.back().damage, shots.back().crit));
         if (pTarget->hp <= pTarget->incomingDamage)
         {
             pTarget->setKillingShot();
@@ -30,8 +30,6 @@ int IngameProjectileController::createTowerShots(const Tower& tower, Targetable*
         }
     }
 
-    pTarget->incomingShots += shotsTaken;
-
     return shotsTaken;
 }
 
@@ -42,8 +40,7 @@ void IngameProjectileController::shotHitsTarget(TowerShot* pShot)
 
     if ((pTarget != NULL) && !(pTarget->isKilled))
     {
-        --pTarget->incomingShots;
-        pTarget->incomingDamage -= pTarget->calculateIncomingDamage(pShot->damage, pShot->crit);
+        pTarget->removeIncomingDamage(pTarget->calculateIncomingDamage(pShot->damage, pShot->crit));
         pTarget->receiveShotDamage(pShot->shot, 1, pShot->damage, pShot->crit, pShot->pSourceGem, pShot->isKillingShot);
 
         if (pTarget->isKilled && pTarget->isSelectedTarget)

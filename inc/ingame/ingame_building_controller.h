@@ -64,5 +64,7 @@ public:
 
     void destroyBuilding(Building* pBuilding);
 
+    int dischargeGems(float x, float y, float rangeSq);
+
     Orb& getOrb() { return orb; }
 };

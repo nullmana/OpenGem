@@ -13,6 +13,15 @@ class Beacon : public Structure
 private:
     int16_t nextShotTimer;
 
+    void activateHeal(IngameMap& map);
+    void activateSpeed(IngameMap& map);
+    void activateCleanse(IngameMap& map);
+    void activateInvulnerability(IngameMap& map);
+    void activateManaBind(IngameMap& map);
+    void activateShield(IngameMap& map);
+    void activateDischarge(IngameMap& map);
+    void activateOmni(IngameMap& map);
+
 public:
     Beacon(int ix_, int iy_, BEACON_TYPE beaconType_);
 

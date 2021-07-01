@@ -62,6 +62,11 @@ public:
         std::vector<Targetable*> targets;
         return getTargetsWithinRangeSq(targets, y, x, rangeSq, TARGET_ENEMY, true);
     }
+    std::vector<Targetable*> getBeaconTargetsWithinRangeSq(float y, float x, float rangeSq, bool ignoreKillingShot)
+    {
+        std::vector<Targetable*> targets;
+        return getTargetsWithinRangeSq(targets, y, x, rangeSq, TARGET_MONSTER, ignoreKillingShot);
+    }
     bool hasShrineTargetsWithinRangeSq(float y, float x, float rangeSq) const
     {
         return hasTargetsWithinRangeSq(y, x, rangeSq, TARGET_ENEMY, true);

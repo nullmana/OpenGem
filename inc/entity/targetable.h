@@ -30,9 +30,21 @@ public:
     virtual void receiveShrineDamage(double damage) = 0;
     virtual void receiveBombDamage(const ShotData& shot, double damage) = 0;
     virtual double calculateIncomingDamage(double damage, double crit) { return damage; }
-    virtual float getShotVariance() { return 0.0f; }
-    virtual bool canBeTargeted() { return true; }
-    virtual bool canLeech() { return true; }
+    virtual void addIncomingDamage(double damage)
+    {
+        ++incomingShots;
+        incomingDamage += damage;
+    }
+    virtual void removeIncomingDamage(double damage)
+    {
+        if (--incomingShots == 0)
+            incomingDamage = 0;
+        else
+            incomingDamage -= damage;
+    }
+    virtual float getShotVariance() const { return 0.0f; }
+    virtual bool canBeTargeted() const { return true; }
+    virtual bool canLeech() const { return true; }
     virtual void setKillingShot() { isKillingShotOnTheWay = true; }
 
     float x;

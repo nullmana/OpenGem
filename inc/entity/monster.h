@@ -1,5 +1,7 @@
 #pragma once
 
+#include "constants/target_type.h"
+
 #include "entity/monster_prototype.h"
 #include "entity/targetable.h"
 
@@ -21,9 +23,14 @@ private:
 
     int motionCycle;
 
+    int incomingShotsOnShield;
+
     double banishmentCostMultiplier;
 
     double getBanishmentCost() const { return mana * 2.0 * banishmentCostMultiplier; }
+
+    inline bool isHoppingGCL() const { return !!(type & (TARGET_RUNNER | TARGET_REAVER)); }
+    inline bool isCrawlingGCL() const { return !!(type & (TARGET_ARMORED | TARGET_GIANT)); }
 
 public:
     Monster(const MonsterSpawnNode* pStart, const MonsterNode* pTarget, const MonsterPrototype& mp);
@@ -35,6 +42,16 @@ public:
     virtual void receiveShrineDamage(double damage);
     virtual void receiveBombDamage(const ShotData& shot, double damage);
     virtual double calculateIncomingDamage(double damage, double crit);
+    virtual void addIncomingDamage(double damage);
+    virtual void removeIncomingDamage(double damage);
+    virtual bool canBeTargeted() const { return !isKilled && (invulnerabilityTimer <= 0); }
+
+    void receiveBeaconHeal(double heal);
+    void receiveBeaconHaste();
+    void receiveBeaconCleanse();
+    void receiveBeaconInvulnerability();
+    void receiveBeaconShield();
+    void receiveBeaconManaBind();
 
     /*!
      * @brief Frame tick for this monster
@@ -64,6 +81,8 @@ public:
     double shockImmunity;
     double poisonDamage;
 
+    int shield;
+
     float scale;
 
     float speed;
@@ -75,6 +94,8 @@ public:
 
     int32_t slowTimer;
     int16_t poisonTimer;
+    int16_t manaBindTimer;
+    int16_t invulnerabilityTimer;
     int8_t healthBarTimer;
     int8_t killingShotTimer;
     int8_t shockTimer;
