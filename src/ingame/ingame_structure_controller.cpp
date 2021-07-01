@@ -42,6 +42,107 @@ void IngameStructureController::render(struct _fbg* pFbg, const Window& window) 
             scale * (n.width - 1.0f), scale * (n.height - 1.0f), (color >> 16) & 0xFF,
             (color >> 8) & 0xFF, color & 0xFF, alpha);
     }
+
+    for (const Beacon& b : beacons)
+    {
+        switch (b.beaconType)
+        {
+            case BEACON_HEAL:
+                fbg_hline(pFbg, (b.ix + 0.1f * b.width) * scale + window.x, (b.iy + 0.5f * b.width) * scale + window.y,
+                    0.8f * b.width * scale, 0, 0, 0);
+                fbg_vline(pFbg, (b.ix + 0.5f * b.width) * scale + window.x, (b.iy + 0.1f * b.width) * scale + window.y,
+                    0.8f * b.width * scale, 0, 0, 0);
+                break;
+            case BEACON_SPEED:
+                fbg_line(pFbg, (b.ix + 0.1f * b.width) * scale + window.x, (b.iy + 0.1f * b.width) * scale + window.y,
+                    (b.ix + 0.8f * b.width) * scale + window.x, (b.iy + 0.5f * b.width) * scale + window.y, 0, 0, 0);
+                fbg_line(pFbg, (b.ix + 0.8f * b.width) * scale + window.x, (b.iy + 0.5f * b.width) * scale + window.y,
+                    (b.ix + 0.1f * b.width) * scale + window.x, (b.iy + 0.9f * b.width) * scale + window.y, 0, 0, 0);
+                break;
+            case BEACON_CLEANSE:
+            {
+                int vertices[8];
+                vertices[0] = (b.ix + 0.5f * b.width) * scale + window.x;
+                vertices[1] = (b.iy + 0.1f * b.width) * scale + window.y;
+                vertices[2] = (b.ix + 0.9f * b.width) * scale + window.x;
+                vertices[3] = (b.iy + 0.5f * b.width) * scale + window.y;
+                vertices[4] = (b.ix + 0.5f * b.width) * scale + window.x;
+                vertices[5] = (b.iy + 0.9f * b.width) * scale + window.y;
+                vertices[6] = (b.ix + 0.1f * b.width) * scale + window.x;
+                vertices[7] = (b.iy + 0.5f * b.width) * scale + window.y;
+                fbg_polygon(pFbg, 4, vertices, 0, 0, 0);
+                break;
+            }
+            case BEACON_SHIELD:
+            {
+                int vertices[6];
+                vertices[0] = (b.ix + 0.1f * b.width) * scale + window.x;
+                vertices[1] = (b.iy + 0.1f * b.width) * scale + window.y;
+                vertices[2] = (b.ix + 0.9f * b.width) * scale + window.x;
+                vertices[3] = (b.iy + 0.1f * b.width) * scale + window.y;
+                vertices[4] = (b.ix + 0.5f * b.width) * scale + window.x;
+                vertices[5] = (b.iy + 0.9f * b.width) * scale + window.y;
+                fbg_polygon(pFbg, 3, vertices, 0, 0, 0);
+                break;
+            }
+            case BEACON_DISCHARGE:
+            {
+                int vertices[6];
+                vertices[0] = (b.ix + 0.5f * b.width) * scale + window.x;
+                vertices[1] = (b.iy + 0.1f * b.width) * scale + window.y;
+                vertices[2] = (b.ix + 0.9f * b.width) * scale + window.x;
+                vertices[3] = (b.iy + 0.9f * b.width) * scale + window.y;
+                vertices[4] = (b.ix + 0.1f * b.width) * scale + window.x;
+                vertices[5] = (b.iy + 0.9f * b.width) * scale + window.y;
+                fbg_polygon(pFbg, 3, vertices, 0, 0, 0);
+                break;
+            }
+            case BEACON_PROTECTOR:
+            {
+                int vertices[8];
+                vertices[0] = (b.ix + 0.1f * b.width) * scale + window.x;
+                vertices[1] = (b.iy + 0.1f * b.width) * scale + window.y;
+                vertices[2] = (b.ix + 0.9f * b.width) * scale + window.x;
+                vertices[3] = (b.iy + 0.1f * b.width) * scale + window.y;
+                vertices[4] = (b.ix + 0.9f * b.width) * scale + window.x;
+                vertices[5] = (b.iy + 0.9f * b.width) * scale + window.y;
+                vertices[6] = (b.ix + 0.1f * b.width) * scale + window.x;
+                vertices[7] = (b.iy + 0.9f * b.width) * scale + window.y;
+                fbg_polygon(pFbg, 4, vertices, 0, 0, 0);
+                break;
+            }
+            case BEACON_STATIC:
+                fbg_line(pFbg, (b.ix + 0.1f * b.width) * scale + window.x, (b.iy + 0.1f * b.width) * scale + window.y,
+                    (b.ix + 0.9f * b.width) * scale + window.x, (b.iy + 0.9f * b.width) * scale + window.y, 0, 0, 0);
+                fbg_line(pFbg, (b.ix + 0.9f * b.width) * scale + window.x, (b.iy + 0.1f * b.width) * scale + window.y,
+                    (b.ix + 0.1f * b.width) * scale + window.x, (b.iy + 0.9f * b.width) * scale + window.y, 0, 0, 0);
+                break;
+            case BEACON_OMNI:
+            {
+                int vertices[8];
+                vertices[0] = (b.ix + 0.5f * b.width) * scale + window.x;
+                vertices[1] = (b.iy + 0.1f * b.width) * scale + window.y;
+                vertices[2] = (b.ix + 0.9f * b.width) * scale + window.x;
+                vertices[3] = (b.iy + 0.5f * b.width) * scale + window.y;
+                vertices[4] = (b.ix + 0.5f * b.width) * scale + window.x;
+                vertices[5] = (b.iy + 0.9f * b.width) * scale + window.y;
+                vertices[6] = (b.ix + 0.1f * b.width) * scale + window.x;
+                vertices[7] = (b.iy + 0.5f * b.width) * scale + window.y;
+                fbg_polygon(pFbg, 4, vertices, 0, 0, 0);
+
+                fbg_hline(pFbg, (b.ix + 0.1f * b.width) * scale + window.x, (b.iy + 0.5f * b.width) * scale + window.y,
+                    0.8f * b.width * scale, 0, 0, 0);
+                fbg_vline(pFbg, (b.ix + 0.5f * b.width) * scale + window.x, (b.iy + 0.1f * b.width) * scale + window.y,
+                    0.8f * b.width * scale, 0, 0, 0);
+
+                fbg_line(pFbg, (b.ix + 0.1f * b.width) * scale + window.x, (b.iy + 0.1f * b.width) * scale + window.y,
+                    (b.ix + 0.8f * b.width) * scale + window.x, (b.iy + 0.5f * b.width) * scale + window.y, 0, 0, 0);
+                fbg_line(pFbg, (b.ix + 0.8f * b.width) * scale + window.x, (b.iy + 0.5f * b.width) * scale + window.y,
+                    (b.ix + 0.1f * b.width) * scale + window.x, (b.iy + 0.9f * b.width) * scale + window.y, 0, 0, 0);
+                break;
+            }
+        }
+    }
 }
 
 void IngameStructureController::tickStructures(IngameMap& map, int frames)

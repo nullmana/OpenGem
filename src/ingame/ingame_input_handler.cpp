@@ -219,7 +219,9 @@ static void keyCallback(GLFWwindow* pWindow, int key, int scancode, int action, 
 #ifdef DEBUG
         case GLFW_KEY_S:
             if (action == GLFW_PRESS)
-                pCore->map.spawnBeacons(1);
+            {
+                pCore->map.spawnBeacons(!!(mods & GLFW_MOD_CONTROL) ? 1000 : 1);
+            }
             break;
 #endif
     }

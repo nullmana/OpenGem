@@ -584,19 +584,22 @@ void IngameMap::spawnBeacons(int numBeacons)
         // Hackey - first element of hashmap is essentially random, so use it instead of actual random.
         // Maybe go it++ rand times instead for actual random, don't think this is guaranteed.
         std::unordered_set<uint32_t>::iterator it = spawnLocations.begin();
-        uint16_t x = (*it >> 16) & 0xFFFF;
-        uint16_t y = (*it) & 0xFFFF;
+        int x = (*it >> 16) & 0xFFFF;
+        int y = (*it) & 0xFFFF;
 
         placeBeacon(x, y);
 
         spawnLocations.erase(it);
-        for (uint16_t j = y; j < y + g_game.ingameBuildingSize; ++j)
+        if (g_game.ingameBuildingSize > 1)
         {
-            for (uint16_t i = x; i < x + g_game.ingameBuildingSize; ++i)
+            for (int j = std::max(0, y - g_game.ingameBuildingSize + 1); j < y + g_game.ingameBuildingSize; ++j)
             {
-                it = spawnLocations.find((uint32_t(i) << 16) | uint32_t(j));
-                if (it != spawnLocations.end())
-                    spawnLocations.erase(it);
+                for (int i = std::max(0, x - g_game.ingameBuildingSize + 1); i < x + g_game.ingameBuildingSize; ++i)
+                {
+                    it = spawnLocations.find((uint32_t(i) << 16) | uint32_t(j));
+                    if (it != spawnLocations.end())
+                        spawnLocations.erase(it);
+                }
             }
         }
     }
