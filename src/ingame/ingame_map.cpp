@@ -581,9 +581,9 @@ void IngameMap::spawnBeacons(int numBeacons)
 
     for (int i = 0; (i < numBeacons) && !spawnLocations.empty(); ++i)
     {
-        // Hackey - first element of hashmap is essentially random, so use it instead of actual random.
-        // Maybe go it++ rand times instead for actual random, don't think this is guaranteed.
         std::unordered_set<uint32_t>::iterator it = spawnLocations.begin();
+        std::advance(it, rand() % spawnLocations.size());
+
         int x = (*it >> 16) & 0xFFFF;
         int y = (*it) & 0xFFFF;
 
