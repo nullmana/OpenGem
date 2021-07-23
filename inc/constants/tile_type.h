@@ -21,9 +21,10 @@ enum TILE_TYPE
     TILE_MONSTER_NEST = 11,
     TILE_MONSTER_NEST_PATH = 12,
 
-    TILE_BEACON = 13,
+    TILE_MANA_SHARD = 13,
+    TILE_BEACON = 14,
 
-    TILE_ORB = 14,
+    TILE_ORB = 15,
 
     TILE_TYPE_COUNT
 };
@@ -51,6 +52,7 @@ const static uint32_t TILE_COLOR[TILE_TYPE_COUNT] = {
     0x222222, // TILE_MONSTER_NEST = TILE_NONE
     0xFFFFCC, // TILE_MONSTER_NEST_PATH = TILE_PATH
 
+    0x101020, // TILE_MANA_SHARD
     0xEEEE66, // TILE_BEACON
 
     0x4477FF, // TILE_ORB
@@ -75,6 +77,7 @@ static const char* TILE_TYPE_NAME[TILE_TYPE_COUNT] = {
     "MonsterNest",
     "MonsterNestPath",
 
+    "ManaShard",
     "Beacon",
 
     "Orb",

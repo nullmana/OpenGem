@@ -21,6 +21,7 @@ public:
     virtual double calculateIncomingDamage(double damage, double crit);
 
     virtual bool canBeTargeted() const { return !isIndestructible; }
+    virtual bool canBeSecondaryTarget() const { return true; }
     virtual float getShotVariance() const { return 0.125f * width; }
     virtual bool canLeech() const { return false; }
 };

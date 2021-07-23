@@ -88,7 +88,7 @@ v0.4:
 - [x] Gem bombing does damage
 - [ ] Tombs
 - [x] Beacons
-- [ ] Mana Shards
+- [x] Mana Shards
 - [x] Wave Formations
 - [x] Tower targeting options
 - [x] Target selection on map

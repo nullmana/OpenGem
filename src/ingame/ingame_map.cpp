@@ -12,7 +12,7 @@ IngameMap::IngameMap(IngameCore& core, IngameLevelDefinition& level)
       tileStructure(g_game.ingameMapHeight, g_game.ingameMapWidth),
       manaPool(core.manaPool),
       buildingController(level),
-      structureController(level),
+      structureController(manaPool, level),
       enemyController(manaPool),
       projectileController(*this),
       pathfinder(*this, structureController, level)
@@ -57,6 +57,11 @@ IngameMap::IngameMap(IngameCore& core, IngameLevelDefinition& level)
                 tileStructure.at(y, x) = &monsterNests[i];
             }
         }
+    }
+
+    for (const LevelManaShardDefinition& m : level.manaShards)
+    {
+        placeManaShard(m.x, m.y, m.size, m.mana, m.shell, m.corrupted);
     }
 
     pathfinder.recalculatePaths(*this);
@@ -546,6 +551,20 @@ STATUS IngameMap::demolishBuilding(int x, int y)
     return STATUS_OK;
 }
 
+void IngameMap::placeManaShard(int x, int y, int size, double mana, double shell, bool corrupted)
+{
+    ManaShard& shard = structureController.addManaShard(x, y, size, mana, shell, corrupted);
+
+    for (int j = y; j < y + size; ++j)
+    {
+        for (int i = x; i < x + size; ++i)
+        {
+            tileOccupied.at(j, i) = TILE_MANA_SHARD;
+            tileStructure.at(j, i) = &shard;
+        }
+    }
+}
+
 void IngameMap::placeBeacon(int x, int y)
 {
     Beacon& beacon = structureController.addBeacon(x, y);
@@ -558,6 +577,48 @@ void IngameMap::placeBeacon(int x, int y)
             tileStructure.at(j, i) = &beacon;
         }
     }
+}
+
+void IngameMap::spawnManaShard()
+{
+    // Can't hash a pair, so use a u16|u16 instead.
+    std::unordered_set<uint32_t> spawnLocations;
+
+    // TODO Optimize this - this set can be cached and only updated when something is placed on the map
+    // Also, share it with GCCS shrine spawning
+    for (uint16_t y = 0; y <= g_game.ingameMapHeight - g_game.ingameBuildingSize; ++y)
+    {
+        for (uint16_t x = 0; x <= g_game.ingameMapWidth - g_game.ingameBuildingSize; ++x)
+        {
+            bool canPlace = true;
+            for (uint16_t j = y; j < y + g_game.ingameBuildingSize; ++j)
+            {
+                for (uint16_t i = x; i < x + g_game.ingameBuildingSize; ++i)
+                {
+                    if (tileOccupied.at(j, i) != TILE_NONE)
+                    {
+                        canPlace = false;
+                        break;
+                    }
+                }
+                if (!canPlace)
+                    break;
+            }
+
+            if (canPlace)
+                spawnLocations.emplace((uint32_t(x) << 16) | uint32_t(y));
+        }
+    }
+
+    std::unordered_set<uint32_t>::iterator it = spawnLocations.begin();
+    std::advance(it, rand() % spawnLocations.size());
+
+    int x = (*it >> 16) & 0xFFFF;
+    int y = (*it) & 0xFFFF;
+
+    placeManaShard(x, y, g_game.ingameBuildingSize, 1000.0, 100.0, false);
+
+    spawnLocations.erase(it);
 }
 
 void IngameMap::spawnBeacons(int numBeacons)
@@ -613,6 +674,20 @@ void IngameMap::spawnBeacons(int numBeacons)
                         spawnLocations.erase(it);
                 }
             }
+        }
+    }
+}
+
+void IngameMap::destroyManaShard(ManaShard* pManaShard)
+{
+    const int x = pManaShard->ix;
+    const int y = pManaShard->iy;
+    for (int j = y; j < y + pManaShard->width; ++j)
+    {
+        for (int i = x; i < x + pManaShard->width; ++i)
+        {
+            tileOccupied.at(j, i) = TILE_NONE;
+            tileStructure.at(j, i) = NULL;
         }
     }
 }

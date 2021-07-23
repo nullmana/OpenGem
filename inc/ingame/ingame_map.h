@@ -33,6 +33,8 @@ private:
     STATUS placeBuilding(TILE_TYPE building, int x, int y);
     void destroyBuilding(Building* pBuilding);
     void destroyWalls(int x, int y);
+
+    void placeManaShard(int x, int y, int size, double mana, double shell, bool corrupted);
     void placeBeacon(int x, int y);
 
 public:
@@ -47,7 +49,10 @@ public:
     STATUS buildShrine(int x, int y, SHRINE_TYPE type);
     STATUS demolishBuilding(int x, int y);
 
+    void spawnManaShard();
     void spawnBeacons(int numBeacons);
+
+    void destroyManaShard(ManaShard* pManaShard);
     void destroyBeacon(Beacon* pBeacon);
 
     void dropGemBomb(Gem* pGem, float x, float y);

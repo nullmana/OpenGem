@@ -68,6 +68,10 @@ int main(int argc, char* argv[])
     level.monsterNests.emplace_back(2, (g_game.ingameMapHeight + g_game.ingameMonsterNestSize) / 2, true);
     level.monsterNests.emplace_back(2, (g_game.ingameMapHeight - 2 * g_game.ingameMonsterNestSize) / 2, false);
 
+    level.manaShards.emplace_back(1, 1, g_game.ingameBuildingSize, 1000.0, 0.0, false);
+    level.manaShards.emplace_back(3, 1, g_game.ingameBuildingSize + 1, 4000.0, 1000.0, false);
+    level.manaShards.emplace_back(g_game.ingameMapWidth - 7, 1, 2 * g_game.ingameBuildingSize + 1, 0.0, 0.0, true);
+
     level.tiles.at(level.orbY, level.orbX) = TILE_ORB;
 
     IngameCore core(level);

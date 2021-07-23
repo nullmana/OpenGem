@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.5] - 2021-07-23
+
+### Added
+
+- Added mana shards, including corrupted mana shards
+
+### Fixed
+
+- Removed duplicated tower targeting left over from before target options
+
+
 ## [0.3.4] - 2021-06-30
 
 ### Added

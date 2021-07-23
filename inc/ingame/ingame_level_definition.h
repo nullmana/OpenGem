@@ -8,6 +8,18 @@
 #include <tuple>
 #include <vector>
 
+struct LevelManaShardDefinition
+{
+    LevelManaShardDefinition(int x_, int y_, int size_, double mana_, double shell_, bool corrupted_)
+        : x(x_), y(y_), size(size_), mana(mana_), shell(shell_), corrupted(corrupted_) {}
+    int x;
+    int y;
+    int size;
+    double mana;
+    double shell;
+    bool corrupted;
+};
+
 struct IngameLevelDefinition
 {
     IngameLevelDefinition()
@@ -15,5 +27,6 @@ struct IngameLevelDefinition
 
     vector2d<TILE_TYPE> tiles;
     std::vector<std::tuple<int, int, bool>> monsterNests;
+    std::vector<LevelManaShardDefinition> manaShards;
     int orbX, orbY;
 };

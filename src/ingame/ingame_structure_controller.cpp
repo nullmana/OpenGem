@@ -7,8 +7,9 @@
 #include <algorithm>
 #include <unordered_set>
 
-IngameStructureController::IngameStructureController(const IngameLevelDefinition& level)
-    : tileStatic(g_game.ingameMapHeight, g_game.ingameMapWidth)
+IngameStructureController::IngameStructureController(IngameManaPool& manaPool_, const IngameLevelDefinition& level)
+    : manaPool(manaPool_),
+      tileStatic(g_game.ingameMapHeight, g_game.ingameMapWidth)
 {
     for (const std::tuple<int, int, bool>& n : level.monsterNests)
     {
@@ -42,6 +43,20 @@ void IngameStructureController::render(struct _fbg* pFbg, const Window& window) 
         fbgx_recta(pFbg, (n.ix + 0.5f) * scale + window.x, (n.iy + 0.5f) * scale + window.y,
             scale * (n.width - 1.0f), scale * (n.height - 1.0f), (color >> 16) & 0xFF,
             (color >> 8) & 0xFF, color & 0xFF, alpha);
+    }
+
+    for (const ManaShard& m : manaShards)
+    {
+        uint32_t color;
+        if (m.isCorrupted)
+            color = 0xDB9509;
+        else if (m.armor > 0.0)
+            color = 0x9B1AD9;
+        else
+            color = 0x269BEA;
+
+        fbg_rect(pFbg, m.ix * scale + window.x, m.iy * scale + window.y, scale * m.width, scale * m.height,
+            (color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
     }
 
     for (const Beacon& b : beacons)
@@ -150,6 +165,26 @@ void IngameStructureController::tickStructures(IngameMap& map, int frames)
 {
     std::unordered_set<Targetable*> invalidatedWithShots;
 
+    for (std::list<ManaShard>::iterator it = manaShards.begin(); it != manaShards.end();)
+    {
+        ManaShard* pManaShard = &(*it);
+        if (pManaShard->isKilled)
+        {
+            if (pManaShard->incomingShots > 0)
+                invalidatedWithShots.insert(pManaShard);
+
+            if (pManaShard->isSelectedTarget)
+                map.setSelectedTarget(NULL);
+
+            map.destroyManaShard(pManaShard);
+            manaShards.erase(it++);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
     for (std::list<Beacon>::iterator it = beacons.begin(); it != beacons.end();)
     {
         Beacon* pBeacon = &(*it);
@@ -197,6 +232,15 @@ void IngameStructureController::applyStaticBeacon(Beacon* pBeacon, int delta)
     for (int y = std::max(0, pBeacon->iy - 3); y < std::min(g_game.ingameMapHeight, pBeacon->iy + 5); ++y)
         for (int x = std::max(0, pBeacon->ix - 3); x < std::min(g_game.ingameMapWidth, pBeacon->ix + 5); ++x)
             tileStatic.at(y, x) += delta;
+}
+
+ManaShard& IngameStructureController::addManaShard(int x, int y, int size, double mana, double shell, bool corrupted)
+{
+    manaShards.emplace_back(manaPool, x, y, size, mana, shell, corrupted);
+
+    ManaShard* pShard = &manaShards.back();
+
+    return manaShards.back();
 }
 
 Beacon& IngameStructureController::addBeacon(int x, int y)
@@ -248,11 +292,21 @@ bool IngameStructureController::checkStaticBeacons(int x, int y, int width, int 
     return true;
 }
 
-std::vector<Targetable*>& IngameStructureController::getTargetableStructuresWithinRangeSq(std::vector<Targetable*>& targets, float y, float x, float rangeSq)
+std::vector<Targetable*>& IngameStructureController::getTargetableStructuresWithinRangeSq(std::vector<Targetable*>& targets, float y, float x, float rangeSq, bool isStructureTarget)
 {
     for (MonsterNest& m : monsterNests)
     {
         if (!m.isKilled && !m.isKillingShotOnTheWay && m.canBeTargeted() &&
+            ((m.y - y) * (m.y - y) + (m.x - x) * (m.x - x) <= rangeSq))
+        {
+            targets.push_back(&m);
+        }
+    }
+
+    for (ManaShard& m : manaShards)
+    {
+        if (!m.isKilled && !m.isKillingShotOnTheWay && m.canBeTargeted() &&
+            (!m.isCorrupted || isStructureTarget) &&
             ((m.y - y) * (m.y - y) + (m.x - x) * (m.x - x) <= rangeSq))
         {
             targets.push_back(&m);
