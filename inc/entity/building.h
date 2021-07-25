@@ -15,6 +15,7 @@ public:
 
     virtual bool canBeDemolished() { return pGem == NULL; }
     virtual bool canBeAmplified() { return true; }
+    virtual bool canQuickSocket() { return true; }
 
     // Apply amplifier effects to sd
     ShotData transformShotDataAmplify(const ShotData& sd);

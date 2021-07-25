@@ -324,6 +324,8 @@ Shrine* IngameBuildingController::addShrine(IngameMap& map, int x, int y, SHRINE
             break;
     }
 
+    printf("%p %i %i\n", pShrine, pShrine->canBeAmplified(), pShrine->canQuickSocket());
+
     return pShrine;
 }
 

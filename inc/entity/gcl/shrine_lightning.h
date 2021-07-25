@@ -10,9 +10,6 @@ protected:
 public:
     ShrineLightning(IngameMap& map_, int ix_, int iy_);
 
-    virtual bool canBeDemolished() { return false; }
-    virtual bool canBeAmplified() { return false; }
-
     virtual bool canActivate();
     virtual void activate(Gem* pGem);
 };

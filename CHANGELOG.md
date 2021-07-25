@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.5.1] - 2021-07-25
+
+### Fixed
+
+- Fixed quicksocket clicking into shrines
+- Fixed crash when interacting with invalidated shrine in vector after building additional shrines of that type
+
+
 ## [0.3.5] - 2021-07-23
 
 ### Added

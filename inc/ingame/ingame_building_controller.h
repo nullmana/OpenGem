@@ -27,8 +27,8 @@ private:
     Orb orb;
 
     // Shrines : GCL
-    std::vector<ShrineChargedBolts> shrinesCB;
-    std::vector<ShrineLightning> shrinesLI;
+    std::list<ShrineChargedBolts> shrinesCB;
+    std::list<ShrineLightning> shrinesLI;
     // Shrines : GCCS
 
     double wallCostCurrent;

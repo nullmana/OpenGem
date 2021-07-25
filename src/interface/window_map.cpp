@@ -85,7 +85,7 @@ void WindowMap::handleMouseInput(GLFWwindow* pWindow, int button, int action, in
                             }
                             shouldCheckTarget = false;
                         }
-                        else if (left)
+                        else if (left && pBuilding->canQuickSocket())
                         {
                             pGem = pCore->inventory.getFirstGem();
                             if (pGem != NULL)

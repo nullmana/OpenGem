@@ -27,6 +27,7 @@ public:
 
     virtual bool canBeDemolished() { return false; }
     virtual bool canBeAmplified() { return false; }
+    virtual bool canQuickSocket() { return false; }
 
     virtual bool canActivate() = 0;
     virtual void activate(Gem* pGem) = 0;
