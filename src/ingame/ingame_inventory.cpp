@@ -14,11 +14,11 @@
 
 #include <cstddef>
 
-IngameInventory::IngameInventory(IngameManaPool& mp_, IngameProjectileController& pc_, int slots_)
+IngameInventory::IngameInventory(IngameManaPool& mp_, IngameProjectileController& pc_, int slots_, uint32_t availableGemTypes_)
     : manaPool(mp_), projectileController(pc_), inventory(slots_)
 {
     pDraggedGem = NULL;
-    unlockedGemTypeMask = (1 << GEM_POISON) | (1 << GEM_CRITICAL);
+    unlockedGemTypeMask = availableGemTypes_;
 }
 
 STATUS IngameInventory::render(struct _fbg* pFbg, const Window& window) const

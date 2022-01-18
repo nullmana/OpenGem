@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.5.2] - 2022-01-17
+
+### Added
+
+- Added primitive stage data defining monster data and gem types
+
 ## [0.3.5.1] - 2021-07-25
 
 ### Fixed

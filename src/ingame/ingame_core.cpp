@@ -6,7 +6,7 @@ IngameCore::IngameCore(IngameLevelDefinition& level)
     : inputHandler(*this),
       renderer(*this),
       map(*this, level),
-      inventory(manaPool, map.projectileController, 36),
+      inventory(manaPool, map.projectileController, 36, level.stage.gemTypes),
       waveController(map, manaPool, level.stage)
 {
     switch (g_game.game)

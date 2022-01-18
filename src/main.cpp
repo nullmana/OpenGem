@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
     level.tiles.at(level.orbY, level.orbX) = TILE_ORB;
 
     // TODO populate from stage definitions
-    level.stage.gemTypes = GEM_POISON | GEM_CRITICAL;
+    level.stage.gemTypes = (1 << GEM_POISON) | (1 << GEM_CRITICAL);
     StageMonsterData& md = level.stage.monsterData;
     md.numWaves = 8;
     md.hpInitial = 4.0;
