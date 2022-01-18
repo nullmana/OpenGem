@@ -31,7 +31,7 @@ make -j2
 
 ### Windows (MINGW64)
 ```
-sudo pacman -S git mingw-w64-x86_64-glew mingw-w64-x86_64-glfw
+pacman -S git mingw-w64-x86_64-glew mingw-w64-x86_64-glfw
 git clone --recurse-submodules https://github.com/nullmana/OpenGem
 cd OpenGem
 make -j2
