@@ -11,6 +11,8 @@ struct _fbg;
 class IngameMap;
 class IngameManaPool;
 
+struct StageData;
+
 class IngameWaveController
 {
 private:
@@ -31,14 +33,14 @@ private:
 
     double getWaveHpGrowthGCL(int numWaves);
 
-    void buildWaves();
+    void buildWaves(const StageData& stage);
     void activateNextWave();
 
     void activateWave();
     void activateSpark();
 
 public:
-    IngameWaveController(IngameMap& map_, IngameManaPool& manaPool_);
+    IngameWaveController(IngameMap& map_, IngameManaPool& manaPool_, const StageData& stage_);
 
     STATUS render(struct _fbg* pFbg, const Window& window) const;
 

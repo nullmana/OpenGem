@@ -7,7 +7,7 @@
 
 #include "wrapfbg.h"
 
-IngameWaveController::IngameWaveController(IngameMap& map_, IngameManaPool& manaPool_)
+IngameWaveController::IngameWaveController(IngameMap& map_, IngameManaPool& manaPool_, const StageData& stage_)
     : map(map_), manaPool(manaPool_)
 {
     currentWaveStone = -1;
@@ -19,7 +19,7 @@ IngameWaveController::IngameWaveController(IngameMap& map_, IngameManaPool& mana
     waveClock = 0;
     fullRushBonus = false;
 
-    buildWaves();
+    buildWaves(stage_);
 }
 
 double IngameWaveController::getWaveHpGrowthGCL(int numWaves)
@@ -63,16 +63,31 @@ double IngameWaveController::getWaveHpGrowthGCL(int numWaves)
 #define rand01(gen) ((gen)() / double((gen).max()))
 #define rand01f(gen) ((gen)() / float((gen).max()))
 
-void IngameWaveController::buildWaves()
+void IngameWaveController::buildWaves(const StageData& stage)
 {
     randWave.seed();
 
-    // Get this from stage data
-    int numWaves = 8;
-    double hpFirstWave = 8.0;
+    int numWaves = stage.monsterData.numWaves;
+    double hpFirstWave = stage.monsterData.hpInitial;
+    double hpGrowth = 1.010;
     double armorFirstWave = 1.0;
-    double hpMultiplier = 1.010;
-    double armorIncrement = 0.4;
+    double armorIncrement = stage.monsterData.armorIncrement;
+
+    if (g_game.game == GC_LABYRINTH)
+    {
+        // numWaves level setting
+        hpGrowth = getWaveHpGrowthGCL(numWaves);
+    }
+    else if (g_game.game == GC_CHASINGSHADOWS)
+    {
+        hpGrowth = stage.monsterData.hpGrowth - 0.003;   // * [1,1.02,1.04] * Hatred
+        armorFirstWave = stage.monsterData.armorInitial; // + [0,15,30]
+        // armorIncrement * [1,1.25,1.4]
+    }
+    else
+        throw "Game Code Unavailable!";
+
+    // TODO monster types based on level distribution
 
     waves.resize(numWaves);
 
@@ -143,7 +158,7 @@ void IngameWaveController::buildWaves()
         {
             wave.numMonsters = round(numMonstersRaw);
 
-            mp.hp = hpFirstWave * pow(hpMultiplier, iw);
+            mp.hp = hpFirstWave * pow(hpGrowth, iw); // * HP level setting
             mp.armor = std::max(0.0, round(armorIncrement * (iw - 3) * (1 + rand01(randWave))));
             mp.mana = 12.0 * (0.64 * iw + 10.0) / wave.numMonsters;
             mp.banishmentCostMultiplier = 1.0;
@@ -184,7 +199,7 @@ void IngameWaveController::buildWaves()
         {
             wave.numMonsters = std::max<int>(2, round(numMonstersRaw));
 
-            mp.hp = std::min(1E300, hpFirstWave * pow(hpMultiplier, iw));
+            mp.hp = std::min(1E300, hpFirstWave * pow(hpGrowth, iw));
             mp.armor = armorFirstWave + std::max(0.0, round(armorIncrement * (iw - 3) * (1 + rand01(randWave))));
             mp.mana = 0.7 * std::max(1.0, round(0.5 * 6.74 * (0.65 * iw + 10.0)));
             mp.banishmentCostMultiplier = 1.0;
@@ -362,6 +377,10 @@ void IngameWaveController::activateWave()
             t /= timeMax;
         }
     }
+
+#ifdef DEBUG
+    printf("Wave %d: - Monsters: %d - HP: %lf - Ar: %lf\n", wave.waveNum, wave.numMonsters, wave.mp.hp, wave.mp.armor);
+#endif
 
     map.enemyController.addPendingMonsters(wave.mp, times);
 }

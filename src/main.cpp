@@ -74,6 +74,23 @@ int main(int argc, char* argv[])
 
     level.tiles.at(level.orbY, level.orbX) = TILE_ORB;
 
+    // TODO populate from stage definitions
+    level.stage.gemTypes = GEM_POISON | GEM_CRITICAL;
+    StageMonsterData& md = level.stage.monsterData;
+    md.numWaves = 8;
+    md.hpInitial = 4.0;
+    md.armorIncrement = 0.1;
+    md.typeFrequent = -1;
+    md.typeUnused = -1;
+
+    md.numGiantWaves = 1;
+    md.numSwarmlingWaves = 1;
+    md.firstNonReaverWave = 3;
+    md.firstBuffedWave = -1;
+    md.buffValueIncrement = 0;
+    md.hpGrowth = 1.010;
+    md.armorInitial = 1.0;
+
     IngameCore core(level);
 
     core.init(pFbg);

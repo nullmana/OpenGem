@@ -5,6 +5,8 @@
 #include "constants/game_header.h"
 #include "constants/tile_type.h"
 
+#include "struct/stage_data.h"
+
 #include <tuple>
 #include <vector>
 
@@ -24,6 +26,8 @@ struct IngameLevelDefinition
 {
     IngameLevelDefinition()
         : tiles(g_game.ingameMapHeight, g_game.ingameMapWidth) {}
+
+    StageData stage;
 
     vector2d<TILE_TYPE> tiles;
     std::vector<std::tuple<int, int, bool>> monsterNests;
